@@ -4,13 +4,28 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
 import { ModalMenu } from "../componets/modalMenu";
 
+
 const { width } = Dimensions.get("window");
+
+const CARD_WIDTH = width * 0.28;
+const IMAGE_SIZE = width * 0.23;
+const BANNER_HEIGHT = width * 0.42;
 
 type BannerItem = {
   type: "static" | "adopted";
@@ -20,7 +35,11 @@ type BannerItem = {
 
 export default function CatalogView() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [filters, setFilters] = useState<Filters>({ type: [], sex: [], size: [] });
+  const [filters, setFilters] = useState<Filters>({
+    type: [],
+    sex: [],
+    size: [],
+  });
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [bannerPage, setBannerPage] = useState(0);
@@ -60,23 +79,23 @@ export default function CatalogView() {
       </View>
     );
 
-  const adoptedPets = pets.filter(p => p.adopted === true);
+  const adoptedPets = pets.filter((p) => p.adopted === true);
 
   const staticBanners: BannerItem[] = [
     { type: "static", image: require("../../../../assets/images/D.png") },
     { type: "static", image: require("../../../../assets/images/Cat.jpeg") },
-    { type: "static", image: require("../../../../assets/images/DOG.png") }
+    { type: "static", image: require("../../../../assets/images/DOG.png") },
   ];
 
-  const adoptedBanners: BannerItem[] = adoptedPets.map(p => ({
+  const adoptedBanners: BannerItem[] = adoptedPets.map((p) => ({
     type: "adopted",
     image: { uri: p.image_url },
-    name: p.name
+    name: p.name,
   }));
 
   const bannerImages: BannerItem[] = [...staticBanners, ...adoptedBanners];
 
-  const filteredPets = pets.filter(p => {
+  const filteredPets = pets.filter((p) => {
     const term = search.toLowerCase();
 
     if (search) {
@@ -86,14 +105,24 @@ export default function CatalogView() {
         !String(p.sex ?? "").toLowerCase().includes(term) &&
         !String(p.size ?? "").toLowerCase().includes(term) &&
         !String(p.age ?? "").toLowerCase().includes(term)
-      ) return false;
+      )
+        return false;
     }
 
-    if (filters.type.length && !filters.type.map(f => f.toLowerCase()).includes((p.type ?? "").toLowerCase()))
+    if (
+      filters.type.length &&
+      !filters.type.map((f) => f.toLowerCase()).includes((p.type ?? "").toLowerCase())
+    )
       return false;
-    if (filters.sex.length && !filters.sex.map(f => f.toLowerCase()).includes((p.sex ?? "").toLowerCase()))
+    if (
+      filters.sex.length &&
+      !filters.sex.map((f) => f.toLowerCase()).includes((p.sex ?? "").toLowerCase())
+    )
       return false;
-    if (filters.size.length && !filters.size.map(f => f.toLowerCase()).includes((p.size ?? "").toLowerCase()))
+    if (
+      filters.size.length &&
+      !filters.size.map((f) => f.toLowerCase()).includes((p.size ?? "").toLowerCase())
+    )
       return false;
     return true;
   });
@@ -128,7 +157,9 @@ export default function CatalogView() {
 
           {isAdopted && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}> ¡{pet.name} ha sido adoptado!</Text>
+              <Text style={styles.badgeText}>
+                ¡{pet.name} ha sido adoptado!
+              </Text>
             </View>
           )}
         </View>
@@ -146,12 +177,22 @@ export default function CatalogView() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
-
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
+        
         <View style={styles.b}>
           <View style={styles.row}>
-            <Text style={styles.txtN}>Animaland</Text>
-            <MaterialCommunityIcons name="dog" size={33} color="#fff" />
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.txtN}>Animaland</Text>
+              <MaterialCommunityIcons name="dog" size={33} color="#fff" />
+            </View>
+
+        
+            <TouchableOpacity onPress={() => setModalOpen(true)}>
+              <Feather name="menu" size={28} color="#fff" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -165,8 +206,7 @@ export default function CatalogView() {
           <TouchableOpacity>
             <Feather name="search" size={20} color="#5B4000" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.F}
-            onPress={() => setFilterOpen(true)}>
+          <TouchableOpacity style={styles.F} onPress={() => setFilterOpen(true)}>
             <Ionicons name="filter-outline" size={24} color="#D09100" />
           </TouchableOpacity>
         </View>
@@ -175,11 +215,18 @@ export default function CatalogView() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={(e) => setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+          onScroll={(e) =>
+            setBannerPage(
+              Math.round(e.nativeEvent.contentOffset.x / width)
+            )
+          }
           scrollEventThrottle={16}
         >
           {bannerImages.map((item, idx) => (
-            <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
+            <View
+              key={idx}
+              style={{ width, alignItems: "center", marginVertical: 10 }}
+            >
               <View style={{ position: "relative" }}>
                 <Image
                   source={item.image}
@@ -199,34 +246,40 @@ export default function CatalogView() {
         </ScrollView>
 
         <View style={styles.BP}>
-          {bannerImages.map((_, i) =>
-            <View key={i} style={[styles.dot, bannerPage === i && styles.dotActive]} />
-          )}
+          {bannerImages.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.dot, bannerPage === i && styles.dotActive]}
+            />
+          ))}
         </View>
 
         <ScrollView
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={(e) => setPagePets(Math.round(e.nativeEvent.contentOffset.x / width))}
+          onScroll={(e) =>
+            setPagePets(
+              Math.round(e.nativeEvent.contentOffset.x / width)
+            )
+          }
           scrollEventThrottle={16}
         >
           {chunks.map((row, idx) => (
             <View
               key={idx}
-              style={{ width, flexDirection: "row", justifyContent: "space-around", marginVertical: 10 }}
+              style={{
+                width,
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginVertical: 10,
+              }}
             >
               {row.map(renderPet)}
             </View>
           ))}
         </ScrollView>
-
       </ScrollView>
-
-      <TouchableOpacity style={styles.floatingButton}
-        onPress={() => setModalOpen(true)}>
-        <Text style={styles.buttonText}>Menú</Text>
-      </TouchableOpacity>
 
       <ModalMenu
         visible={modalOpen}
@@ -248,25 +301,31 @@ export default function CatalogView() {
 
 const styles = StyleSheet.create({
   container: { backgroundColor: "#fff" },
+
   row: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 10
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "90%",
+    marginVertical: 10,
   },
+
   b: {
     width: "100%",
-    height: 60,
+    height: 100,
     backgroundColor: "#d4b37a",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
+
   txtN: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 25,
-    marginRight: 5
+    marginRight: 5,
   },
+
   S: {
     flexDirection: "row",
     alignItems: "center",
@@ -275,67 +334,57 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 20,
     margin: 10,
-    backgroundColor: "#FFF8EC"
+    backgroundColor: "#FFF8EC",
   },
+
   TI: {
     flex: 1,
     height: 40,
-    color: "#333"
+    color: "#333",
   },
-  F: {
-    left: 10
-  },
+
+  F: { left: 10 },
+
   imgD: {
-    height: 160,
-    borderRadius: 20
+    height: BANNER_HEIGHT,
+    borderRadius: 20,
   },
+
   BP: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 8
+    marginTop: 8,
   },
+
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: "#ccc",
-    margin: 5
+    margin: 5,
   },
+
   dotActive: {
-    backgroundColor: "#000"
+    backgroundColor: "#000",
   },
+
   CC: {
-    width: 120,
+    width: CARD_WIDTH,
     padding: 5,
     backgroundColor: "#D9D9D9",
     borderRadius: 20,
-    alignItems: "center"
+    alignItems: "center",
   },
+
   img: {
-    width: 100,
-    height: 100,
-    borderRadius: 20
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    borderRadius: 20,
   },
-  N: {
-    fontSize: 15,
-    textAlign: "center"
-  },
-  D: {
-    fontSize: 12,
-    textAlign: "center"
-  },
-  floatingButton: {
-    position: "absolute",
-    bottom: 40,
-    alignSelf: "center",
-    backgroundColor: "#22c55e",
-    padding: 12,
-    borderRadius: 50
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold"
-  },
+
+  N: { fontSize: 15, textAlign: "center" },
+  D: { fontSize: 12, textAlign: "center" },
+
   badge: {
     position: "absolute",
     top: 5,
@@ -343,19 +392,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFD700",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 15
+    borderRadius: 15,
   },
+
   badgeText: {
     fontSize: 10,
     fontWeight: "bold",
-    color: "#000"
+    color: "#000",
   },
+
   unavailable: {
     marginTop: 5,
     fontSize: 10,
     color: "#999",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
+
   successBadge: {
     position: "absolute",
     bottom: 10,
@@ -363,17 +415,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#22c55e",
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 15
+    borderRadius: 15,
   },
+
   successText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 12
+    fontSize: 12,
   },
 
   center: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });

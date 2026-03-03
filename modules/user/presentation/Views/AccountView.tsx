@@ -1,9 +1,24 @@
 import { supabase } from "@/lib/supabase";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 import AvatarView from "../components/AvatarView";
+
+const { width, height } = Dimensions.get("window");
+
+const HEADER_PADDING = width * 0.25;
+const AVATAR_SIZE = width * 0.32;
+const FONT_TITLE = width * 0.08;
 
 export default function Account() {
   const [user, setUser] = useState<any>(null);
@@ -11,6 +26,7 @@ export default function Account() {
   const [phone, setPhone] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -27,8 +43,7 @@ export default function Account() {
   }, []);
 
   if (!user)
-    return
-  <Text style={{ padding: 20 }}>No hay usuario logueado</Text>;
+    return <Text style={{ padding: 20 }}>No hay usuario logueado</Text>;
 
   const updateProfile = async () => {
     try {
@@ -47,6 +62,7 @@ export default function Account() {
       await AsyncStorage.setItem("user", JSON.stringify(newUser));
 
       Alert.alert("Perfil actualizado");
+      router.push("/catalog");
     } catch (err: any) {
       Alert.alert("Error", err.message);
     } finally {
@@ -59,46 +75,52 @@ export default function Account() {
 
       <View style={styles.BC}>
         <View style={styles.BR}>
-          <Text style={styles.txtSU}>
-            Animaland
-          </Text>
-          <MaterialCommunityIcons name="dog" size={30} color="white"
-          />
+          <Text style={styles.txtSU}>Animaland</Text>
+          <MaterialCommunityIcons name="dog" size={width * 0.075} color="white" />
         </View>
       </View>
 
       <View style={styles.aB}>
         <AvatarView
-          size={120}
+          size={AVATAR_SIZE}
           url={avatarUrl}
-          onUpload={(url) =>
-            setAvatarUrl(url)}
+          onUpload={(url) => setAvatarUrl(url)}
         />
       </View>
 
       <View style={styles.iB}>
-        <TextInput style={styles.input}
+        <TextInput
+          style={styles.input}
           value={user.email}
           editable={false}
         />
-        <TextInput style={styles.input}
+
+        <TextInput
+          style={styles.input}
           value={username}
           onChangeText={setUsername}
           placeholder="Username"
         />
-        <TextInput style={styles.input}
-          value={phone} onChangeText={setPhone}
+
+        <TextInput
+          style={styles.input}
+          value={phone}
+          onChangeText={setPhone}
           placeholder="Phone"
           keyboardType="phone-pad"
         />
       </View>
 
-      <TouchableOpacity style={styles.button}
+      <TouchableOpacity
+        style={styles.button}
         onPress={updateProfile}
-        disabled={loading}>
+        disabled={loading}
+      >
         <Text style={styles.buttonText}>
-          {loading ? "Guardando..." : "Actualizar Perfil"}</Text>
+          {loading ? "Guardando..." : "Actualizar Perfil"}
+        </Text>
       </TouchableOpacity>
+
     </View>
   );
 }
@@ -106,50 +128,59 @@ export default function Account() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    alignItems: "center"
+    padding: width * 0.05,
+    alignItems: "center",
+    backgroundColor: "#ffff"
   },
+
   input: {
     width: "100%",
-    padding: 12,
+    padding: width * 0.03,
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#DAC193',
   },
+
   button: {
     width: "100%",
     backgroundColor: '#E5DCCC',
-    padding: 15,
+    padding: width * 0.04,
     borderRadius: 10,
     marginTop: 10
   },
+
   buttonText: {
     textAlign: "center",
     fontWeight: "bold"
   },
+
   txtSU: {
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: FONT_TITLE,
     textAlign: 'center',
     color: 'rgb(255, 255, 255)'
   },
+
   BC: {
     backgroundColor: "#D4B37A",
-    paddingVertical: 12,
-    paddingHorizontal: 100,
+    paddingVertical: height * 0.015,
+    paddingHorizontal: HEADER_PADDING,
   },
+
   BR: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: height * 0.02,
   },
+
   aB: {
-    marginTop: 20,
+    marginTop: height * 0.03,
   },
+
   iB: {
-  marginTop: 25, 
-  width: "100%",
-},
+    marginTop: height * 0.03,
+    width: "100%",
+  },
 });
