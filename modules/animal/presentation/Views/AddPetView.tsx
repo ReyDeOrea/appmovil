@@ -312,3 +312,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   },
 });
+
+//añadir animal
