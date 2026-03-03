@@ -1,7 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { UserDataSource } from "./userDataSource";
-
-export class SupabaseUserDataSource implements UserDataSource {
+export class SupabaseUserDataSource implements SupabaseUserDataSource {
   private tableName = "profiles";
 
   async checkIfProfileExists(id: string): Promise<boolean> {

@@ -1,4 +1,4 @@
-//CRUD DE MASCOTAS
+
 import { supabase } from "@/lib/supabase";
 import { Pet } from "../domain/pet";
 
