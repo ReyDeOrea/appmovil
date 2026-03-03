@@ -7,16 +7,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    Alert,
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
+import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import * as Print from "expo-print";
@@ -33,28 +24,28 @@ export function ProfileAnimal() {
 
 
     const verificarUsuario = async () => {
-    const userSession = await AsyncStorage.getItem("user");
+        const userSession = await AsyncStorage.getItem("user");
 
-    if (!userSession) {
-        Alert.alert(
-            "Debes iniciar sesión",
-            "Necesitas iniciar sesión para agregar favoritos",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Ir a Login",
-                    onPress: () => router.push("/login")
-                }
-            ]
-        );
-        return false;
-    }
+        if (!userSession) {
+            Alert.alert(
+                "Debes iniciar sesión",
+                "Necesitas iniciar sesión para agregar favoritos",
+                [
+                    {
+                        text: "Cancelar",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Ir a Login",
+                        onPress: () => router.push("/login")
+                    }
+                ]
+            );
+            return false;
+        }
 
-    return true;
-};
+        return true;
+    };
     let mascota: Pet | null = null;
 
     if (typeof params.pet === "string") {
@@ -71,47 +62,47 @@ export function ProfileAnimal() {
         }
     }, []);
 
-   const checkIfFavorite = async () => {
-    const userData = await AsyncStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
+    const checkIfFavorite = async () => {
+        const userData = await AsyncStorage.getItem("user");
+        const user = userData ? JSON.parse(userData) : null;
 
-    if (!user) return;
+        if (!user) return;
 
-    const data = await AsyncStorage.getItem(`favorites_${user.id}`);
-    const favorites = data ? JSON.parse(data) : [];
+        const data = await AsyncStorage.getItem(`favorites_${user.id}`);
+        const favorites = data ? JSON.parse(data) : [];
 
-    const exists = favorites.some((pet: Pet) => pet.id === mascota?.id);
-    setIsFavorite(exists);
-};
+        const exists = favorites.some((pet: Pet) => pet.id === mascota?.id);
+        setIsFavorite(exists);
+    };
 
- const toggleFavorite = async () => {
+    const toggleFavorite = async () => {
 
-    const autorizado = await verificarUsuario();
-    if (!autorizado) return;
+        const autorizado = await verificarUsuario();
+        if (!autorizado) return;
 
-    const userData = await AsyncStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
+        const userData = await AsyncStorage.getItem("user");
+        const user = userData ? JSON.parse(userData) : null;
 
-    if (!user) return;
+        if (!user) return;
 
-    const data = await AsyncStorage.getItem(`favorites_${user.id}`);
-    let favorites = data ? JSON.parse(data) : [];
+        const data = await AsyncStorage.getItem(`favorites_${user.id}`);
+        let favorites = data ? JSON.parse(data) : [];
 
-    if (isFavorite) {
-        favorites = favorites.filter((pet: Pet) => pet.id !== mascota?.id);
-        Alert.alert("Eliminado", "Se quitó de favoritos");
-    } else {
-        favorites.push(mascota);
-        Alert.alert("Agregado", "Se agregó a favoritos");
-    }
+        if (isFavorite) {
+            favorites = favorites.filter((pet: Pet) => pet.id !== mascota?.id);
+            Alert.alert("Eliminado", "Se quitó de favoritos");
+        } else {
+            favorites.push(mascota);
+            Alert.alert("Agregado", "Se agregó a favoritos");
+        }
 
-    await AsyncStorage.setItem(
-        `favorites_${user.id}`,
-        JSON.stringify(favorites)
-    );
+        await AsyncStorage.setItem(
+            `favorites_${user.id}`,
+            JSON.stringify(favorites)
+        );
 
-    setIsFavorite(!isFavorite);
-};
+        setIsFavorite(!isFavorite);
+    };
 
     if (!mascota) {
         return (
@@ -124,16 +115,16 @@ export function ProfileAnimal() {
     const llamar = () => {
         Linking.openURL(`tel:${mascota.phone}`);
     };
-
+    //MODIFICAR ENLACE
     const copiarEnlace = async () => {
-        const enlace = `https://tuapp.com/animal/${mascota.id}`;
+        const enlace = `https://app.com/animal/${mascota.id}`;
         await Clipboard.setStringAsync(enlace);
         Alert.alert("Enlace copiado", "El enlace fue copiado");
     };
 
     const descargarFormulario = async () => {
 
-        const enlacePerfil = `https://tuapp.com/animal/${mascota.id}`;
+        const enlacePerfil = `https://app.com/animal/${mascota.id}`;
         const estadoAnimal = mascota.adopted ? "Adoptado" : "No adoptado";
         const fecha = new Date().toLocaleDateString();
 
@@ -209,16 +200,17 @@ export function ProfileAnimal() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
-            {/* HEADER */}
             <View style={styles.b}>
                 <View style={styles.row}>
-                    <TouchableOpacity onPress={() => router.back()}>
+                    <TouchableOpacity
+                        onPress={() => router.back()}>
                         <AntDesign name="arrow-left" size={24} color="white" />
                     </TouchableOpacity>
 
                     <Text style={styles.txtN}>{mascota.name}</Text>
 
-                    <TouchableOpacity onPress={toggleFavorite}>
+                    <TouchableOpacity
+                        onPress={toggleFavorite}>
                         <FontAwesome
                             name={isFavorite ? "star" : "star-o"}
                             size={28}
@@ -228,7 +220,6 @@ export function ProfileAnimal() {
                 </View>
             </View>
 
-            {/* IMAGEN */}
             <View style={styles.imageContainer}>
                 <Image
                     source={{ uri: mascota.image_url }}
@@ -255,7 +246,6 @@ export function ProfileAnimal() {
                 </Text>
             )}
 
-            {/* TABS */}
             <View style={styles.B}>
                 <TouchableOpacity
                     style={tab === "info" ? styles.IBS : styles.I}
@@ -345,18 +335,38 @@ export function ProfileAnimal() {
     );
 }
 const styles = StyleSheet.create({
-    container: { flexGrow: 1, backgroundColor: "#fff" },
-    center: { flex: 1, justifyContent: "center", alignItems: "center" },
-    b: { height: 60, backgroundColor: "#d4b37a", justifyContent: "center" },
+    container: {
+        flexGrow: 1,
+        backgroundColor: "#fff"
+    },
+    center: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    b: {
+        height: 60,
+        backgroundColor: "#d4b37a",
+        justifyContent: "center"
+    },
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 15
     },
-    txtN: { fontSize: 22, fontWeight: "bold", color: "#fff" },
-    img: { width: "100%", height: 220 },
-    imageContainer: { position: "relative" },
+    txtN: {
+        fontSize: 22,
+        fontWeight: "bold",
+        color: "#fff"
+    },
+    img: {
+        width: "100%",
+        height: 220
+    },
+    imageContainer: {
+        position: "relative"
+    },
     copyIconButton: {
         position: "absolute",
         top: 15,
@@ -365,7 +375,11 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 25,
     },
-    txtU: { flexDirection: "row", alignItems: "center", margin: 10 },
+    txtU: {
+        flexDirection: "row",
+        alignItems: "center",
+        margin: 10
+    },
     adoptedText: {
         textAlign: "center",
         color: "red",
@@ -392,8 +406,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         borderRadius: 10
     },
-    I: { padding: 10 },
-    IBS: { padding: 10, backgroundColor: "#fff", borderRadius: 20 },
+    I: {
+        padding: 10
+    },
+    IBS: {
+        padding: 10,
+        backgroundColor: "#fff",
+        borderRadius: 20
+    },
     RI: {
         flex: 1,
         alignItems: "center",
@@ -403,12 +423,20 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10
     },
-    BRI: { flexDirection: "row", justifyContent: "space-around" },
-    descargarContainer: { alignItems: "center", marginVertical: 15 },
+    BRI: {
+        flexDirection: "row",
+        justifyContent: "space-around"
+    },
+    descargarContainer: {
+        alignItems: "center",
+        marginVertical: 15
+    },
     botonDescargar: {
         backgroundColor: "#E5DCCC",
         padding: 12,
         borderRadius: 25
     },
-    textoBoton: { fontWeight: "bold" }
+    textoBoton: {
+        fontWeight: "bold"
+    }
 });

@@ -3,7 +3,7 @@ export interface Pet {
     type: "perro" | "gato";
     name: string;
     sex: "macho" | "hembra";
-    age: String;
+    age: string;
     size: "pequeño" | "mediano" | "grande";
     breed: string;
     description: string;

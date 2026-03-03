@@ -1,27 +1,17 @@
-import { supabase } from "@/lib/supabase";
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { updatePetUseCase } from "../../application/updatePet";
 
 export default function UpdatePetsScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
-  const petParam = params.pet ? JSON.parse(params.pet as string) : null;
+  const petParam = useMemo(() => {
+    return params.pet ? JSON.parse(params.pet as string) : null;
+  }, [params.pet]);
 
   const [selectedPet, setSelectedPet] = useState<any>(null);
   const [type, setType] = useState("");
@@ -37,7 +27,6 @@ export default function UpdatePetsScreen() {
   const [location, setLocation] = useState("");
   const [adopted, setAdopted] = useState(false);
 
-  // Cargar los datos de la mascota al abrir
   useEffect(() => {
     if (petParam) {
       setSelectedPet(petParam);
@@ -57,8 +46,19 @@ export default function UpdatePetsScreen() {
   }, [petParam]);
 
   const clearFields = () => {
-    setType(""); setName(""); setSex(""); setAge(""); setSize("");
-    setBreed(""); setHealthInfo(""); setDescription(""); setPhone(""); setLocation(""); setImage(null); setSelectedPet(null);  setAdopted(false);
+    setType("");
+    setName("");
+    setSex("");
+    setAge("");
+    setSize("");
+    setBreed("");
+    setHealthInfo("");
+    setDescription("");
+    setPhone("");
+    setLocation("");
+    setImage(null);
+    setSelectedPet(null);
+    setAdopted(false);
   };
 
   const pickImage = async () => {
@@ -67,45 +67,60 @@ export default function UpdatePetsScreen() {
       Alert.alert("Permiso requerido para acceder a la galería");
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-    if (!result.canceled) setImage(result.assets[0].uri);
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   };
 
-  const updatePet = async () => {
-    if (!selectedPet) { Alert.alert("No hay mascota seleccionada"); return; }
-
-    let imageUrl = selectedPet.image_url;
-
-    if (img && img !== selectedPet.image_url) {
-      const uploaded = await saveS({ uri: img });
-      if (!uploaded) { Alert.alert("Error al subir imagen"); return; }
-      imageUrl = uploaded;
-      await saveDB(uploaded);
+  const handleUpdatePet = async () => {
+    if (!selectedPet) {
+      Alert.alert("No hay mascota seleccionada");
+      return;
     }
 
-    const { error } = await supabase
-      .from("pets")
-      .update({
-        type: type.toLowerCase().trim(),
-        name,
-        sex: sex.toLowerCase().trim(),
-        age,
-        size: size.toLowerCase().trim(),
-        breed,
-        health_info: healthInfo,
-        description,
-        phone,
-        location,
+    try {
+      let imageUrl = selectedPet.image_url;
+
+      if (img && img !== selectedPet.image_url) {
+        const uploaded = await saveS({ uri: img });
+
+        if (!uploaded) {
+          Alert.alert("Error al subir imagen");
+          return;
+        }
+
+        imageUrl = uploaded;
+        await saveDB(uploaded);
+      }
+
+      await updatePetUseCase(selectedPet.id, {
+        type: type.toLowerCase().trim() as any,
+        name: name.trim(),
+        sex: sex.toLowerCase().trim() as any,
+        age: age.trim(),
+        size: size.toLowerCase().trim() as any,
+        breed: breed.trim(),
+        health_info: healthInfo.trim(),
+        description: description.trim(),
+        phone: phone.replace(/[^0-9]/g, ""),
+        location: location.trim(),
         image_url: imageUrl,
-         adopted,
-      })
-      .eq("id", selectedPet.id);
+        adopted,
+      });
 
-    if (error) { Alert.alert("Error", error.message); return; }
+      Alert.alert("Mascota actualizada ✨");
+      clearFields();
+      router.back();
 
-    Alert.alert("Mascota actualizada ✨");
-    clearFields();
-    router.back(); // Regresa a la lista de mascotas
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
@@ -114,45 +129,77 @@ export default function UpdatePetsScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-   
-<View style={styles.b}>
+
+        <View style={styles.b}>
           <View style={styles.row}>
             <Text style={styles.txtN}>Animaland</Text>
             <MaterialCommunityIcons name="dog" size={33} color="#fff" />
           </View>
         </View>
 
-<View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
-  <Text style={{ marginRight: 10 }}>¿Adoptada?</Text>
-  <Switch
-    value={adopted}
-    onValueChange={setAdopted}
-    trackColor={{ false: "#767577", true: "#22c55e" }}
-    thumbColor={adopted ? "#ffffff" : "#f4f3f4"}
-  />
-</View>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+          <Text style={{ marginRight: 10 }}>¿Adoptada?</Text>
+          <Switch
+            value={adopted}
+            onValueChange={setAdopted}
+            trackColor={{ false: "#767577", true: "#22c55e" }}
+            thumbColor={adopted ? "#ffffff" : "#f4f3f4"}
+          />
+        </View>
 
         {img && <Image source={{ uri: img }} style={styles.previewImage} />}
+
         <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
         </TouchableOpacity>
-         <Text style={styles.sectionTitle}>Información general</Text>
-        <TextInput style={styles.input} placeholder="Tipo" value={type} onChangeText={setType} />
-        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Sexo" value={sex} onChangeText={setSex} />
-        <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} />
-        <TextInput style={styles.input} placeholder="Tamaño" value={size} onChangeText={setSize} />
-        <TextInput style={styles.input} placeholder="Raza" value={breed} onChangeText={setBreed} />
-        <Text style={styles.sectionTitle}>Salud</Text>
-        <TextInput style={styles.textArea} placeholder="Información de salud" value={healthInfo} onChangeText={setHealthInfo} multiline />
-         <Text style={styles.sectionTitle}>Personalidad</Text>
-        <TextInput style={styles.textArea} placeholder="Descripción" value={description} onChangeText={setDescription} multiline />
-         <Text style={styles.sectionTitle}>Contacto</Text>
-        <TextInput style={styles.input} placeholder="Teléfono" value={phone} onChangeText={setPhone} />
-        <TextInput style={styles.input} placeholder="Ubicación" value={location} onChangeText={setLocation} />
 
-        <TouchableOpacity style={styles.saveButton} onPress={updatePet}>
-          <Text >Actualizar</Text>
+        <Text style={styles.sectionTitle}>Información general</Text>
+
+        <TextInput style={styles.input} placeholder="Tipo (perro/gato)" value={type} onChangeText={setType} />
+        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
+        <TextInput style={styles.input} placeholder="Sexo (macho/hembra)" value={sex} onChangeText={setSex} />
+        <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} />
+        <TextInput style={styles.input} placeholder="Tamaño (pequeño/mediano/grande)" value={size} onChangeText={setSize} />
+        <TextInput style={styles.input} placeholder="Raza" value={breed} onChangeText={setBreed} />
+
+        <Text style={styles.sectionTitle}>Salud</Text>
+        <TextInput
+          style={styles.textArea}
+          placeholder="Información de salud"
+          value={healthInfo}
+          onChangeText={setHealthInfo}
+          multiline
+        />
+
+        <Text style={styles.sectionTitle}>Personalidad</Text>
+        <TextInput
+          style={styles.textArea}
+          placeholder="Descripción"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+
+        <Text style={styles.sectionTitle}>Contacto</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Teléfono"
+          value={phone}
+          onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ""))}
+          keyboardType="numeric"
+          maxLength={10}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Ubicación"
+          value={location}
+          onChangeText={setLocation}
+        />
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleUpdatePet}>
+          <Text>Actualizar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -161,13 +208,14 @@ export default function UpdatePetsScreen() {
         >
           <Text style={{ color: "white" }}>Cancelar</Text>
         </TouchableOpacity>
+
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-   row: {
+  row: {
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10
@@ -187,18 +235,58 @@ const styles = StyleSheet.create({
     marginRight: 5
   },
   sectionTitle: {
-  fontWeight: "bold",
-  fontSize: 16,
-  textAlign: "center",
-  marginVertical: 8,
-},
-  scrollContainer: { padding: 15, paddingBottom: 30 },
-  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
-  input: { borderWidth: 1, borderColor: "#DAC193", padding: 10, borderRadius: 8, marginBottom: 8 },
-  textArea: { borderWidth: 1, borderColor: "#DAC193", padding: 10, borderRadius: 8, marginBottom: 8, height: 80 },
-  saveButton: { backgroundColor: "#E5DCCC", padding: 12, borderRadius: 10, alignItems: "center", marginTop: 10 },
-  cancelButton: { backgroundColor: "#ef4444", padding: 12, borderRadius: 10, alignItems: "center", marginTop: 10 },
-  previewImage: { width: "100%", height: 200, borderRadius: 10, marginBottom: 10 },
-  imageBtn: { backgroundColor: "#E5DCCC", padding: 10, borderRadius: 8, alignItems: "center", marginBottom: 10},
-  imageBtnText: {  fontWeight: "bold" },
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 8,
+  },
+  scrollContainer: {
+    padding: 15,
+    paddingBottom: 30
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8
+  },
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    height: 80
+  },
+  saveButton: {
+    backgroundColor: "#E5DCCC",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10
+  },
+  cancelButton: {
+    backgroundColor: "#ef4444",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10
+  },
+  previewImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10
+  },
+  imageBtn: {
+    backgroundColor: "#E5DCCC",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10
+  },
+  imageBtnText: {
+    fontWeight: "bold"
+  },
 });

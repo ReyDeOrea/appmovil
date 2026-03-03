@@ -31,7 +31,7 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
 
           {!user && (
             <>
-            
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {

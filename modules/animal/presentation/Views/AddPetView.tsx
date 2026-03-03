@@ -5,17 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity, View
-} from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function AddPetScreen() {
   const router = useRouter();
@@ -45,6 +35,49 @@ export default function AddPetScreen() {
   };
 
   const savePet = async () => {
+    if (
+      !type.trim() ||
+      !name.trim() ||
+      !sex.trim() ||
+      !age.trim() ||
+      !size.trim() ||
+      !breed.trim() ||
+      !healthInfo.trim() ||
+      !description.trim() ||
+      !phone.trim() ||
+      !location.trim()
+    ) {
+      Alert.alert("Faltan campos", "Todos los campos son obligatorios");
+      return;
+    }
+    const petType = type.toLowerCase().trim();
+    const petSex = sex.toLowerCase().trim();
+    const petSize = size.toLowerCase().trim();
+
+    const validTypes = ["perro", "gato"];
+    const validSex = ["macho", "hembra"];
+    const validSizes = ["pequeño", "mediano", "grande"];
+
+    if (!validTypes.includes(petType)) {
+      Alert.alert("Error", "Debe escribir correctamente el tipo: perro o gato");
+      return;
+    }
+
+    if (!validSex.includes(petSex)) {
+      Alert.alert("Error", "Debe escribir correctamente el sexo: macho o hembra");
+      return;
+    }
+
+    if (!validSizes.includes(petSize)) {
+      Alert.alert("Error", "Debe escribir correctamente el tamaño: pequeño, mediano o grande");
+      return;
+    }
+
+
+    if (!img) {
+      Alert.alert("Debe seleccionar una imagen");
+      return;
+    }
     const u = await AsyncStorage.getItem("user");
     if (!u) {
       Alert.alert("No hay sesión iniciada");
@@ -63,10 +96,6 @@ export default function AddPetScreen() {
       }
       await saveDB(imageUrl);
     }
-
-    const petType = type.toLowerCase().trim();
-    const petSex = sex.toLowerCase().trim();
-    const petSize = size.toLowerCase().trim();
 
     const { error } = await supabase.from("pets").insert({
       user: user.id,
@@ -90,12 +119,21 @@ export default function AddPetScreen() {
 
     Alert.alert("Mascota guardada 🐶");
     clearFields();
-    router.back(); // vuelve a MyPetsScreen
+    router.back();
   };
 
   const clearFields = () => {
-    setType(""); setName(""); setSex(""); setAge(""); setSize("");
-    setBreed(""); setHealthInfo(""); setDescription(""); setPhone(""); setLocation(""); setImage(null);
+    setType("");
+    setName("");
+    setSex("");
+    setAge("");
+    setSize("");
+    setBreed("");
+    setHealthInfo("");
+    setDescription("");
+    setPhone("");
+    setLocation("");
+    setImage(null);
   };
 
   return (
@@ -104,8 +142,8 @@ export default function AddPetScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        
-           <View style={styles.b}>
+
+        <View style={styles.b}>
           <View style={styles.row}>
             <Text style={styles.txtN}>Animaland</Text>
             <MaterialCommunityIcons name="dog" size={33} color="#fff" />
@@ -117,14 +155,39 @@ export default function AddPetScreen() {
         <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
         </TouchableOpacity>
-    <Text style={styles.sectionTitle}>Información general</Text>
-        <TextInput style={styles.input} placeholder="Tipo (gato o perro)" value={type} onChangeText={setType} />
-        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Sexo (hembra o macho)" value={sex} onChangeText={setSex} />
-        <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} />
-        <TextInput style={styles.input} placeholder="Tamaño (pequeño, mediano o grande)" value={size} onChangeText={setSize} />
-        <TextInput style={styles.input} placeholder="Raza" value={breed} onChangeText={setBreed} />
-       <Text style={styles.sectionTitle}>Salud</Text>
+
+        <Text style={styles.sectionTitle}>Información general</Text>
+        <TextInput style={styles.input}
+          placeholder="Tipo (gato o perro)"
+          value={type}
+          onChangeText={setType}
+        />
+        <TextInput style={styles.input}
+          placeholder="Nombre"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput style={styles.input}
+          placeholder="Sexo (hembra o macho)"
+          value={sex}
+          onChangeText={setSex}
+        />
+        <TextInput style={styles.input}
+          placeholder="Edad"
+          value={age}
+          onChangeText={setAge}
+        />
+        <TextInput style={styles.input}
+          placeholder="Tamaño (pequeño, mediano o grande)"
+          value={size}
+          onChangeText={setSize}
+        />
+        <TextInput style={styles.input}
+          placeholder="Raza"
+          value={breed}
+          onChangeText={setBreed}
+        />
+        <Text style={styles.sectionTitle}>Salud</Text>
         <TextInput
           style={styles.textArea}
           placeholder="Salud"
@@ -140,15 +203,26 @@ export default function AddPetScreen() {
           onChangeText={setDescription}
           multiline
         />
-         <Text style={styles.sectionTitle}>Contacto</Text>
-        <TextInput style={styles.input} placeholder="Teléfono" value={phone} onChangeText={setPhone} />
-        <TextInput style={styles.input} placeholder="Ubicación" value={location} onChangeText={setLocation} />
+        <Text style={styles.sectionTitle}>Contacto</Text>
+        <TextInput style={styles.input}
+          placeholder="Teléfono"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+        />
+        <TextInput style={styles.input}
+          placeholder="Ubicación"
+          value={location}
+          onChangeText={setLocation}
+        />
 
-        <TouchableOpacity style={styles.saveButton} onPress={savePet}>
+        <TouchableOpacity style={styles.saveButton}
+          onPress={savePet}>
           <Text >Registrar Mascota</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.closeButton}
+          onPress={() => router.back()}>
           <Text style={{ color: "white" }}>Cancelar</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -157,17 +231,17 @@ export default function AddPetScreen() {
 }
 
 const styles = StyleSheet.create({
-    row: {
+  row: {
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10
   },
-    sectionTitle: {
-  fontWeight: "bold",
-  fontSize: 16,
-  textAlign: "center",
-  marginVertical: 8,
-},
+  sectionTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 8,
+  },
   b: {
     width: "100%",
     height: 60,
@@ -182,13 +256,58 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginRight: 5
   },
-  scrollContainer: { padding: 15, paddingBottom: 30 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  input: { borderWidth: 1, borderColor: "#DAC193", padding: 10, borderRadius: 8, marginBottom: 8 },
-  textArea: { borderWidth: 1, borderColor: "#DAC193", padding: 10, borderRadius: 8, marginBottom: 8, height: 80 },
-  saveButton: { backgroundColor: "#E5DCCC", padding: 12, borderRadius: 10, alignItems: "center", marginTop: 10 },
-  closeButton: { backgroundColor: "#ef4444", padding: 12, borderRadius: 10, alignItems: "center", marginTop: 10 },
-  previewImage: { width: "100%", height: 200, borderRadius: 10, marginBottom: 10 },
-  imageBtn: { backgroundColor: "#E5DCCC", padding: 10, borderRadius: 8, alignItems: "center", marginBottom: 10 },
-  imageBtnText: { fontWeight: "bold" },
+  scrollContainer: {
+    padding: 15,
+    paddingBottom: 30
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 10
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8
+  },
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    height: 80
+  },
+  saveButton: {
+    backgroundColor: "#E5DCCC",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10
+  },
+  closeButton: {
+    backgroundColor: "#ef4444",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10
+  },
+  previewImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10
+  },
+  imageBtn: {
+    backgroundColor: "#E5DCCC",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10
+  },
+  imageBtnText: {
+    fontWeight: "bold"
+  },
 });

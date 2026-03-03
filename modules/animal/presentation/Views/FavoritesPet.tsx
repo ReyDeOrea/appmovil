@@ -1,14 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 import { Pet } from "../../domain/pet";
 import { getPets } from "../../infraestructure/petDatasource";
 
@@ -25,14 +18,11 @@ export default function FavoritesPet() {
       return;
     }
 
-    // 🔥 Obtener favoritos guardados
     const data = await AsyncStorage.getItem(`favorites_${user.id}`);
     const favs: Pet[] = data ? JSON.parse(data) : [];
 
-    // 🔥 Obtener mascotas actualizadas desde datasource
     const allPets = await getPets();
 
-    // 🔥 Cruzar información para saber si ahora están adoptadas
     const updatedFavorites = favs.map(fav => {
       const updatedPet = allPets.find(p => p.id === fav.id);
       return updatedPet ? updatedPet : fav;

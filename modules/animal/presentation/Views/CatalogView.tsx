@@ -4,19 +4,9 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
-import { getPets } from "../../infraestructure/petDatasource";
 import { FilterModal, Filters } from "../componets/FilterModal";
 import { ModalMenu } from "../componets/modalMenu";
 
@@ -30,7 +20,7 @@ type BannerItem = {
 
 export default function CatalogView() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [filters, setFilters] = useState<Filters>({ type: [], sex: [], size: [], age: [] });
+  const [filters, setFilters] = useState<Filters>({ type: [], sex: [], size: [] });
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [bannerPage, setBannerPage] = useState(0);
@@ -52,7 +42,7 @@ export default function CatalogView() {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const data = await getPets();
+        const data = await getPetsUseCase();
         setPets(data);
       } catch (err) {
         console.error("ERROR fetching pets:", err);
@@ -70,17 +60,14 @@ export default function CatalogView() {
       </View>
     );
 
-  // 🔹 Mascotas adoptadas
   const adoptedPets = pets.filter(p => p.adopted === true);
 
-  // 🔹 Banners estáticos
   const staticBanners: BannerItem[] = [
     { type: "static", image: require("../../../../assets/images/D.png") },
     { type: "static", image: require("../../../../assets/images/Cat.jpeg") },
     { type: "static", image: require("../../../../assets/images/DOG.png") }
   ];
 
-  // 🔹 Banners adoptados
   const adoptedBanners: BannerItem[] = adoptedPets.map(p => ({
     type: "adopted",
     image: { uri: p.image_url },
@@ -89,7 +76,6 @@ export default function CatalogView() {
 
   const bannerImages: BannerItem[] = [...staticBanners, ...adoptedBanners];
 
-  // 🔎 Filtros
   const filteredPets = pets.filter(p => {
     const term = search.toLowerCase();
 
@@ -103,11 +89,12 @@ export default function CatalogView() {
       ) return false;
     }
 
-    if (filters.type.length && !filters.type.map(f => f.toLowerCase()).includes((p.type ?? "").toLowerCase())) return false;
-    if (filters.sex.length && !filters.sex.map(f => f.toLowerCase()).includes((p.sex ?? "").toLowerCase())) return false;
-    if (filters.size.length && !filters.size.map(f => f.toLowerCase()).includes((p.size ?? "").toLowerCase())) return false;
-    if (filters.age.length && !filters.age.map(f => f.toLowerCase()).includes((p.age ?? "").toLowerCase())) return false;
-
+    if (filters.type.length && !filters.type.map(f => f.toLowerCase()).includes((p.type ?? "").toLowerCase()))
+      return false;
+    if (filters.sex.length && !filters.sex.map(f => f.toLowerCase()).includes((p.sex ?? "").toLowerCase()))
+      return false;
+    if (filters.size.length && !filters.size.map(f => f.toLowerCase()).includes((p.size ?? "").toLowerCase()))
+      return false;
     return true;
   });
 
@@ -161,7 +148,6 @@ export default function CatalogView() {
     <View style={{ flex: 1 }}>
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
 
-        {/* HEADER */}
         <View style={styles.b}>
           <View style={styles.row}>
             <Text style={styles.txtN}>Animaland</Text>
@@ -169,10 +155,9 @@ export default function CatalogView() {
           </View>
         </View>
 
-        {/* BUSCADOR */}
         <View style={styles.S}>
           <TextInput
-            placeholder="Buscar por nombre, tipo, sexo, tamaño o edad"
+            placeholder="Buscar por nombre, tipo, sexo o tamaño"
             style={styles.TI}
             value={search}
             onChangeText={setSearch}
@@ -180,12 +165,12 @@ export default function CatalogView() {
           <TouchableOpacity>
             <Feather name="search" size={20} color="#5B4000" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.F} onPress={() => setFilterOpen(true)}>
+          <TouchableOpacity style={styles.F}
+            onPress={() => setFilterOpen(true)}>
             <Ionicons name="filter-outline" size={24} color="#D09100" />
           </TouchableOpacity>
         </View>
 
-        {/* 🔥 BANNER DINÁMICO */}
         <ScrollView
           horizontal
           pagingEnabled
@@ -204,7 +189,7 @@ export default function CatalogView() {
                 {item.type === "adopted" && (
                   <View style={styles.successBadge}>
                     <Text style={styles.successText}>
-                     ¡ {item.name} ahora tiene una familia! 🐾
+                      ¡ {item.name} ahora tiene una familia! 🐾
                     </Text>
                   </View>
                 )}
@@ -219,7 +204,6 @@ export default function CatalogView() {
           )}
         </View>
 
-        {/* TARJETAS */}
         <ScrollView
           horizontal
           pagingEnabled
@@ -239,8 +223,8 @@ export default function CatalogView() {
 
       </ScrollView>
 
-      {/* BOTÓN MENÚ */}
-      <TouchableOpacity style={styles.floatingButton} onPress={() => setModalOpen(true)}>
+      <TouchableOpacity style={styles.floatingButton}
+        onPress={() => setModalOpen(true)}>
         <Text style={styles.buttonText}>Menú</Text>
       </TouchableOpacity>
 
@@ -264,7 +248,11 @@ export default function CatalogView() {
 
 const styles = StyleSheet.create({
   container: { backgroundColor: "#fff" },
-  row: { flexDirection: "row", justifyContent: "center", marginVertical: 10 },
+  row: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10
+  },
   b: {
     width: "100%",
     height: 60,
@@ -273,8 +261,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10
   },
-  txtN: { color: "#fff", fontWeight: "bold", fontSize: 25, marginRight: 5 },
-
+  txtN: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 25,
+    marginRight: 5
+  },
   S: {
     flexDirection: "row",
     alignItems: "center",
@@ -285,14 +277,33 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "#FFF8EC"
   },
-  TI: { flex: 1, height: 40, color: "#333" },
-  F: { left: 10 },
-
-  imgD: { height: 160, borderRadius: 20 },
-  BP: { flexDirection: "row", justifyContent: "center", marginTop: 8 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#ccc", margin: 5 },
-  dotActive: { backgroundColor: "#000" },
-
+  TI: {
+    flex: 1,
+    height: 40,
+    color: "#333"
+  },
+  F: {
+    left: 10
+  },
+  imgD: {
+    height: 160,
+    borderRadius: 20
+  },
+  BP: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 8
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    margin: 5
+  },
+  dotActive: {
+    backgroundColor: "#000"
+  },
   CC: {
     width: 120,
     padding: 5,
@@ -300,10 +311,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center"
   },
-  img: { width: 100, height: 100, borderRadius: 20 },
-  N: { fontSize: 15, textAlign: "center" },
-  D: { fontSize: 12, textAlign: "center" },
-
+  img: {
+    width: 100,
+    height: 100,
+    borderRadius: 20
+  },
+  N: {
+    fontSize: 15,
+    textAlign: "center"
+  },
+  D: {
+    fontSize: 12,
+    textAlign: "center"
+  },
   floatingButton: {
     position: "absolute",
     bottom: 40,
@@ -312,8 +332,10 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 50
   },
-  buttonText: { color: "white", fontWeight: "bold" },
-
+  buttonText: {
+    color: "white",
+    fontWeight: "bold"
+  },
   badge: {
     position: "absolute",
     top: 5,
@@ -323,9 +345,17 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 15
   },
-  badgeText: { fontSize: 10, fontWeight: "bold", color: "#000" },
-  unavailable: { marginTop: 5, fontSize: 10, color: "#999", fontWeight: "bold" },
-
+  badgeText: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: "#000"
+  },
+  unavailable: {
+    marginTop: 5,
+    fontSize: 10,
+    color: "#999",
+    fontWeight: "bold"
+  },
   successBadge: {
     position: "absolute",
     bottom: 10,
@@ -335,7 +365,15 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 15
   },
-  successText: { color: "#fff", fontWeight: "bold", fontSize: 12 },
+  successText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12
+  },
 
-  center: { flex: 1, justifyContent: "center", alignItems: "center" }
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 });

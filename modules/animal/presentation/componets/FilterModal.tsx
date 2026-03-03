@@ -11,7 +11,6 @@ export interface Filters {
   type: string[];
   sex: string[];
   size: string[];
-  age: string[];
 }
 
 export function FilterModal({ visible, onClose, filters, setFilters }: FilterModalProps) {
@@ -55,9 +54,6 @@ export function FilterModal({ visible, onClose, filters, setFilters }: FilterMod
 
         <Text>Tamaño</Text>
         {renderButtons("size", ["Pequeño", "Mediano", "Grande"])}
-
-        <Text>Edad</Text>
-        {renderButtons("age", ["0-3 meses", "4-8 meses", "1-3 años", "4-7 años", "8-12 años"])}
 
         <TouchableOpacity style={styles.close}
           onPress={onClose} >
