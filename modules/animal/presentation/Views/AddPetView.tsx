@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
   imageBtnText: {
     fontWeight: "bold"
   },
-  labelText:{
-    color: '#000000'
-  }
 });
+
+//añadir animal
