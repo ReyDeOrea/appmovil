@@ -1,10 +1,18 @@
+export type PetType = "perro" | "gato";
+
+export enum PetSize {
+    "pequeño" = "Pequeño",
+    "mediano" = "Mediano",
+    "grande" = "Grande",
+}
+
 export interface Pet {
     id: number; 
-    type: "perro" | "gato";
+    type: PetType;
     name: string;
     sex: "macho" | "hembra";
     age: string;
-    size: "pequeño" | "mediano" | "grande";
+    size: PetSize;
     breed: string;
     description: string;
     health_info: string;
