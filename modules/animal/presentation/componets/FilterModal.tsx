@@ -11,29 +11,44 @@ export interface Filters {
   type: string[];
   sex: string[];
   size: string[];
+  adopted: boolean;
 }
+type ArrayFilterKey = "type" | "sex" | "size";
 
 export function FilterModal({ visible, onClose, filters, setFilters }: FilterModalProps) {
-  const toggleFilter = (key: keyof Filters, value: string) => {
+  const toggleFilter = (key: ArrayFilterKey, value: string) => {
     const arr = filters[key] || [];
     const lowerValue = value.toLowerCase();
 
     if (arr.map(v => v.toLowerCase()).includes(lowerValue)) {
-      setFilters({ ...filters, [key]: arr.filter(v => v.toLowerCase() !== lowerValue) });
-    } else {
-      setFilters({ ...filters, [key]: [...arr, value] });
+      setFilters({
+        ...filters, [key]: arr.filter(v => v.toLowerCase() !== lowerValue)
+      });
+    }
+    else {
+      setFilters({
+        ...filters, [key]: [...arr, value]
+      });
     }
   };
 
-  const renderButtons = (key: keyof Filters, options: string[]) => (
+  const renderButtons = (key: ArrayFilterKey, options: string[]) => (
     <View style={styles.row}>
       {options.map(v => (
         <TouchableOpacity
           key={v}
-          style={[styles.btn, filters[key].map(f => f.toLowerCase()).includes(v.toLowerCase()) && styles.btnActive]}
+          style={[styles.btn, (filters[key] as string[])?.map(f => f.toLowerCase()).includes(v.toLowerCase()) && styles.btnActive,
+          ]}
           onPress={() => toggleFilter(key, v)}
         >
-          <Text style={filters[key].map(f => f.toLowerCase()).includes(v.toLowerCase()) ? styles.txtActive : undefined}>
+          <Text style={
+            (filters[key] as string[])
+              ?.map(f => f.toLowerCase())
+              .includes(v.toLowerCase())
+              ? styles.txtActive
+              : undefined
+          }
+          >
             {v}
           </Text>
         </TouchableOpacity>
@@ -54,6 +69,15 @@ export function FilterModal({ visible, onClose, filters, setFilters }: FilterMod
 
         <Text>Tamaño</Text>
         {renderButtons("size", ["Pequeño", "Mediano", "Grande"])}
+
+        <Text> Mascota adoptada</Text>
+        <TouchableOpacity style={[styles.btn, filters.adopted && styles.btnActive]}
+          onPress={() => setFilters({ ...filters, adopted: !filters.adopted })}
+        >
+          <Text style={filters.adopted ? styles.txtActive : undefined}>
+            Mostar solo adoptadas
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.close}
           onPress={onClose} >
@@ -82,15 +106,16 @@ const styles = StyleSheet.create({
   btn: {
     padding: 10,
     backgroundColor: "#ddd",
-    borderRadius: 10
+    borderRadius: 10,
   },
-  btnActive: {
-    backgroundColor: "#d09100"
 
+  btnActive: {
+    backgroundColor: "#d09100",
   },
+
   txtActive: {
     color: "#fff",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   close: {
     marginTop: 30,
