@@ -242,7 +242,8 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 15,
-    paddingBottom: 30
+    paddingBottom: 30,
+    backgroundColor: '#fff',
   },
   input: {
     borderWidth: 1,

@@ -102,7 +102,7 @@ export default function AddPetScreen() {
 
     const user = JSON.parse(u);
 
-    let imageUrl : string | null = null;
+    let imageUrl: string | null = null;
 
     if (img) {
       imageUrl = await saveS({ uri: img });
@@ -124,8 +124,8 @@ export default function AddPetScreen() {
           petSize.toLowerCase() === "pequeño"
             ? PetSize.pequeño
             : petSize.toLowerCase() === "mediano"
-            ?PetSize.mediano
-            :PetSize.grande,
+              ? PetSize.mediano
+              : PetSize.grande,
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
@@ -165,11 +165,20 @@ export default function AddPetScreen() {
         <Text style={styles.sectionTitle}>Información general</Text>
 
         <Label style={styles.LabelText}>Tipo de animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Tipo (gato o perro)"
-          value={type}
-          onChangeText={setType}
-        />
+        <View style={styles.selectionContainer}>
+          {["perro", "gato"].map((t) => (
+            <TouchableOpacity
+              key={t}
+              style={[
+                styles.selectionButton,
+                type === t && styles.selectionButtonActive,
+              ]}
+              onPress={() => setType(t)}
+            >
+              <Text style={styles.selectionButtonText}>{t}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <Label style={styles.LabelText}>Nombre del animal</Label>
         <TextInput style={styles.input}
@@ -179,11 +188,20 @@ export default function AddPetScreen() {
         />
 
         <Label style={styles.LabelText}>Sexo del animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Sexo (hembra o macho)"
-          value={sex}
-          onChangeText={setSex}
-        />
+        <View style={styles.selectionContainer}>
+          {["macho", "hembra"].map((s) => (
+            <TouchableOpacity
+              key={s}
+              style={[
+                styles.selectionButton,
+                sex === s && styles.selectionButtonActive,
+              ]}
+              onPress={() => setSex(s)}
+            >
+              <Text style={styles.selectionButtonText}>{s}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <Label style={styles.LabelText}>Edad del animal</Label>
         <TextInput style={styles.input}
@@ -331,12 +349,35 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 15,
-    marginVertical:15,
+    marginVertical: 15,
   },
   imageBtnText: {
     fontWeight: "bold"
   },
-  LabelText:{
+  LabelText: {
     color: '#000000'
-  }
+  },
+
+
+  selectionContainer: {
+  flexDirection: "row",
+  justifyContent: "space-around",
+  marginBottom: 8,
+},
+selectionButton: {
+  paddingVertical: 10,
+  paddingHorizontal: 15,
+  borderWidth: 1,
+  borderColor: "#DAC193",
+  borderRadius: 8,
+  backgroundColor: "#fff",
+},
+selectionButtonActive: {
+  backgroundColor: "#E5DCCC",
+  borderColor: "#DAC193",
+},
+selectionButtonText: {
+  textTransform: "capitalize",
+  fontWeight: "bold",
+},
 });
