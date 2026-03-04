@@ -70,12 +70,12 @@ export function FilterModal({ visible, onClose, filters, setFilters }: FilterMod
         <Text>Tamaño</Text>
         {renderButtons("size", ["Pequeño", "Mediano", "Grande"])}
 
-        <Text> Mascota adoptada</Text>
+       <Text>Animales adoptados</Text>
         <TouchableOpacity style={[styles.btn, filters.adopted && styles.btnActive]}
           onPress={() => setFilters({ ...filters, adopted: !filters.adopted })}
         >
           <Text style={filters.adopted ? styles.txtActive : undefined}>
-            Mostar solo adoptadas
+            Mostrar animales adoptados
           </Text>
         </TouchableOpacity>
 
