@@ -5,6 +5,7 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -13,6 +14,7 @@ import * as Clipboard from "expo-clipboard";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
+import { uploadForm } from "../../application/uploadForm";
 import { Pet } from "../../domain/pet";
 
 export function ProfileAnimal() {
@@ -115,12 +117,47 @@ export function ProfileAnimal() {
     const llamar = () => {
         Linking.openURL(`tel:${mascota.phone}`);
     };
-    //MODIFICAR ENLACE
+
     const copiarEnlace = async () => {
         const enlace = `https://app.com/animal/${mascota.id}`;
         await Clipboard.setStringAsync(enlace);
         Alert.alert("Enlace copiado", "El enlace fue copiado");
     };
+
+
+    const subirFormulario = async () => {
+        try {
+            if (!mascota)
+                return;
+
+            const autorizado = await verificarUsuario();
+            if (!autorizado)
+                return;
+
+            const result = await DocumentPicker.getDocumentAsync({
+                type: "application/pdf",
+                copyToCacheDirectory: true,
+            });
+
+            if (result.canceled) return;
+
+            const file = result.assets[0];
+            const response = await fetch(file.uri);
+            const blob = await response.blob();
+
+            const fileName = `formulario_${mascota.id}_${Date.now()}.pdf`;
+
+            await uploadForm(mascota.id, fileName, blob);
+
+            Alert.alert("Éxito", "Formulario enviado correctamente");
+
+        } catch (error) {
+            console.log(error);
+            Alert.alert("Error al subir el archivo");
+        }
+    };
+
+
 
     const descargarFormulario = async () => {
 
@@ -303,11 +340,6 @@ export function ProfileAnimal() {
                         <Text style={styles.txtC}>Contacto</Text>
 
                         <View style={styles.BRI}>
-                            <View style={styles.RI}>
-                                <Feather name="user" size={24} />
-                                <Text>{mascota.user_id}</Text>
-                            </View>
-
                             <TouchableOpacity style={styles.RI} onPress={llamar}>
                                 <Feather name="phone" size={24} />
                                 <Text>{mascota.phone}</Text>
@@ -321,6 +353,13 @@ export function ProfileAnimal() {
                             >
                                 <Text style={styles.textoBoton}>
                                     Descargar formulario
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.botonDescargar}
+                                onPress={subirFormulario}>
+                                <Text style={styles.textoBoton}>
+                                    Subir formulario  (PDF)
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -391,7 +430,6 @@ const styles = StyleSheet.create({
         borderBottomColor: "#E5DCCC",
         marginVertical: 20
     },
-
     txtC: {
         textAlign: "center",
         fontWeight: "bold",
@@ -434,7 +472,8 @@ const styles = StyleSheet.create({
     botonDescargar: {
         backgroundColor: "#E5DCCC",
         padding: 12,
-        borderRadius: 25
+        borderRadius: 25,
+        marginVertical: 8,
     },
     textoBoton: {
         fontWeight: "bold"
