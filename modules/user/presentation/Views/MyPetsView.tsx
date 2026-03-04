@@ -3,10 +3,10 @@ import { supabase } from "@/lib/supabase";
 import DeletePetModal from "@/modules/animal/presentation/componets/DeletePetModal";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
 
 export default function MyPetsScreen() {
   const [pets, setPets] = useState<any[]>([]);
@@ -15,7 +15,11 @@ export default function MyPetsScreen() {
 
   const router = useRouter();
 
-  useEffect(() => { loadPets(); }, []);
+useFocusEffect(
+  useCallback(() => {
+    loadPets();
+  }, [])
+);
 
   const loadPets = async () => {
     const u = await AsyncStorage.getItem("user");
