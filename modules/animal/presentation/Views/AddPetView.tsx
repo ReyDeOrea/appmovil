@@ -2,6 +2,7 @@
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -162,37 +163,52 @@ export default function AddPetScreen() {
         </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>Información general</Text>
+
+        <Label style={styles.LabelText}>Tipo de animal</Label>
         <TextInput style={styles.input}
           placeholder="Tipo (gato o perro)"
           value={type}
           onChangeText={setType}
         />
+
+        <Label style={styles.LabelText}>Nombre del animal</Label>
         <TextInput style={styles.input}
           placeholder="Nombre"
           value={name}
           onChangeText={setName}
         />
+
+        <Label style={styles.LabelText}>Sexo del animal</Label>
         <TextInput style={styles.input}
           placeholder="Sexo (hembra o macho)"
           value={sex}
           onChangeText={setSex}
         />
+
+        <Label style={styles.LabelText}>Edad del animal</Label>
         <TextInput style={styles.input}
           placeholder="Edad"
           value={age}
           onChangeText={setAge}
         />
+
+        <Label style={styles.LabelText}>Tamaño del animal</Label>
         <TextInput style={styles.input}
           placeholder="Tamaño (pequeño, mediano o grande)"
           value={size}
           onChangeText={setSize}
         />
+
+        <Label style={styles.LabelText}>Raza del animal</Label>
         <TextInput style={styles.input}
           placeholder="Raza"
           value={breed}
           onChangeText={setBreed}
         />
+
         <Text style={styles.sectionTitle}>Salud</Text>
+
+        <Label style={styles.LabelText}>Historial clinico del animal</Label>
         <TextInput
           style={styles.textArea}
           placeholder="Salud"
@@ -200,7 +216,8 @@ export default function AddPetScreen() {
           onChangeText={setHealthInfo}
           multiline
         />
-        <Text style={styles.sectionTitle}>Personalidad</Text>
+        <Text style={styles.sectionTitle}>Descripción</Text>
+        <Label style={styles.LabelText}>Da una breve descripcion sobre como es</Label>
         <TextInput
           style={styles.textArea}
           placeholder="Descripción"
@@ -209,12 +226,14 @@ export default function AddPetScreen() {
           multiline
         />
         <Text style={styles.sectionTitle}>Contacto</Text>
+        <Label style={styles.LabelText}>Numero de telefono</Label>
         <TextInput style={styles.input}
           placeholder="Teléfono"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
         />
+        <Label style={styles.LabelText}>Ubicación donde se encuentra</Label>
         <TextInput style={styles.input}
           placeholder="Ubicación"
           value={location}
@@ -263,8 +282,8 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 15,
-    paddingBottom: 30
-    
+    paddingBottom: 30,
+    backgroundColor: "#ffff",
   },
   title: {
     fontSize: 22,
