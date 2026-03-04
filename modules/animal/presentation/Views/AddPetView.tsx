@@ -6,13 +6,20 @@ import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { addPetUseCase } from "../../application/addPet";
 import { PetSize } from "../../domain/pet";
 
+
+const { width } = Dimensions.get("window");
+const BANNER_HEIGHT = width * 0.42;
+
+type BannerItem = {
+  image: any;
+};
+
 export default function AddPetScreen() {
   const router = useRouter();
-
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [sex, setSex] = useState("");
@@ -21,21 +28,27 @@ export default function AddPetScreen() {
   const [breed, setBreed] = useState("");
   const [healthInfo, setHealthInfo] = useState("");
   const [description, setDescription] = useState("");
-  const [img, setImage] = useState<string | null>(null);
+  const [img, setImage] = useState<string[]>([]);
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
+  const [bannerPage, setBannerPage] = useState(0);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsMultipleSelection: true,
+      allowsEditing: false,
       quality: 0.7,
+      selectionLimit: 5,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const uris = result.assets.map(asset => asset.uri);
+      setImage([...img, ...uris]);
     }
   };
+  const bannerImages = img.map((uri) => ({ image: { uri } }));
+
   const clearFields = () => {
     setType("");
     setName("");
@@ -47,7 +60,7 @@ export default function AddPetScreen() {
     setDescription("");
     setPhone("");
     setLocation("");
-    setImage(null);
+    setImage([]);
   };
 
   const savePet = async () => {
@@ -67,7 +80,7 @@ export default function AddPetScreen() {
       return;
     }
 
-    const petType = type.toLowerCase().trim();
+    const petType = type.toLowerCase().trim(); //modificar
     const petSex = sex.toLowerCase().trim();
     const petSize = size.toLowerCase().trim();
 
@@ -75,23 +88,8 @@ export default function AddPetScreen() {
     const validSex = ["macho", "hembra"];
     const validSizes = ["pequeño", "mediano", "grande"];
 
-    if (!validTypes.includes(petType)) {
-      Alert.alert("Error", "Debe escribir correctamente el tipo: perro o gato");
-      return;
-    }
-
-    if (!validSex.includes(petSex)) {
-      Alert.alert("Error", "Debe escribir correctamente el sexo: macho o hembra");
-      return;
-    }
-
-    if (!validSizes.includes(petSize)) {
-      Alert.alert("Error", "Debe escribir correctamente el tamaño: pequeño, mediano o grande");
-      return;
-    }
-
-    if (!img) {
-      Alert.alert("Debe seleccionar una imagen");
+    if (img.length < 5) {
+      Alert.alert("Debe seleccionar mínimo 5 imágenes");
       return;
     }
     const u = await AsyncStorage.getItem("user");
@@ -102,18 +100,20 @@ export default function AddPetScreen() {
 
     const user = JSON.parse(u);
 
-    let imageUrl: string | null = null;
-
-    if (img) {
-      imageUrl = await saveS({ uri: img });
-      if (!imageUrl) {
-        Alert.alert("Error al subir imagen");
-        return;
-      }
-      await saveDB(imageUrl);
-    }
+    let imageUrl: string[] = [];
 
     try {
+      for (const uri of img) {
+        const url = await saveS({ uri });
+        if (!url) {
+          Alert.alert("Error al subir una imagen");
+          return;
+        }
+        await saveDB(url);
+        imageUrl.push(url);
+      }
+
+
       await addPetUseCase({
         user: user.id,
         type: petType as "perro" | "gato",
@@ -129,7 +129,7 @@ export default function AddPetScreen() {
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
-        image_url: imageUrl!,
+        image_url: JSON.stringify(imageUrl),
         phone: phone.trim(),
         location: location.trim(),
       });
@@ -140,7 +140,7 @@ export default function AddPetScreen() {
     catch (error: any) {
       Alert.alert("Error", error.message);
     }
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -156,7 +156,41 @@ export default function AddPetScreen() {
           </View>
         </View>
 
-        {img && <Image source={{ uri: img }} style={styles.previewImage} />}
+        {img.length > 0 && (
+          <>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={(e) =>
+                setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))
+              }
+              scrollEventThrottle={16}
+            >
+              {bannerImages.map((item, idx) => (
+                <View
+                  key={idx}
+                  style={{ width, alignItems: "center", marginVertical: 10 }}
+                >
+                  <Image
+                    source={item.image}
+                    style={[styles.imgD, { width: width * 0.9 }]}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.BP}>
+              {bannerImages.map((_, i) => (
+                <View
+                  key={i}
+                  style={[styles.dot, bannerPage === i && styles.dotActive]}
+                />
+              ))}
+            </View>
+          </>
+        )}
+
 
         <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
@@ -277,15 +311,18 @@ export default function AddPetScreen() {
           <Text style={{ color: "white" }}>Cancelar</Text>
         </TouchableOpacity>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingView >
   );
 }
-
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10
+  },
+  imgD: {
+    height: BANNER_HEIGHT,
+    borderRadius: 20,
   },
   sectionTitle: {
     fontWeight: "bold",
@@ -306,6 +343,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 25,
     marginRight: 5
+  },
+  BP: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 8,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    margin: 5,
+  },
+  dotActive: {
+    backgroundColor: "#000",
   },
   scrollContainer: {
     padding: 15,
@@ -347,7 +399,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   previewImage: {
-    width: "100%",
+    //width:  width - 30,
     height: 200,
     borderRadius: 10,
     marginBottom: 10

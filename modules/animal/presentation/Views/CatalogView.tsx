@@ -10,7 +10,6 @@ import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
 import { ModalMenu } from "../componets/modalMenu";
 
-
 const { width } = Dimensions.get("window");
 
 const CARD_WIDTH = width * 0.28;
@@ -38,7 +37,7 @@ export default function CatalogView() {
   const [modalOpen, setModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [pagePets, setPagePets] = useState(0);
+  const [petPages, setPetPages] = useState<{ [id: string]: number }>({});
   const router = useRouter();
 
   useEffect(() => {
@@ -88,7 +87,6 @@ export default function CatalogView() {
 
   const filteredPets = pets.filter((p) => {
     const term = search.toLowerCase();
-
     if (search) {
       if (
         !p.name?.toLowerCase().includes(term) &&
@@ -100,26 +98,11 @@ export default function CatalogView() {
         return false;
     }
 
-     if (filters.adopted) {
+    if (filters.adopted) {
       if (p.adopted !== true) return false;
     } else {
       if (p.adopted === true) return false;
     }
-    if (
-      filters.type.length &&
-      !filters.type.map((f) => f.toLowerCase()).includes((p.type ?? "").toLowerCase())
-    )
-      return false;
-    if (
-      filters.sex.length &&
-      !filters.sex.map((f) => f.toLowerCase()).includes((p.sex ?? "").toLowerCase())
-    )
-      return false;
-    if (
-      filters.size.length &&
-      !filters.size.map((f) => f.toLowerCase()).includes((p.size ?? "").toLowerCase())
-    )
-      return false;
     return true;
   });
 
@@ -130,6 +113,16 @@ export default function CatalogView() {
 
   const renderPet = (pet: Pet) => {
     const isAdopted = pet.adopted === true;
+
+    let images: string[] = [];
+    try {
+      images = JSON.parse(pet.image_url || "[]");
+      if (!Array.isArray(images)) images = [images];
+    } catch {
+      images = pet.image_url ? [pet.image_url] : [];
+    }
+
+    const currentPage = petPages[pet.id] || 0;
 
     return (
       <TouchableOpacity
@@ -145,27 +138,20 @@ export default function CatalogView() {
           });
         }}
       >
-        <View style={{ position: "relative" }}>
-          <Image
-            source={{ uri: pet.image_url }}
-            style={[styles.img, isAdopted && { opacity: 0.4 }]}
-          />
 
-          {isAdopted && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>
-                ¡{pet.name} ha sido adoptado!
-              </Text>
-            </View>
-          )}
-        </View>
+        <Image
+          source={{ uri: images[0] }}
+          style={[styles.img, isAdopted && { opacity: 0.4 }]}
+        />
 
         <Text style={styles.N}>{pet.name}</Text>
         <Text style={styles.D}>{pet.sex}</Text>
         <Text style={styles.D}>{pet.size}</Text>
 
         {isAdopted && (
-          <Text style={styles.unavailable}>No disponible</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>¡{pet.name} ha sido adoptado!</Text>
+          </View>
         )}
       </TouchableOpacity>
     );
@@ -173,18 +159,13 @@ export default function CatalogView() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      >
-
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={styles.b}>
           <View style={styles.row}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text style={styles.txtN}>Animaland</Text>
               <MaterialCommunityIcons name="dog" size={33} color="#fff" />
             </View>
-
 
             <TouchableOpacity onPress={() => setModalOpen(true)}>
               <Feather name="menu" size={28} color="#fff" />
@@ -212,9 +193,7 @@ export default function CatalogView() {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onScroll={(e) =>
-            setBannerPage(
-              Math.round(e.nativeEvent.contentOffset.x / width)
-            )
+            setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))
           }
           scrollEventThrottle={16}
         >
@@ -228,7 +207,6 @@ export default function CatalogView() {
                   source={item.image}
                   style={[styles.imgD, { width: width * 0.9 }]}
                 />
-
                 {item.type === "adopted" && (
                   <View style={styles.successBadge}>
                     <Text style={styles.successText}>
@@ -385,13 +363,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: "#000",
-  },
-
-  unavailable: {
-    marginTop: 5,
-    fontSize: 10,
-    color: "#999",
-    fontWeight: "bold",
   },
 
   successBadge: {
