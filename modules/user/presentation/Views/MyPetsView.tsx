@@ -15,11 +15,11 @@ export default function MyPetsScreen() {
 
   const router = useRouter();
 
-useFocusEffect(
-  useCallback(() => {
-    loadPets();
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      loadPets();
+    }, [])
+  );
 
   const loadPets = async () => {
     const u = await AsyncStorage.getItem("user");
@@ -36,28 +36,53 @@ useFocusEffect(
     setModalVisible(true);
   };
 
-  const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      {item.image_url && <Image source={{ uri: item.image_url }} style={styles.image} />}
-      <Text style={styles.name}>{item.name}</Text>
+  const renderItem = ({ item }: any) => {
+    let images: string[] = [];
 
-      <View style={styles.cardButtons}>
-        <TouchableOpacity
-          style={styles.editBtn}
-          onPress={() => router.push({ pathname: "/updatePet", params: { pet: JSON.stringify(item) } })}
-        >
-          <Text style={styles.btnText}>Editar</Text>
-        </TouchableOpacity>
+    try {
+      images = JSON.parse(item.image_url || "[]");
 
-        <TouchableOpacity
-          style={styles.deleteBtn}
-          onPress={() => openDeleteModal(item.id)}
-        >
-          <Text style={styles.btnText}>Eliminar</Text>
-        </TouchableOpacity>
+      if (!Array.isArray(images)) {
+        images = [images];
+      }
+    } catch {
+      images = item.image_url ? [item.image_url] : [];
+    }
+
+    return (
+      <View style={styles.card}>
+        {images.length > 0 && (
+          <Image
+            source={{ uri: images[0] }}
+            style={styles.image}
+          />
+        )}
+
+        <Text style={styles.name}>{item.name}</Text>
+
+        <View style={styles.cardButtons}>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() =>
+              router.push({
+                pathname: "/updatePet",
+                params: { pet: JSON.stringify(item) },
+              })
+            }
+          >
+            <Text style={styles.btnText}>Editar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            onPress={() => openDeleteModal(item.id)}
+          >
+            <Text style={styles.btnText}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
