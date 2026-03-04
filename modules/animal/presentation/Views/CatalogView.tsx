@@ -204,17 +204,7 @@ export default function CatalogView() {
           )}
         </View>
 
-        <ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) =>
-            setPagePets(
-              Math.round(e.nativeEvent.contentOffset.x / width)
-            )
-          }
-          scrollEventThrottle={16}
-        >
+        <View>
           {chunks.map((row, idx) => (
             <View
               key={idx}
@@ -223,7 +213,7 @@ export default function CatalogView() {
               {row.map(renderPet)}
             </View>
           ))}
-        </ScrollView>
+        </View>
       </ScrollView>
 
       <TouchableOpacity style={styles.floatingButton}
