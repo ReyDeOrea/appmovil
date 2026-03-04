@@ -2,18 +2,10 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
@@ -58,27 +50,19 @@ export default function CatalogView() {
     loadUser();
   }, []);
 
-   const fetchPets = async () => {
-    try {
-      setLoading(true);
-      const data = await getPetsUseCase();
-      setPets(data);
-    } catch (err) {
-      console.error("ERROR fetching pets:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const data = await getPetsUseCase();
+        setPets(data);
+      } catch (err) {
+        console.error("ERROR fetching pets:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPets();
   }, [refresh]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchPets();
-    }, [])
-  );
 
   if (loading)
     return (
