@@ -4,9 +4,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
-} from "react-native";
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
@@ -31,6 +29,7 @@ export default function CatalogView() {
     type: [],
     sex: [],
     size: [],
+    adopted: false,
   });
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -101,6 +100,11 @@ export default function CatalogView() {
         return false;
     }
 
+     if (filters.adopted) {
+      if (p.adopted !== true) return false;
+    } else {
+      if (p.adopted === true) return false;
+    }
     if (
       filters.type.length &&
       !filters.type.map((f) => f.toLowerCase()).includes((p.type ?? "").toLowerCase())
@@ -173,7 +177,7 @@ export default function CatalogView() {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        
+
         <View style={styles.b}>
           <View style={styles.row}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -181,7 +185,7 @@ export default function CatalogView() {
               <MaterialCommunityIcons name="dog" size={33} color="#fff" />
             </View>
 
-        
+
             <TouchableOpacity onPress={() => setModalOpen(true)}>
               <Feather name="menu" size={28} color="#fff" />
             </TouchableOpacity>
