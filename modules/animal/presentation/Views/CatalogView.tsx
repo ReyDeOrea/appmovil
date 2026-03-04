@@ -2,8 +2,9 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
@@ -48,9 +49,11 @@ export default function CatalogView() {
     loadUser();
   }, []);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const fetchPets = async () => {
       try {
+        setLoading(true);
         const data = await getPetsUseCase();
         setPets(data);
       } catch (err) {
@@ -59,8 +62,10 @@ export default function CatalogView() {
         setLoading(false);
       }
     };
+
     fetchPets();
-  }, [refresh]);
+  }, [])
+);
 
   if (loading)
     return (
