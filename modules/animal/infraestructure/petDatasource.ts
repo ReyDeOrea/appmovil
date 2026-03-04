@@ -1,8 +1,8 @@
 
 import { supabase } from "@/lib/supabase";
-import { Pet } from "../domain/pet";
+import { CreatePet, Pet } from "../domain/pet";
 
-export async function addPet(pet: Pet): Promise<Pet | null> {
+export async function addPet(pet: CreatePet): Promise<Pet | null> {
   try {
     const { data, error } = await supabase
       .from("pets")
