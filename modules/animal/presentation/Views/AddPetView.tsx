@@ -211,11 +211,20 @@ export default function AddPetScreen() {
         />
 
         <Label style={styles.LabelText}>Tamaño del animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Tamaño (pequeño, mediano o grande)"
-          value={size}
-          onChangeText={setSize}
-        />
+        <View style={styles.selectionContainer}>
+          {["pequeño", "mediano", "grande"].map((s) => (
+            <TouchableOpacity
+              key={s}
+              style={[
+                styles.selectionButton,
+                size === s && styles.selectionButtonActive,
+              ]}
+              onPress={() => setSize(s)}
+            >
+              <Text style={styles.selectionButtonText}>{s}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <Label style={styles.LabelText}>Raza del animal</Label>
         <TextInput style={styles.input}
@@ -360,24 +369,24 @@ const styles = StyleSheet.create({
 
 
   selectionContainer: {
-  flexDirection: "row",
-  justifyContent: "space-around",
-  marginBottom: 8,
-},
-selectionButton: {
-  paddingVertical: 10,
-  paddingHorizontal: 15,
-  borderWidth: 1,
-  borderColor: "#DAC193",
-  borderRadius: 8,
-  backgroundColor: "#fff",
-},
-selectionButtonActive: {
-  backgroundColor: "#E5DCCC",
-  borderColor: "#DAC193",
-},
-selectionButtonText: {
-  textTransform: "capitalize",
-  fontWeight: "bold",
-},
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 8,
+  },
+  selectionButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  selectionButtonActive: {
+    backgroundColor: "#E5DCCC",
+    borderColor: "#DAC193",
+  },
+  selectionButtonText: {
+    textTransform: "capitalize",
+    fontWeight: "bold",
+  },
 });
