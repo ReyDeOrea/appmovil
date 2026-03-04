@@ -1,5 +1,6 @@
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -155,11 +156,56 @@ export default function UpdatePetsScreen() {
 
         <Text style={styles.sectionTitle}>Información general</Text>
 
-        <TextInput style={styles.input} placeholder="Tipo (perro/gato)" value={type} onChangeText={setType} />
+        <Label style={styles.LabelText}>Tipo de animal</Label>
+        <View style={styles.selectionContainer}>
+          {["perro", "gato"].map((t) => (
+            <TouchableOpacity
+              key={t}
+              style={[
+                styles.selectionButton,
+                type === t && styles.selectionButtonActive,
+              ]}
+              onPress={() => setType(t)}
+            >
+              <Text style={styles.selectionButtonText}>{t}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Label style={styles.LabelText}>Nombre del animal</Label>
         <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Sexo (macho/hembra)" value={sex} onChangeText={setSex} />
+        <Label style={styles.LabelText}>Sexo del animal</Label>
+        <View style={styles.selectionContainer}>
+          {["macho", "hembra"].map((s) => (
+            <TouchableOpacity
+              key={s}
+              style={[
+                styles.selectionButton,
+                sex === s && styles.selectionButtonActive,
+              ]}
+              onPress={() => setSex(s)}
+            >
+              <Text style={styles.selectionButtonText}>{s}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Label style={styles.LabelText}>Edad del animal</Label>
         <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} />
-        <TextInput style={styles.input} placeholder="Tamaño (pequeño/mediano/grande)" value={size} onChangeText={setSize} />
+        <Label style={styles.LabelText}>Tamaño del animal</Label>
+        <View style={styles.selectionContainer}>
+          {["pequeño", "mediano", "grande"].map((s) => (
+            <TouchableOpacity
+              key={s}
+              style={[
+                styles.selectionButton,
+                size === s && styles.selectionButtonActive,
+              ]}
+              onPress={() => setSize(s)}
+            >
+              <Text style={styles.selectionButtonText}>{s}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Label style={styles.LabelText}>Raza del animal</Label>
         <TextInput style={styles.input} placeholder="Raza" value={breed} onChangeText={setBreed} />
 
         <Text style={styles.sectionTitle}>Salud</Text>
@@ -171,7 +217,7 @@ export default function UpdatePetsScreen() {
           multiline
         />
 
-        <Text style={styles.sectionTitle}>Personalidad</Text>
+        <Text style={styles.sectionTitle}>Descripción</Text>
         <TextInput
           style={styles.textArea}
           placeholder="Descripción"
@@ -290,4 +336,30 @@ const styles = StyleSheet.create({
   imageBtnText: {
     fontWeight: "bold"
   },
+  LabelText: {
+    color: '#000000'
+  },
+
+
+  selectionContainer: {
+  flexDirection: "row",
+  justifyContent: "space-around",
+  marginBottom: 8,
+},
+selectionButton: {
+  paddingVertical: 10,
+  paddingHorizontal: 15,
+  borderWidth: 1,
+  borderColor: "#DAC193",
+  borderRadius: 8,
+  backgroundColor: "#fff",
+},
+selectionButtonActive: {
+  backgroundColor: "#E5DCCC",
+  borderColor: "#DAC193",
+},
+selectionButtonText: {
+  textTransform: "capitalize",
+  fontWeight: "bold",
+},
 });
