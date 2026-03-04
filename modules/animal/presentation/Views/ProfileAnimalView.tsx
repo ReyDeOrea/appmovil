@@ -5,29 +5,28 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
-import { uploadForm } from "../../application/uploadForm";
 import { Pet } from "../../domain/pet";
 
 export function ProfileAnimal() {
-
+    const screenWidth = Dimensions.get("window").width;
     const router = useRouter();
     const params = useLocalSearchParams();
     const [tab, setTab] = useState<"info" | "salud" | "personalidad">("info");
     const [isFavorite, setIsFavorite] = useState(false);
+    const [imagePage, setImagePage] = useState(0);
+
 
 
     const verificarUsuario = async () => {
         const userSession = await AsyncStorage.getItem("user");
-
         if (!userSession) {
             Alert.alert(
                 "Debes iniciar sesión",
@@ -125,39 +124,7 @@ export function ProfileAnimal() {
     };
 
 
-    const subirFormulario = async () => {
-        try {
-            if (!mascota)
-                return;
-
-            const autorizado = await verificarUsuario();
-            if (!autorizado)
-                return;
-
-            const result = await DocumentPicker.getDocumentAsync({
-                type: "application/pdf",
-                copyToCacheDirectory: true,
-            });
-
-            if (result.canceled) return;
-
-            const file = result.assets[0];
-            const response = await fetch(file.uri);
-            const blob = await response.blob();
-
-            const fileName = `formulario_${mascota.id}_${Date.now()}.pdf`;
-
-            await uploadForm(mascota.id, fileName, blob);
-
-            Alert.alert("Éxito", "Formulario enviado correctamente");
-
-        } catch (error) {
-            console.log(error);
-            Alert.alert("Error al subir el archivo");
-        }
-    };
-
-
+ 
 
     const descargarFormulario = async () => {
 
@@ -234,6 +201,20 @@ export function ProfileAnimal() {
         await Sharing.shareAsync(uri);
     };
 
+    const images: string[] = (() => {
+        if (Array.isArray(mascota.image_url)) {
+            return mascota.image_url.filter(Boolean);
+        } else if (typeof mascota.image_url === "string") {
+            try {
+                const parsed = JSON.parse(mascota.image_url);
+                if (Array.isArray(parsed)) return parsed.filter(Boolean);
+            } catch {
+                return [mascota.image_url].filter(Boolean);
+            }
+        }
+        return [];
+    })();
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
@@ -258,11 +239,37 @@ export function ProfileAnimal() {
             </View>
 
             <View style={styles.imageContainer}>
-                <Image
-                    source={{ uri: mascota.image_url }}
-                    style={styles.img}
-                    resizeMode="cover"
-                />
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={(e) => {
+                        const page = Math.round(e.nativeEvent.contentOffset.x / screenWidth);
+                        setImagePage(page);
+                    }}
+                    scrollEventThrottle={16}
+                >
+                    {images.map((uri, idx) => (
+                        <Image
+                            key={idx}
+                            source={{ uri }}
+                            style={{ width: screenWidth, height: 220 }}
+                            resizeMode="cover"
+                        />
+                    ))}
+                </ScrollView>
+
+                <View style={styles.dotsContainer}>
+                    {images.map((_, idx) => (
+                        <View
+                            key={idx}
+                            style={[
+                                styles.dot,
+                                imagePage === idx && styles.dotActive,
+                            ]}
+                        />
+                    ))}
+                </View>
 
                 <TouchableOpacity
                     style={styles.copyIconButton}
@@ -356,12 +363,7 @@ export function ProfileAnimal() {
                                 </Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.botonDescargar}
-                                onPress={subirFormulario}>
-                                <Text style={styles.textoBoton}>
-                                    Subir formulario  (PDF)
-                                </Text>
-                            </TouchableOpacity>
+                        
                         </View>
                     </>
                 )}
@@ -387,6 +389,25 @@ const styles = StyleSheet.create({
         height: 60,
         backgroundColor: "#d4b37a",
         justifyContent: "center"
+    },
+    dotsContainer: {
+        position: "absolute",
+        bottom: 10,
+        left: 0,
+        right: 0,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "#ccc",
+        marginHorizontal: 3,
+    },
+    dotActive: {
+        backgroundColor: "#fff",
     },
     row: {
         flexDirection: "row",
