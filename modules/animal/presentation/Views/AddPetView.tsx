@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,6 +6,8 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { addPetUseCase } from "../../application/addPet";
+import { PetSize } from "../../domain/pet";
 
 export default function AddPetScreen() {
   const router = useRouter();
@@ -33,6 +35,19 @@ export default function AddPetScreen() {
       setImage(result.assets[0].uri);
     }
   };
+  const clearFields = () => {
+    setType("");
+    setName("");
+    setSex("");
+    setAge("");
+    setSize("");
+    setBreed("");
+    setHealthInfo("");
+    setDescription("");
+    setPhone("");
+    setLocation("");
+    setImage(null);
+  };
 
   const savePet = async () => {
     if (
@@ -50,6 +65,7 @@ export default function AddPetScreen() {
       Alert.alert("Faltan campos", "Todos los campos son obligatorios");
       return;
     }
+
     const petType = type.toLowerCase().trim();
     const petSex = sex.toLowerCase().trim();
     const petSize = size.toLowerCase().trim();
@@ -73,7 +89,6 @@ export default function AddPetScreen() {
       return;
     }
 
-
     if (!img) {
       Alert.alert("Debe seleccionar una imagen");
       return;
@@ -86,7 +101,7 @@ export default function AddPetScreen() {
 
     const user = JSON.parse(u);
 
-    let imageUrl = null;
+    let imageUrl : string | null = null;
 
     if (img) {
       imageUrl = await saveS({ uri: img });
@@ -97,44 +112,34 @@ export default function AddPetScreen() {
       await saveDB(imageUrl);
     }
 
-    const { error } = await supabase.from("pets").insert({
-      user: user.id,
-      type: petType,
-      name,
-      sex: petSex,
-      age,
-      size: petSize,
-      breed,
-      health_info: healthInfo,
-      description,
-      image_url: imageUrl,
-      phone,
-      location,
-    });
-
-    if (error) {
-      Alert.alert("Error", error.message);
-      return;
+    try {
+      await addPetUseCase({
+        user: user.id,
+        type: petType as "perro" | "gato",
+        name: name.trim(),
+        sex: petSex as "macho" | "hembra",
+        age: age.trim(),
+        size:
+          petSize.toLowerCase() === "pequeño"
+            ? PetSize.pequeño
+            : petSize.toLowerCase() === "mediano"
+            ?PetSize.mediano
+            :PetSize.grande,
+        breed: breed.trim(),
+        health_info: healthInfo.trim(),
+        description: description.trim(),
+        image_url: imageUrl!,
+        phone: phone.trim(),
+        location: location.trim(),
+      });
+      Alert.alert("Mascota guardada");
+      clearFields();
+      router.back();
     }
-
-    Alert.alert("Mascota guardada 🐶");
-    clearFields();
-    router.back();
-  };
-
-  const clearFields = () => {
-    setType("");
-    setName("");
-    setSex("");
-    setAge("");
-    setSize("");
-    setBreed("");
-    setHealthInfo("");
-    setDescription("");
-    setPhone("");
-    setLocation("");
-    setImage(null);
-  };
+    catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -306,9 +311,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 15,
+    marginVertical:15,
   },
   imageBtnText: {
     fontWeight: "bold"
   },
+  LabelText:{
+    color: '#000000'
+  }
 });

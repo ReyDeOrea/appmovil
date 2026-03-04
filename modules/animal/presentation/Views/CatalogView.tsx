@@ -208,7 +208,11 @@ export default function CatalogView() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={(e) => setPagePets(Math.round(e.nativeEvent.contentOffset.x / width))}
+          onScroll={(e) =>
+            setPagePets(
+              Math.round(e.nativeEvent.contentOffset.x / width)
+            )
+          }
           scrollEventThrottle={16}
         >
           {chunks.map((row, idx) => (
@@ -220,7 +224,6 @@ export default function CatalogView() {
             </View>
           ))}
         </ScrollView>
-
       </ScrollView>
 
       <TouchableOpacity style={styles.floatingButton}

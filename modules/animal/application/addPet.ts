@@ -1,7 +1,7 @@
-import { Pet } from "../domain/pet";
+import { CreatePet, PetSize } from "../domain/pet";
 import { addPet } from "../infraestructure/petDatasource";
 
-export async function addPetUseCase(pet: Pet) {
+export async function addPetUseCase(pet: CreatePet) {
 
   if (!pet.name.trim()) {
     throw new Error("El nombre es obligatorio");
@@ -28,7 +28,7 @@ export async function addPetUseCase(pet: Pet) {
   }
   const validTypes = ["perro", "gato"];
   const validSex = ["macho", "hembra"];
-  const validSizes = ["pequeño", "mediano", "grande"];
+  const validSizes = Object.values(PetSize);
 
   if (!validTypes.includes(pet.type)) {
     throw new Error("Tipo inválido. Debe ser perro o gato");
