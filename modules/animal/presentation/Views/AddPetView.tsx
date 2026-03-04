@@ -159,42 +159,42 @@ export default function AddPetScreen() {
 
         <Text style={styles.sectionTitle}>Información general</Text>
 
-        <Label style={styles.labelText}>Tipo de animal</Label>
+        <Label style={styles.LabelText}>Tipo de animal</Label>
         <TextInput style={styles.input}
           placeholder="Tipo (gato o perro)"
           value={type}
           onChangeText={setType}
         />
 
-        <Label style={styles.labelText}>Nombre del animal</Label>
+        <Label style={styles.LabelText}>Nombre del animal</Label>
         <TextInput style={styles.input}
           placeholder="Nombre"
           value={name}
           onChangeText={setName}
         />
 
-        <Label style={styles.labelText}>Sexo del animal</Label>
+        <Label style={styles.LabelText}>Sexo del animal</Label>
         <TextInput style={styles.input}
           placeholder="Sexo (hembra o macho)"
           value={sex}
           onChangeText={setSex}
         />
 
-        <Label style={styles.labelText}>Edad del animal</Label>
+        <Label style={styles.LabelText}>Edad del animal</Label>
         <TextInput style={styles.input}
           placeholder="Edad"
           value={age}
           onChangeText={setAge}
         />
 
-        <Label style={styles.labelText}>Tamaño del animal</Label>
+        <Label style={styles.LabelText}>Tamaño del animal</Label>
         <TextInput style={styles.input}
           placeholder="Tamaño (pequeño, mediano o grande)"
           value={size}
           onChangeText={setSize}
         />
 
-        <Label style={styles.labelText}>Raza del animal</Label>
+        <Label style={styles.LabelText}>Raza del animal</Label>
         <TextInput style={styles.input}
           placeholder="Raza"
           value={breed}
@@ -203,7 +203,7 @@ export default function AddPetScreen() {
 
         <Text style={styles.sectionTitle}>Salud</Text>
 
-        <Label style={styles.labelText}>Historial clinico del animal</Label>
+        <Label style={styles.LabelText}>Historial clinico del animal</Label>
         <TextInput
           style={styles.textArea}
           placeholder="Salud"
@@ -212,7 +212,7 @@ export default function AddPetScreen() {
           multiline
         />
         <Text style={styles.sectionTitle}>Descripción</Text>
-        <Label style={styles.labelText}>Da una breve descripcion sobre como es</Label>
+        <Label style={styles.LabelText}>Da una breve descripcion sobre como es</Label>
         <TextInput
           style={styles.textArea}
           placeholder="Descripción"
@@ -221,14 +221,14 @@ export default function AddPetScreen() {
           multiline
         />
         <Text style={styles.sectionTitle}>Contacto</Text>
-        <Label style={styles.labelText}>Numero de telefono</Label>
+        <Label style={styles.LabelText}>Numero de telefono</Label>
         <TextInput style={styles.input}
           placeholder="Teléfono"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
         />
-        <Label style={styles.labelText}>Ubicación donde se encuentra</Label>
+        <Label style={styles.LabelText}>Ubicación donde se encuentra</Label>
         <TextInput style={styles.input}
           placeholder="Ubicación"
           value={location}
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 15,
     paddingBottom: 30,
-    backgroundColor: "#ffff"
+    backgroundColor: "#ffff",
   },
   title: {
     fontSize: 22,
@@ -331,6 +331,7 @@ const styles = StyleSheet.create({
   imageBtnText: {
     fontWeight: "bold"
   },
+  LabelText:{
+    color: '#000000'
+  }
 });
-
-//añadir animal
