@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { updatePetUseCase } from "../../application/updatePet";
+import { PetSex, PetSize, PetType } from "../../domain/pet";
 
 export default function UpdatePetsScreen() {
   const params = useLocalSearchParams();
@@ -101,11 +102,11 @@ export default function UpdatePetsScreen() {
       }
 
       await updatePetUseCase(selectedPet.id, {
-        type: type.toLowerCase().trim() as any,
+        type: type as PetType,
         name: name.trim(),
-        sex: sex.toLowerCase().trim() as any,
+        sex: sex as PetSex,
         age: age.trim(),
-        size: size.toLowerCase().trim() as any,
+         size: size as  PetSize,
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
