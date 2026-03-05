@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { addPetUseCase } from "../../application/addPet";
-import { PetSize } from "../../domain/pet";
+import { PetSex, PetSize, PetType } from "../../domain/pet";
 
 
 const { width } = Dimensions.get("window");
@@ -80,13 +80,6 @@ export default function AddPetScreen() {
       return;
     }
 
-    const petType = type.toLowerCase().trim(); //modificar
-    const petSex = sex.toLowerCase().trim();
-    const petSize = size.toLowerCase().trim();
-
-    const validTypes = ["perro", "gato"];
-    const validSex = ["macho", "hembra"];
-    const validSizes = ["pequeño", "mediano", "grande"];
 
     if (img.length < 5) {
       Alert.alert("Debe seleccionar mínimo 5 imágenes");
@@ -116,16 +109,11 @@ export default function AddPetScreen() {
 
       await addPetUseCase({
         user: user.id,
-        type: petType as "perro" | "gato",
+        type: type as PetType,
         name: name.trim(),
-        sex: petSex as "macho" | "hembra",
+        sex: sex as PetSex,
         age: age.trim(),
-        size:
-          petSize.toLowerCase() === "pequeño"
-            ? PetSize.pequeño
-            : petSize.toLowerCase() === "mediano"
-              ? PetSize.mediano
-              : PetSize.grande,
+        size: size as  PetSize,
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
