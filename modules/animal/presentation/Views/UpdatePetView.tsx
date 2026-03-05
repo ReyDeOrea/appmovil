@@ -24,7 +24,8 @@ export default function UpdatePetsScreen() {
   const [breed, setBreed] = useState("");
   const [healthInfo, setHealthInfo] = useState("");
   const [description, setDescription] = useState("");
-  const [img, setImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [imagePage, setImagePage] = useState(0);
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [adopted, setAdopted] = useState(false);
@@ -42,7 +43,20 @@ export default function UpdatePetsScreen() {
       setDescription(petParam.description ?? "");
       setPhone(petParam.phone ?? "");
       setLocation(petParam.location ?? "");
-      setImage(petParam.image_url ?? null);
+      if (Array.isArray(petParam.image_url)) {
+        setImages(petParam.image_url);
+      } else if (typeof petParam.image_url === "string") {
+        try {
+          const parsed = JSON.parse(petParam.image_url);
+          if (Array.isArray(parsed)) {
+            setImages(parsed);
+          } else {
+            setImages([petParam.image_url]);
+          }
+        } catch {
+          setImages([petParam.image_url]);
+        }
+      }
       setAdopted(petParam.adopted ?? false);
     }
   }, [petParam]);
@@ -58,7 +72,7 @@ export default function UpdatePetsScreen() {
     setDescription("");
     setPhone("");
     setLocation("");
-    setImage(null);
+    setImages([]);
     setSelectedPet(null);
     setAdopted(false);
   };
@@ -76,7 +90,7 @@ export default function UpdatePetsScreen() {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImages([...images, result.assets[0].uri]);
     }
   };
 
@@ -87,18 +101,22 @@ export default function UpdatePetsScreen() {
     }
 
     try {
-      let imageUrl = selectedPet.image_url;
+      let imageUrl: string[] = [];
 
-      if (img && img !== selectedPet.image_url) {
-        const uploaded = await saveS({ uri: img });
+      for (const uri of images) {
+        if (uri.startsWith("http")) {
+          imageUrl.push(uri);
+        } else {
+          const uploaded = await saveS({ uri });
 
-        if (!uploaded) {
-          Alert.alert("Error al subir imagen");
-          return;
+          if (!uploaded) {
+            Alert.alert("Error al subir imagen");
+            return;
+          }
+
+          imageUrl.push(uploaded);
+          await saveDB(uploaded);
         }
-
-        imageUrl = uploaded;
-        await saveDB(uploaded);
       }
 
       await updatePetUseCase(selectedPet.id, {
@@ -106,13 +124,13 @@ export default function UpdatePetsScreen() {
         name: name.trim(),
         sex: sex as PetSex,
         age: age.trim(),
-         size: size as  PetSize,
+        size: size as PetSize,
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
         phone: phone.replace(/[^0-9]/g, ""),
         location: location.trim(),
-        image_url: imageUrl,
+        image_url: imageUrl[0] ?? "",
         adopted,
       });
 
@@ -149,7 +167,44 @@ export default function UpdatePetsScreen() {
           />
         </View>
 
-        {img && <Image source={{ uri: img }} style={styles.previewImage} />}
+        <View style={{ marginBottom: 10 }}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={(e) => {
+              const page = Math.round(
+                e.nativeEvent.contentOffset.x / 360
+              );
+              setImagePage(page);
+            }}
+            scrollEventThrottle={16}
+          >
+            {images.map((uri, idx) => (
+              <Image
+                key={idx}
+                source={{ uri }}
+                style={{ 
+                  width: 380, 
+                  height: 200,
+                  borderRadius: 30,
+                 }}
+              />
+            ))}
+          </ScrollView>
+
+          <View style={styles.dotsContainer}>
+            {images.map((_, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.dot,
+                  imagePage === idx && styles.dotActive
+                ]}
+              />
+            ))}
+          </View>
+        </View>
 
         <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
@@ -343,24 +398,41 @@ const styles = StyleSheet.create({
 
 
   selectionContainer: {
-  flexDirection: "row",
-  justifyContent: "space-around",
-  marginBottom: 8,
-},
-selectionButton: {
-  paddingVertical: 10,
-  paddingHorizontal: 15,
-  borderWidth: 1,
-  borderColor: "#DAC193",
-  borderRadius: 8,
-  backgroundColor: "#fff",
-},
-selectionButtonActive: {
-  backgroundColor: "#E5DCCC",
-  borderColor: "#DAC193",
-},
-selectionButtonText: {
-  textTransform: "capitalize",
-  fontWeight: "bold",
-},
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 8,
+  },
+  selectionButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  selectionButtonActive: {
+    backgroundColor: "#E5DCCC",
+    borderColor: "#DAC193",
+  },
+  selectionButtonText: {
+    textTransform: "capitalize",
+    fontWeight: "bold",
+  },
+
+
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 5
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    marginHorizontal: 3,
+  },
+  dotActive: {
+    backgroundColor: "#000",
+  },
 });
