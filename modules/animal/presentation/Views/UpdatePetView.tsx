@@ -4,9 +4,12 @@ import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { updatePetUseCase } from "../../application/updatePet";
 import { PetSex, PetSize, PetType } from "../../domain/pet";
+
+const { width } = Dimensions.get("window");
+const BANNER_HEIGHT = width * 0.42;
 
 export default function UpdatePetsScreen() {
   const params = useLocalSearchParams();
@@ -86,13 +89,18 @@ export default function UpdatePetsScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      allowsEditing: false,
       quality: 0.7,
+      selectionLimit: 5,
     });
 
     if (!result.canceled) {
-      setImages([...images, result.assets[0].uri]);
+      const uris = result.assets.map(asset => asset.uri);
+       setImages(uris);
     }
   };
+  const bannerImages = images.map((uri) => ({ image: { uri } }));
 
   const handleUpdatePet = async () => {
     if (!selectedPet) {
@@ -130,7 +138,7 @@ export default function UpdatePetsScreen() {
         description: description.trim(),
         phone: phone.replace(/[^0-9]/g, ""),
         location: location.trim(),
-        image_url: imageUrl[0] ?? "",
+        image_url: JSON.stringify(imageUrl),
         adopted,
       });
 
@@ -167,44 +175,41 @@ export default function UpdatePetsScreen() {
           />
         </View>
 
-        <View style={{ marginBottom: 10 }}>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={(e) => {
-              const page = Math.round(
-                e.nativeEvent.contentOffset.x / 360
-              );
-              setImagePage(page);
-            }}
-            scrollEventThrottle={16}
-          >
-            {images.map((uri, idx) => (
-              <Image
-                key={idx}
-                source={{ uri }}
-                style={{ 
-                  width: 380, 
-                  height: 200,
-                  borderRadius: 30,
-                 }}
-              />
-            ))}
-          </ScrollView>
 
-          <View style={styles.dotsContainer}>
-            {images.map((_, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.dot,
-                  imagePage === idx && styles.dotActive
-                ]}
-              />
-            ))}
-          </View>
-        </View>
+        {images.length > 0 && (
+          <>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={(e) =>
+                setImagePage(Math.round(e.nativeEvent.contentOffset.x / width))
+              }
+              scrollEventThrottle={16}
+            >
+              {images.map((uri, idx) => (
+                <View
+                  key={idx}
+                  style={{ width, alignItems: "center", marginVertical: 10 }}
+                >
+                  <Image
+                    source={{ uri }}
+                    style={[styles.imgD, { width: width * 0.9 }]}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.BP}>
+              {images.map((_, i) => (
+                <View
+                  key={i}
+                  style={[styles.dot, imagePage === i && styles.dotActive]}
+                />
+              ))}
+            </View>
+          </>
+        )}
 
         <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
@@ -336,6 +341,11 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginRight: 5
   },
+  BP: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 8,
+  },
   sectionTitle: {
     fontWeight: "bold",
     fontSize: 16,
@@ -395,8 +405,10 @@ const styles = StyleSheet.create({
   LabelText: {
     color: '#000000'
   },
-
-
+  imgD: {
+    height: BANNER_HEIGHT,
+    borderRadius: 20,
+  },
   selectionContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
