@@ -23,7 +23,7 @@ export async function ImgS(): Promise<string[]> {
 export async function saveDB(rutaSP: string): Promise<Pet | null> {
   try {
     const { data, error } = await supabase
-      .from("img")
+      .from("pets")
       .insert([{ ruta: rutaSP, date: new Date() }])
       .select();
     if (error)

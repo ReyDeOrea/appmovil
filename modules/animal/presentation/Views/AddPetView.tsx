@@ -32,6 +32,7 @@ export default function AddPetScreen() {
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [bannerPage, setBannerPage] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -64,48 +65,58 @@ export default function AddPetScreen() {
   };
 
   const savePet = async () => {
-    if (
-      !type.trim() ||
-      !name.trim() ||
-      !sex.trim() ||
-      !age.trim() ||
-      !size.trim() ||
-      !breed.trim() ||
-      !healthInfo.trim() ||
-      !description.trim() ||
-      !phone.trim() ||
-      !location.trim()
-    ) {
-      Alert.alert("Faltan campos", "Todos los campos son obligatorios");
-      return;
-    }
 
-
-    if (img.length < 5) {
-      Alert.alert("Debe seleccionar mínimo 5 imágenes");
-      return;
-    }
-    const u = await AsyncStorage.getItem("user");
-    if (!u) {
-      Alert.alert("No hay sesión iniciada");
-      return;
-    }
-
-    const user = JSON.parse(u);
-
-    let imageUrl: string[] = [];
+    if (isSaving) return; // evita doble click
+    setIsSaving(true);
 
     try {
+
+      if (
+        !type.trim() ||
+        !name.trim() ||
+        !sex.trim() ||
+        !age.trim() ||
+        !size.trim() ||
+        !breed.trim() ||
+        !healthInfo.trim() ||
+        !description.trim() ||
+        !phone.trim() ||
+        !location.trim()
+      ) {
+        Alert.alert("Faltan campos", "Todos los campos son obligatorios");
+        setIsSaving(false);
+        return;
+      }
+
+      if (img.length < 5) {
+        Alert.alert("Debe seleccionar mínimo 5 imágenes");
+        setIsSaving(false);
+        return;
+      }
+
+      const u = await AsyncStorage.getItem("user");
+      if (!u) {
+        Alert.alert("No hay sesión iniciada");
+        setIsSaving(false);
+        return;
+      }
+
+      const user = JSON.parse(u);
+
+      let imageUrl: string[] = [];
+
       for (const uri of img) {
         const url = await saveS({ uri });
+
         if (!url) {
           Alert.alert("Error al subir una imagen");
+          setIsSaving(false);
           return;
         }
+
         await saveDB(url);
         imageUrl.push(url);
       }
-
 
       await addPetUseCase({
         user: user.id,
@@ -113,7 +124,7 @@ export default function AddPetScreen() {
         name: name.trim(),
         sex: sex as PetSex,
         age: age.trim(),
-        size: size as  PetSize,
+        size: size as PetSize,
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
@@ -121,12 +132,15 @@ export default function AddPetScreen() {
         phone: phone.trim(),
         location: location.trim(),
       });
+
       Alert.alert("Mascota guardada");
       clearFields();
       router.back();
-    }
-    catch (error: any) {
+
+    } catch (error: any) {
       Alert.alert("Error", error.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -289,9 +303,14 @@ export default function AddPetScreen() {
           onChangeText={setLocation}
         />
 
-        <TouchableOpacity style={styles.saveButton}
-          onPress={savePet}>
-          <Text >Registrar Mascota</Text>
+        <TouchableOpacity
+          style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
+          onPress={savePet}
+          disabled={isSaving}
+        >
+          <Text>
+            {isSaving ? "Guardando..." : "Registrar Mascota"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.closeButton}
