@@ -1,12 +1,12 @@
-import { supabase } from '@/lib/supabase';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { loginUser } from '../../application/loginUser';
+import { validateLoginData } from '../../application/validateLoginData';
 
 export default function LoginForm() {
   const router = useRouter()
@@ -14,44 +14,18 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const isValidPassword = (password: string) => {
-    return password.length >= 6
-  }
-
   const handleLogin = async () => {
-    if (!isValidPassword(password)) {
-      Alert.alert('Contraseña inválida')
-      return
-    }
-    if (!username) {
-      Alert.alert('Usuario requerido', 'Ingresa tu usuario')
-      return
-    }
-
     try {
-      setLoading(true)
-
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('username', username)
-        .eq('password', password)
-        .single()
-
-      if (error || !data) {
-        Alert.alert('Error', 'Email o contraseña incorrectos')
-        return
-      }
-
-      await AsyncStorage.setItem('user', JSON.stringify(data))
-      router.replace('/catalog')
-
+      setLoading(true);
+      validateLoginData(username, password);
+      await loginUser(username, password);
+      router.replace("/catalog");
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'No se pudo iniciar sesión')
+      Alert.alert("Error", err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>

@@ -1,6 +1,4 @@
-import { supabase } from "@/lib/supabase";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +10,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { getUserProfile } from "../../application/getUserProfile";
+import { updateUserProfile } from "../../application/updateUserProfile";
 import AvatarView from "../components/AvatarView";
 
 const { width, height } = Dimensions.get("window");
@@ -28,47 +28,36 @@ export default function Account() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const u = await AsyncStorage.getItem("user");
-      if (u) {
-        const parsed = JSON.parse(u);
-        setUser(parsed);
-        setUsername(parsed.username ?? "");
-        setPhone(parsed.phone ?? "");
-        setAvatarUrl(parsed.avatar_url ?? "");
-      }
-    };
-    loadUser();
-  }, []);
+useEffect(() => {
+  const load = async () => {
+    const u = await getUserProfile();
+    if (u) {
+      setUser(u);
+      setUsername(u.username ?? "");
+      setPhone(u.phone ?? "");
+      setAvatarUrl(u.avatar_url ?? "");
+    }
+  };
+  load();
+}, []);
+
+const UpdateProfile = async () => {
+  try {
+    setLoading(true);
+    const updated = await updateUserProfile(user, { username, phone, avatar_url: avatarUrl });
+    setUser(updated);
+    Alert.alert("Perfil actualizado");
+    router.push("/catalog");
+  } catch (err: any) {
+    Alert.alert("Error", err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!user)
     return <Text style={{ padding: 20 }}>No hay usuario logueado</Text>;
 
-  const updateProfile = async () => {
-    try {
-      setLoading(true);
-
-      const { error } = await supabase
-        .from("clients")
-        .update({ username, phone, avatar_url: avatarUrl })
-        .eq("email", user.email);
-
-      if (error) throw error;
-
-      const newUser = { ...user, username, phone, avatar_url: avatarUrl };
-      setUser(newUser);
-
-      await AsyncStorage.setItem("user", JSON.stringify(newUser));
-
-      Alert.alert("Perfil actualizado");
-      router.push("/catalog");
-    } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -113,7 +102,7 @@ export default function Account() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={updateProfile}
+        onPress={UpdateProfile}
         disabled={loading}
       >
         <Text style={styles.buttonText}>

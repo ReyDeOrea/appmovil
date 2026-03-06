@@ -1,12 +1,11 @@
 
-import { supabase } from "@/lib/supabase";
 import DeletePetModal from "@/modules/animal/presentation/componets/DeletePetModal";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getUserPets } from "../../application/getUserPets";
 
 export default function MyPetsScreen() {
   const [pets, setPets] = useState<any[]>([]);
@@ -21,19 +20,14 @@ export default function MyPetsScreen() {
     }, [])
   );
 
-  const loadPets = async () => {
-    const u = await AsyncStorage.getItem("user");
-    if (!u) return;
-
-    const user = JSON.parse(u);
-    const { data, error } = await supabase
-    .from("pets")
-    .select("*")
-    .eq("user", user.id);
-    
-    if (error) console.log("ERROR PETS:", error.message);
-    setPets(data || []);
-  };
+const loadPets = async () => {
+  try {
+    const data = await getUserPets();
+    setPets(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const openDeleteModal = (id: string) => {
     setSelectedPetId(id);

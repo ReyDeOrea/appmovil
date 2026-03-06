@@ -1,7 +1,8 @@
-import { supabase } from '@/lib/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { useEffect, useState } from 'react'
 import { Alert, Button, Image, StyleSheet, View } from 'react-native'
+import { downloadAvatar } from '../../application/downloadAvatar'
+import { uploadAvatarFile } from '../../application/uploadAvatar'
 
 interface Props {
   size: number
@@ -20,71 +21,19 @@ export default function AvatarView({ url, size = 150, onUpload }: Props) {
 
   async function downloadImage(path: string) {
     try {
-      const { data, error } = await supabase.storage.from('avatars').download(path)
-
-      if (error) {
-        throw error
-      }
-
-      const fr = new FileReader()
-      fr.readAsDataURL(data)
-      fr.onload = () => {
-        setAvatarUrl(fr.result as string)
-      }
+      const avatar = await downloadAvatar(path)
+      setAvatarUrl(avatar)
     } catch (error) {
-      if (error instanceof Error) {
-        console.log('Error downloading image: ', error.message)
-      }
+      console.log('Error downloading avatar:', error)
     }
   }
 
-  async function uploadAvatar() {
+  async function uploadImage(imageUri: string, mimeType?: string) {
     try {
-      setUploading(true)
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Restrict to only images
-        allowsMultipleSelection: false, // Can only select one image
-        allowsEditing: true, // Allows the user to crop / rotate their photo before uploading it
-        quality: 1,
-        exif: false, // We don't want nor need that data.
-      })
-
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        console.log('User cancelled image picker.')
-        return
-      }
-
-      const image = result.assets[0]
-      console.log('Got image', image)
-
-      if (!image.uri) {
-        throw new Error('No image uri!') // Realistically, this should never happen, but just in case...
-      }
-
-      const arraybuffer = await fetch(image.uri).then((res) => res.arrayBuffer())
-
-      const fileExt = image.uri?.split('.').pop()?.toLowerCase() ?? 'jpeg'
-      const path = `${Date.now()}.${fileExt}`
-      const { data, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(path, arraybuffer, {
-          contentType: image.mimeType ?? 'image/jpeg',
-        })
-
-      if (uploadError) {
-        throw uploadError
-      }
-
-      onUpload(data.path)
+      const path = await uploadAvatarFile(imageUri, mimeType)
+      onUpload(path)
     } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      } else {
-        throw error
-      }
-    } finally {
-      setUploading(false)
+      Alert.alert('Error', (error as Error).message)
     }
   }
 
@@ -102,7 +51,21 @@ export default function AvatarView({ url, size = 150, onUpload }: Props) {
       <View>
         <Button
           title={uploading ? 'Uploading ...' : 'Upload'}
-          onPress={uploadAvatar}
+          onPress={async () => {
+            try {
+              setUploading(true)
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 1,
+              })
+              if (!result.canceled && result.assets && result.assets.length > 0) {
+                await uploadImage(result.assets[0].uri, result.assets[0].mimeType)
+              }
+            } finally {
+              setUploading(false)
+            }
+          }}
           disabled={uploading}
         />
       </View>
