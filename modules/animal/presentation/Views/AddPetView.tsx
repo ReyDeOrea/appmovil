@@ -131,6 +131,7 @@ export default function AddPetScreen() {
             <Text style={styles.txtN}>Animaland</Text>
             <FontAwesome name="paw" size={30} color="#fff" />
           </View>
+
         </View>
 
         {img.length > 0 && (
@@ -411,24 +412,27 @@ const styles = StyleSheet.create({
   },
   selectionContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 8,
+    justifyContent: "center",
+    elevation: 3,
   },
-  selectionButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: "#DAC193",
-    borderRadius: 8,
-    backgroundColor: "#fff",
+  cancelButton: {
+    backgroundColor: "#E8B4B4",
+    padding: 14,
+    borderRadius: 15,
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    elevation: 3,
   },
-  selectionButtonActive: {
-    backgroundColor: "#E5DCCC",
-    borderColor: "#DAC193",
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+    marginLeft: 8,
   },
-  selectionButtonText: {
-    textTransform: "capitalize",
-    fontWeight: "bold",
+  buttonIcon: {
+    marginRight: 4,
   },
   BP: {
     flexDirection: "row",
