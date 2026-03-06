@@ -5,27 +5,30 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
+import { uploadForm } from "../../application/uploadForm";
 import { Pet } from "../../domain/pet";
 
 export function ProfileAnimal() {
-
+    const screenWidth = Dimensions.get("window").width;
     const router = useRouter();
     const params = useLocalSearchParams();
     const [tab, setTab] = useState<"info" | "salud" | "personalidad">("info");
     const [isFavorite, setIsFavorite] = useState(false);
+    const [imagePage, setImagePage] = useState(0);
+
 
 
     const verificarUsuario = async () => {
         const userSession = await AsyncStorage.getItem("user");
-
         if (!userSession) {
             Alert.alert(
                 "Debes iniciar sesión",
@@ -115,12 +118,15 @@ export function ProfileAnimal() {
     const llamar = () => {
         Linking.openURL(`tel:${mascota.phone}`);
     };
-    //MODIFICAR ENLACE
+
     const copiarEnlace = async () => {
         const enlace = `https://app.com/animal/${mascota.id}`;
         await Clipboard.setStringAsync(enlace);
         Alert.alert("Enlace copiado", "El enlace fue copiado");
     };
+
+
+ 
 
     const descargarFormulario = async () => {
 
@@ -197,6 +203,20 @@ export function ProfileAnimal() {
         await Sharing.shareAsync(uri);
     };
 
+    const images: string[] = (() => {
+        if (Array.isArray(mascota.image_url)) {
+            return mascota.image_url.filter(Boolean);
+        } else if (typeof mascota.image_url === "string") {
+            try {
+                const parsed = JSON.parse(mascota.image_url);
+                if (Array.isArray(parsed)) return parsed.filter(Boolean);
+            } catch {
+                return [mascota.image_url].filter(Boolean);
+            }
+        }
+        return [];
+    })();
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
@@ -221,11 +241,37 @@ export function ProfileAnimal() {
             </View>
 
             <View style={styles.imageContainer}>
-                <Image
-                    source={{ uri: mascota.image_url }}
-                    style={styles.img}
-                    resizeMode="cover"
-                />
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={(e) => {
+                        const page = Math.round(e.nativeEvent.contentOffset.x / screenWidth);
+                        setImagePage(page);
+                    }}
+                    scrollEventThrottle={16}
+                >
+                    {images.map((uri, idx) => (
+                        <Image
+                            key={idx}
+                            source={{ uri }}
+                            style={{ width: screenWidth, height: 220 }}
+                            resizeMode="cover"
+                        />
+                    ))}
+                </ScrollView>
+
+                <View style={styles.dotsContainer}>
+                    {images.map((_, idx) => (
+                        <View
+                            key={idx}
+                            style={[
+                                styles.dot,
+                                imagePage === idx && styles.dotActive,
+                            ]}
+                        />
+                    ))}
+                </View>
 
                 <TouchableOpacity
                     style={styles.copyIconButton}
@@ -303,11 +349,6 @@ export function ProfileAnimal() {
                         <Text style={styles.txtC}>Contacto</Text>
 
                         <View style={styles.BRI}>
-                            <View style={styles.RI}>
-                                <Feather name="user" size={24} />
-                                <Text>{mascota.user_id}</Text>
-                            </View>
-
                             <TouchableOpacity style={styles.RI} onPress={llamar}>
                                 <Feather name="phone" size={24} />
                                 <Text>{mascota.phone}</Text>
@@ -323,6 +364,8 @@ export function ProfileAnimal() {
                                     Descargar formulario
                                 </Text>
                             </TouchableOpacity>
+
+                        
                         </View>
                     </>
                 )}
@@ -348,6 +391,25 @@ const styles = StyleSheet.create({
         height: 60,
         backgroundColor: "#d4b37a",
         justifyContent: "center"
+    },
+    dotsContainer: {
+        position: "absolute",
+        bottom: 10,
+        left: 0,
+        right: 0,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    dot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "#ccc",
+        marginHorizontal: 3,
+    },
+    dotActive: {
+        backgroundColor: "#fff",
     },
     row: {
         flexDirection: "row",
@@ -391,7 +453,6 @@ const styles = StyleSheet.create({
         borderBottomColor: "#E5DCCC",
         marginVertical: 20
     },
-
     txtC: {
         textAlign: "center",
         fontWeight: "bold",
@@ -434,7 +495,8 @@ const styles = StyleSheet.create({
     botonDescargar: {
         backgroundColor: "#E5DCCC",
         padding: 12,
-        borderRadius: 25
+        borderRadius: 25,
+        marginVertical: 8,
     },
     textoBoton: {
         fontWeight: "bold"

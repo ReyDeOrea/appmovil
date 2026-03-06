@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -6,11 +6,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { addPetUseCase } from "../../application/addPet";
+import { PetSex, PetSize, PetType } from "../../domain/pet";
+
+
+const { width } = Dimensions.get("window");
+const BANNER_HEIGHT = width * 0.42;
+
+type BannerItem = {
+  image: any;
+};
 
 export default function AddPetScreen() {
   const router = useRouter();
-
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [sex, setSex] = useState("");
@@ -19,109 +28,27 @@ export default function AddPetScreen() {
   const [breed, setBreed] = useState("");
   const [healthInfo, setHealthInfo] = useState("");
   const [description, setDescription] = useState("");
-  const [img, setImage] = useState<string | null>(null);
+  const [img, setImage] = useState<string[]>([]);
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
+  const [bannerPage, setBannerPage] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsMultipleSelection: true,
+      allowsEditing: false,
       quality: 0.7,
+      selectionLimit: 5,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const uris = result.assets.map(asset => asset.uri);
+      setImage([...img, ...uris]);
     }
   };
-
-  const savePet = async () => {
-    if (
-      !type.trim() ||
-      !name.trim() ||
-      !sex.trim() ||
-      !age.trim() ||
-      !size.trim() ||
-      !breed.trim() ||
-      !healthInfo.trim() ||
-      !description.trim() ||
-      !phone.trim() ||
-      !location.trim()
-    ) {
-      Alert.alert("Faltan campos", "Todos los campos son obligatorios");
-      return;
-    }
-    const petType = type.toLowerCase().trim();
-    const petSex = sex.toLowerCase().trim();
-    const petSize = size.toLowerCase().trim();
-
-    const validTypes = ["perro", "gato"];
-    const validSex = ["macho", "hembra"];
-    const validSizes = ["pequeño", "mediano", "grande"];
-
-    if (!validTypes.includes(petType)) {
-      Alert.alert("Error", "Debe escribir correctamente el tipo: perro o gato");
-      return;
-    }
-
-    if (!validSex.includes(petSex)) {
-      Alert.alert("Error", "Debe escribir correctamente el sexo: macho o hembra");
-      return;
-    }
-
-    if (!validSizes.includes(petSize)) {
-      Alert.alert("Error", "Debe escribir correctamente el tamaño: pequeño, mediano o grande");
-      return;
-    }
-
-
-    if (!img) {
-      Alert.alert("Debe seleccionar una imagen");
-      return;
-    }
-    const u = await AsyncStorage.getItem("user");
-    if (!u) {
-      Alert.alert("No hay sesión iniciada");
-      return;
-    }
-
-    const user = JSON.parse(u);
-
-    let imageUrl = null;
-
-    if (img) {
-      imageUrl = await saveS({ uri: img });
-      if (!imageUrl) {
-        Alert.alert("Error al subir imagen");
-        return;
-      }
-      await saveDB(imageUrl);
-    }
-
-    const { error } = await supabase.from("pets").insert({
-      user: user.id,
-      type: petType,
-      name,
-      sex: petSex,
-      age,
-      size: petSize,
-      breed,
-      health_info: healthInfo,
-      description,
-      image_url: imageUrl,
-      phone,
-      location,
-    });
-
-    if (error) {
-      Alert.alert("Error", error.message);
-      return;
-    }
-
-    Alert.alert("Mascota guardada 🐶");
-    clearFields();
-    router.back();
-  };
+  const bannerImages = img.map((uri) => ({ image: { uri } }));
 
   const clearFields = () => {
     setType("");
@@ -134,7 +61,87 @@ export default function AddPetScreen() {
     setDescription("");
     setPhone("");
     setLocation("");
-    setImage(null);
+    setImage([]);
+  };
+
+  const savePet = async () => {
+
+    if (isSaving) return; // evita doble click
+    setIsSaving(true);
+
+    try {
+
+      if (
+        !type.trim() ||
+        !name.trim() ||
+        !sex.trim() ||
+        !age.trim() ||
+        !size.trim() ||
+        !breed.trim() ||
+        !healthInfo.trim() ||
+        !description.trim() ||
+        !phone.trim() ||
+        !location.trim()
+      ) {
+        Alert.alert("Faltan campos", "Todos los campos son obligatorios");
+        setIsSaving(false);
+        return;
+      }
+
+      if (img.length < 5) {
+        Alert.alert("Debe seleccionar mínimo 5 imágenes");
+        setIsSaving(false);
+        return;
+      }
+
+      const u = await AsyncStorage.getItem("user");
+      if (!u) {
+        Alert.alert("No hay sesión iniciada");
+        setIsSaving(false);
+        return;
+      }
+
+      const user = JSON.parse(u);
+
+      let imageUrl: string[] = [];
+
+      for (const uri of img) {
+        const url = await saveS({ uri });
+
+        if (!url) {
+          Alert.alert("Error al subir una imagen");
+          setIsSaving(false);
+          return;
+        }
+
+        await saveDB(url);
+        imageUrl.push(url);
+      }
+
+      await addPetUseCase({
+        user: user.id,
+        type: type as PetType,
+        name: name.trim(),
+        sex: sex as PetSex,
+        age: age.trim(),
+        size: size as PetSize,
+        breed: breed.trim(),
+        health_info: healthInfo.trim(),
+        description: description.trim(),
+        image_url: JSON.stringify(imageUrl),
+        phone: phone.trim(),
+        location: location.trim(),
+      });
+
+      Alert.alert("Mascota guardada");
+      clearFields();
+      router.back();
+
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -314,10 +321,9 @@ export default function AddPetScreen() {
           </View>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingView >
   );
 }
-
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,

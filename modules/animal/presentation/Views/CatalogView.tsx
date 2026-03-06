@@ -2,24 +2,14 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
 import { ModalMenu } from "../componets/modalMenu";
-
 
 const { width } = Dimensions.get("window");
 
@@ -39,6 +29,7 @@ export default function CatalogView() {
     type: [],
     sex: [],
     size: [],
+    adopted: false,
   });
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -47,7 +38,7 @@ export default function CatalogView() {
   const [modalOpen, setModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [pagePets, setPagePets] = useState(0);
+  const [petPages, setPetPages] = useState<{ [id: string]: number }>({});
   const router = useRouter();
 
   useEffect(() => {
@@ -58,9 +49,11 @@ export default function CatalogView() {
     loadUser();
   }, []);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const fetchPets = async () => {
       try {
+        setLoading(true);
         const data = await getPetsUseCase();
         setPets(data);
       } catch (err) {
@@ -69,8 +62,10 @@ export default function CatalogView() {
         setLoading(false);
       }
     };
+
     fetchPets();
-  }, [refresh]);
+  }, [])
+);
 
   if (loading)
     return (
@@ -97,7 +92,6 @@ export default function CatalogView() {
 
   const filteredPets = pets.filter((p) => {
     const term = search.toLowerCase();
-
     if (search) {
       if (
         !p.name?.toLowerCase().includes(term) &&
@@ -109,21 +103,11 @@ export default function CatalogView() {
         return false;
     }
 
-    if (
-      filters.type.length &&
-      !filters.type.map((f) => f.toLowerCase()).includes((p.type ?? "").toLowerCase())
-    )
-      return false;
-    if (
-      filters.sex.length &&
-      !filters.sex.map((f) => f.toLowerCase()).includes((p.sex ?? "").toLowerCase())
-    )
-      return false;
-    if (
-      filters.size.length &&
-      !filters.size.map((f) => f.toLowerCase()).includes((p.size ?? "").toLowerCase())
-    )
-      return false;
+    if (filters.adopted) {
+      if (p.adopted !== true) return false;
+    } else {
+      if (p.adopted === true) return false;
+    }
     return true;
   });
 
@@ -134,6 +118,16 @@ export default function CatalogView() {
 
   const renderPet = (pet: Pet) => {
     const isAdopted = pet.adopted === true;
+
+    let images: string[] = [];
+    try {
+      images = JSON.parse(pet.image_url || "[]");
+      if (!Array.isArray(images)) images = [images];
+    } catch {
+      images = pet.image_url ? [pet.image_url] : [];
+    }
+
+    const currentPage = petPages[pet.id] || 0;
 
     return (
       <TouchableOpacity
@@ -149,27 +143,20 @@ export default function CatalogView() {
           });
         }}
       >
-        <View style={{ position: "relative" }}>
-          <Image
-            source={{ uri: pet.image_url }}
-            style={[styles.img, isAdopted && { opacity: 0.4 }]}
-          />
 
-          {isAdopted && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>
-                ¡{pet.name} ha sido adoptado!
-              </Text>
-            </View>
-          )}
-        </View>
+        <Image
+          source={{ uri: images[0] }}
+          style={[styles.img, isAdopted && { opacity: 0.4 }]}
+        />
 
         <Text style={styles.N}>{pet.name}</Text>
         <Text style={styles.D}>{pet.sex}</Text>
         <Text style={styles.D}>{pet.size}</Text>
 
         {isAdopted && (
-          <Text style={styles.unavailable}>No disponible</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>¡{pet.name} ha sido adoptado!</Text>
+          </View>
         )}
       </TouchableOpacity>
     );
@@ -177,11 +164,7 @@ export default function CatalogView() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      >
-        
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={styles.b}>
           <View style={styles.row}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -189,7 +172,6 @@ export default function CatalogView() {
               <MaterialCommunityIcons name="dog" size={33} color="#fff" />
             </View>
 
-        
             <TouchableOpacity onPress={() => setModalOpen(true)}>
               <Feather name="menu" size={28} color="#fff" />
             </TouchableOpacity>
@@ -216,9 +198,7 @@ export default function CatalogView() {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onScroll={(e) =>
-            setBannerPage(
-              Math.round(e.nativeEvent.contentOffset.x / width)
-            )
+            setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))
           }
           scrollEventThrottle={16}
         >
@@ -232,7 +212,6 @@ export default function CatalogView() {
                   source={item.image}
                   style={[styles.imgD, { width: width * 0.9 }]}
                 />
-
                 {item.type === "adopted" && (
                   <View style={styles.successBadge}>
                     <Text style={styles.successText}>
@@ -254,17 +233,7 @@ export default function CatalogView() {
           ))}
         </View>
 
-        <ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) =>
-            setPagePets(
-              Math.round(e.nativeEvent.contentOffset.x / width)
-            )
-          }
-          scrollEventThrottle={16}
-        >
+        <View>
           {chunks.map((row, idx) => (
             <View
               key={idx}
@@ -278,7 +247,7 @@ export default function CatalogView() {
               {row.map(renderPet)}
             </View>
           ))}
-        </ScrollView>
+        </View>
       </ScrollView>
 
       <ModalMenu
@@ -399,13 +368,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: "#000",
-  },
-
-  unavailable: {
-    marginTop: 5,
-    fontSize: 10,
-    color: "#999",
-    fontWeight: "bold",
   },
 
   successBadge: {

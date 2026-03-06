@@ -1,12 +1,11 @@
 
-import { supabase } from "@/lib/supabase";
 import DeletePetModal from "@/modules/animal/presentation/componets/DeletePetModal";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
+import { getUserPets } from "../../application/getUserPets";
 
 export default function MyPetsScreen() {
   const [pets, setPets] = useState<any[]>([]);
@@ -15,45 +14,73 @@ export default function MyPetsScreen() {
 
   const router = useRouter();
 
-  useEffect(() => { loadPets(); }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadPets();
+    }, [])
+  );
 
-  const loadPets = async () => {
-    const u = await AsyncStorage.getItem("user");
-    if (!u) return;
-
-    const user = JSON.parse(u);
-    const { data, error } = await supabase.from("pets").select("*").eq("user", user.id);
-    if (error) console.log("ERROR PETS:", error.message);
-    setPets(data || []);
-  };
+const loadPets = async () => {
+  try {
+    const data = await getUserPets();
+    setPets(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const openDeleteModal = (id: string) => {
     setSelectedPetId(id);
     setModalVisible(true);
   };
 
-  const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      {item.image_url && <Image source={{ uri: item.image_url }} style={styles.image} />}
-      <Text style={styles.name}>{item.name}</Text>
+  const renderItem = ({ item }: any) => {
+    let images: string[] = [];
 
-      <View style={styles.cardButtons}>
-        <TouchableOpacity
-          style={styles.editBtn}
-          onPress={() => router.push({ pathname: "/updatePet", params: { pet: JSON.stringify(item) } })}
-        >
-          <Text style={styles.btnText}>Editar</Text>
-        </TouchableOpacity>
+    try {
+      images = JSON.parse(item.image_url || "[]");
 
-        <TouchableOpacity
-          style={styles.deleteBtn}
-          onPress={() => openDeleteModal(item.id)}
-        >
-          <Text style={styles.btnText}>Eliminar</Text>
-        </TouchableOpacity>
+      if (!Array.isArray(images)) {
+        images = [images];
+      }
+    } catch {
+      images = item.image_url ? [item.image_url] : [];
+    }
+
+    return (
+      <View style={styles.card}>
+        {images.length > 0 && (
+          <Image
+            source={{ uri: images[0] }}
+            style={styles.image}
+          />
+        )}
+
+        <Text style={styles.name}>{item.name}</Text>
+
+        <View style={styles.cardButtons}>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() =>
+              router.push({
+                pathname: "/updatePet",
+                params: { pet: JSON.stringify(item) },
+              })
+            }
+          >
+            <Text style={styles.btnText}>Editar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            onPress={() => openDeleteModal(item.id)}
+          >
+            <Text style={styles.btnText}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
