@@ -1,12 +1,13 @@
-import { supabase } from "@/lib/supabase";
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { checkUserExists } from "../../application/checkUserExists";
+import { registerUser } from "../../application/registerUser";
+import { validateSignUpData } from "../../application/validateSignUpData";
 
 export default function SignUp() {
   const router = useRouter();
@@ -19,84 +20,21 @@ export default function SignUp() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const validateInputs = () => {
-    if (!usuario || !numt || !email || !password || !confirmPassword) {
-      Alert.alert("Error", "Todos los campos son obligatorios");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden");
-      return false;
-    }
-    if (password.length < 6) {
-      Alert.alert("Error", "La contraseña debe tener mínimo 6 caracteres");
-      return false;
-    }
-    if (!/^\d+$/.test(numt)) {
-      Alert.alert("Error", "El teléfono solo debe contener números");
-      return false;
-    }
-    return true;
-  };
 
-  const handleRegister = async () => {
-    if (!validateInputs()) return;
-    try {
-      setLoading(true);
-      const { data: emailExist } = await supabase
-        .from("clients")
-        .select("id")
-        .eq("email", email)
-        .single();
-      if (emailExist) {
-        Alert.alert("Error", "Este email ya está registrado");
-        return;
-      }
-
-      const { data: userExist } = await supabase
-        .from("clients")
-        .select("id")
-        .eq("username", usuario)
-        .single();
-      if (userExist) {
-        Alert.alert("Error", "Este nombre de usuario ya existe");
-        return;
-      }
-
-      const { data: phoneExist } = await supabase
-        .from("clients")
-        .select("id")
-        .eq("phone", numt)
-        .single();
-      if (phoneExist) {
-        Alert.alert("Error", "Este número ya está registrado");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("clients")
-        .insert([
-          {
-            email,
-            password,
-            username: usuario,
-            phone: numt,
-            avatar_url: avatarUrl || null
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-      await AsyncStorage.setItem("user", JSON.stringify(data));
-      Alert.alert("Cuenta creada 🎉");
-      router.replace("/catalog");
-    } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleRegister = async () => {
+  try {
+    setLoading(true);
+    validateSignUpData({ username: usuario, phone: numt, email, password, confirmPassword });
+    await checkUserExists(email, usuario, numt);
+    const newUser = await registerUser({ email, username: usuario, password, phone: numt, avatar_url: avatarUrl });
+    Alert.alert("Cuenta creada 🎉");
+    router.replace("/catalog");
+  } catch (err: any) {
+    Alert.alert("Error", err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
