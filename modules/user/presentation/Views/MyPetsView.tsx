@@ -26,7 +26,11 @@ export default function MyPetsScreen() {
     if (!u) return;
 
     const user = JSON.parse(u);
-    const { data, error } = await supabase.from("pets").select("*").eq("user", user.id);
+    const { data, error } = await supabase
+    .from("pets")
+    .select("*")
+    .eq("user", user.id);
+    
     if (error) console.log("ERROR PETS:", error.message);
     setPets(data || []);
   };

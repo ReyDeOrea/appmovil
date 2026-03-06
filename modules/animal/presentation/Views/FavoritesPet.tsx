@@ -2,8 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
-import { getPets } from "../../infraestructure/petDatasource";
 
 export default function FavoritesPet() {
   const [favorites, setFavorites] = useState<Pet[]>([]);
@@ -21,7 +21,7 @@ export default function FavoritesPet() {
     const data = await AsyncStorage.getItem(`favorites_${user.id}`);
     const favs: Pet[] = data ? JSON.parse(data) : [];
 
-    const allPets = await getPets();
+    const allPets = await getPetsUseCase();
 
     const updatedFavorites = favs.map(fav => {
       const updatedPet = allPets.find(p => p.id === fav.id);
