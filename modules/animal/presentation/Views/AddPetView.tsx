@@ -131,7 +131,6 @@ export default function AddPetScreen() {
             <Text style={styles.txtN}>Animaland</Text>
             <FontAwesome name="paw" size={30} color="#fff" />
           </View>
-
         </View>
 
         {img.length > 0 && (
@@ -159,7 +158,6 @@ export default function AddPetScreen() {
         )}
 
         <View style={styles.mainContainer}>
-          {/* Columna Izquierda: Formulario */}
           <View style={styles.leftColumn}>
             <Text style={styles.sectionTitle}>Información Básica</Text>
 
@@ -179,35 +177,31 @@ export default function AddPetScreen() {
             <Text style={styles.inputLabel}>Nombre del animal</Text>
             <TextInput style={styles.inputFull} placeholder="Nombre del animal" value={name} onChangeText={setName} />
 
-            <View style={styles.rowInputs}>
-              <View style={styles.inputHalfContainer}>
-                <Text style={styles.inputLabel}>Sexo</Text>
-                <View style={styles.selectionContainer}>
-                  {["macho", "hembra"].map((s) => (
-                    <TouchableOpacity
-                      key={s}
-                      style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
-                      onPress={() => setSex(s)}
-                    >
-                      <Text style={styles.selectionButtonText}>{s}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+            <View style={{ marginBottom: 12 }}>
+              <Text style={styles.inputLabel}>Sexo</Text>
+              <View style={styles.selectionContainer}>
+                {["macho", "hembra"].map((s) => (
+                  <TouchableOpacity
+                    key={s}
+                    style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
+                    onPress={() => setSex(s)}
+                  >
+                    <Text style={styles.selectionButtonText}>{s}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
 
-              <View style={styles.inputHalfContainer}>
-                <Text style={styles.inputLabel}>Tamaño</Text>
-                <View style={styles.selectionContainer}>
-                  {["pequeño", "mediano", "grande"].map((s) => (
-                    <TouchableOpacity
-                      key={s}
-                      style={[styles.selectionButton, size === s && styles.selectionButtonActive]}
-                      onPress={() => setSize(s)}
-                    >
-                      <Text style={styles.selectionButtonText}>{s}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+              <Text style={styles.inputLabel}>Tamaño</Text>
+              <View style={styles.selectionContainer}>
+                {["pequeño", "mediano", "grande"].map((s) => (
+                  <TouchableOpacity
+                    key={s}
+                    style={[styles.selectionButton, size === s && styles.selectionButtonActive]}
+                    onPress={() => setSize(s)}
+                  >
+                    <Text style={styles.selectionButtonText}>{s}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
 
@@ -230,7 +224,6 @@ export default function AddPetScreen() {
             <TextInput style={styles.inputFull} placeholder="Número de teléfono" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
           </View>
 
-          {/* Columna Derecha: Imagen y Botones */}
           <View style={styles.rightColumn}>
             <View style={styles.imageBox}>
               {img.length > 0 ? (
@@ -412,27 +405,24 @@ const styles = StyleSheet.create({
   },
   selectionContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    elevation: 3,
+    justifyContent: "space-around",
+    marginBottom: 8,
   },
-  cancelButton: {
-    backgroundColor: "#E8B4B4",
-    padding: 14,
-    borderRadius: 15,
-    width: "100%",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    elevation: 3,
+  selectionButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#DAC193",
+    borderRadius: 8,
+    backgroundColor: "#fff",
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-    marginLeft: 8,
+  selectionButtonActive: {
+    backgroundColor: "#E5DCCC",
+    borderColor: "#DAC193",
   },
-  buttonIcon: {
-    marginRight: 4,
+  selectionButtonText: {
+    textTransform: "capitalize",
+    fontWeight: "bold",
   },
   BP: {
     flexDirection: "row",
