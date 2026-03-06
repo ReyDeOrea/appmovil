@@ -6,10 +6,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ModalMenu } from "../../../user/presentation/components/modalMenu";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
-import { ModalMenu } from "../componets/modalMenu";
 
 const { width } = Dimensions.get("window");
 
