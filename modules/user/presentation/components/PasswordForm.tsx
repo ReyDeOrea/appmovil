@@ -1,39 +1,29 @@
-import { supabase } from "@/lib/supabase";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from "expo-router";
 import { useState } from "react";
-
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { sendPasswordResetEmail } from "../../application/sendPasswordResetEmail";
+import { validateEmail } from "../../application/validateEmail";
 
 export default function Password() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleReset = async () => {
-    if (!email) {
-      Alert.alert("Error", "Ingresa tu correo")
-      return
-    }
-
-    try {
-      setLoading(true)
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email)
-
-      if (error) throw error
-
-      Alert.alert("Listo", "Te enviamos un correo para cambiar tu contraseña")
-      router.back()
-
-    } catch (err: any) {
-      Alert.alert("Error", err.message)
-    } finally {
-      setLoading(false)
-    }
+const handleReset = async () => {
+  try {
+    setLoading(true);
+    validateEmail(email); 
+    await sendPasswordResetEmail(email); 
+    Alert.alert("Listo", "Te enviamos un correo para cambiar tu contraseña");
+    router.back();
+  } catch (err: any) {
+    Alert.alert("Error", err.message);
+  } finally {
+    setLoading(false);
   }
-
+};
   return (
     <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
       <View>
