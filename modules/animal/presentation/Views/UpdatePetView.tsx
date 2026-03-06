@@ -1,4 +1,4 @@
-import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
+import { saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
@@ -102,54 +102,53 @@ export default function UpdatePetsScreen() {
   };
   const bannerImages = images.map((uri) => ({ image: { uri } }));
 
-  const handleUpdatePet = async () => {
-    if (!selectedPet) {
-      Alert.alert("No hay mascota seleccionada");
-      return;
-    }
+const handleUpdatePet = async () => {
+  if (!selectedPet) {
+    Alert.alert("No hay mascota seleccionada");
+    return;
+  }
 
-    try {
-      let imageUrl: string[] = [];
+  try {
+    let imageUrl: string[] = [];
 
-      for (const uri of images) {
-        if (uri.startsWith("http")) {
-          imageUrl.push(uri);
-        } else {
-          const uploaded = await saveS({ uri });
+    for (const uri of images) {
+      if (uri.startsWith("http")) {
+        imageUrl.push(uri);
+      } else {
+        const uploaded = await saveS({ uri });
 
-          if (!uploaded) {
-            Alert.alert("Error al subir imagen");
-            return;
-          }
-
-          imageUrl.push(uploaded);
-          await saveDB(uploaded);
+        if (!uploaded) {
+          Alert.alert("Error al subir imagen");
+          return;
         }
+
+        imageUrl.push(uploaded);
       }
-
-      await updatePetUseCase(selectedPet.id, {
-        type: type as PetType,
-        name: name.trim(),
-        sex: sex as PetSex,
-        age: age.trim(),
-        size: size as PetSize,
-        breed: breed.trim(),
-        health_info: healthInfo.trim(),
-        description: description.trim(),
-        phone: phone.replace(/[^0-9]/g, ""),
-        location: location.trim(),
-        image_url: JSON.stringify(imageUrl),
-        adopted,
-      });
-
-      Alert.alert("Mascota actualizada ✨");
-      clearFields();
-      router.back();
-
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
     }
-  };
+
+    await updatePetUseCase(selectedPet.id, {
+      type: type as PetType,
+      name: name.trim(),
+      sex: sex as PetSex,
+      age: age.trim(),
+      size: size as PetSize,
+      breed: breed.trim(),
+      health_info: healthInfo.trim(),
+      description: description.trim(),
+      phone: phone.replace(/[^0-9]/g, ""),
+      location: location.trim(),
+      image_url: JSON.stringify(imageUrl), // todas las imágenes juntas
+      adopted,
+    });
+
+    Alert.alert("Mascota actualizada ✨");
+    clearFields();
+    router.back();
+
+  } catch (error: any) {
+    Alert.alert("Error", error.message);
+  }
+};
 
   return (
     <KeyboardAvoidingView

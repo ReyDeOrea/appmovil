@@ -20,18 +20,24 @@ export async function ImgS(): Promise<string[]> {
   }
 }
 
-export async function saveDB(rutaSP: string): Promise<Pet | null> {
+export async function saveDB(pet: Partial<Pet>): Promise<Pet | null> {
   try {
     const { data, error } = await supabase
       .from("pets")
-      .insert([{ ruta: rutaSP, date: new Date() }])
+      .insert([{
+        type: pet.type ?? "dog",      // valor por defecto si no se pasa
+        name: pet.name ?? "Sin nombre",
+        sex: pet.sex ?? "m",
+        adopted: pet.adopted ?? false,
+        user: pet.user ?? "unknown",
+        image_url: pet.image_url ?? ""
+      }])
       .select();
-    if (error)
-      throw error;
+
+    if (error) throw error;
 
     return data ? data[0] : null;
-  }
-  catch (e) {
+  } catch (e) {
     console.log("ERROR EN saveDB:", e);
     return null;
   }

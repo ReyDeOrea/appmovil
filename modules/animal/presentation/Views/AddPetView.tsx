@@ -1,4 +1,4 @@
-import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
+import { saveS } from "@/modules/animal/presentation/componets/uploadImage";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -85,7 +85,6 @@ export default function AddPetScreen() {
 
       const user = JSON.parse(u);
       let imageUrl: string[] = [];
-
       for (const uri of img) {
         const url = await saveS({ uri });
         if (!url) {
@@ -93,7 +92,6 @@ export default function AddPetScreen() {
           setIsSaving(false);
           return;
         }
-        await saveDB(url);
         imageUrl.push(url);
       }
 
@@ -107,7 +105,7 @@ export default function AddPetScreen() {
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
-        image_url: JSON.stringify(imageUrl),
+        image_url: JSON.stringify(imageUrl), // todas las imágenes juntas
         phone: phone.trim(),
         location: location.trim(),
       });
