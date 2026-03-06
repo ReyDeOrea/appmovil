@@ -1,8 +1,8 @@
 
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -149,303 +149,348 @@ export default function AddPetScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-
-        <View style={styles.b}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
           <View style={styles.row}>
             <Text style={styles.txtN}>Animaland</Text>
-            <MaterialCommunityIcons name="dog" size={33} color="#fff" />
+            <FontAwesome name="paw" size={30} color='#fdfdfd' />
+          </View>
+
+        </View>
+
+        <View style={styles.mainContainer}>
+          {/* Formulario */}
+          <View style={styles.leftColumn}>
+            {/* Información Básica */}
+            <Text style={styles.sectionTitle}>Información Básica</Text>
+
+            <View style={styles.rowInputs}>
+            <View style={styles.inputHalfContainer}>
+            <Text style={styles.inputLabel}>Tipo (Perro o Gato)</Text>
+            <TextInput
+              style={styles.inputHalf}
+              value={type}
+              onChangeText={setType}
+                 />
+              </View>
+
+             <View style={styles.inputHalfContainer}>
+                 <Text style={styles.inputLabel}>Edad</Text>
+                 <TextInput
+                  style={styles.inputHalf}
+                  value={age}
+                  onChangeText={setAge}
+                  />
+                  </View>
+</View>
+
+{/* FILA 2 */}
+<View style={styles.rowInputs}>
+  <View style={styles.inputHalfContainer}>
+    <Text style={styles.inputLabel}>Sexo</Text>
+    <TextInput
+      style={styles.inputHalf}
+      placeholder="M o H"
+      value={sex}
+      onChangeText={setSex}
+    />
+  </View>
+                 <View style={styles.inputHalfContainer}>
+    <Text style={styles.inputLabel}>Tamaño</Text>
+    <TextInput
+      style={styles.inputHalf}
+      placeholder=""
+      value={size}
+      onChangeText={setSize}
+    />
+  </View>
+</View>
+
+           <View style={styles.inputFullContainer}>
+  <Text style={styles.inputLabel}>Raza</Text>
+  <TextInput
+    style={styles.inputFull}
+    placeholder="ej. Chihuahua"
+    value={breed}
+    onChangeText={setBreed}
+  />
+           
+               <View style={styles.inputFullContainer}>
+  <Text style={styles.inputLabel}>Ubicación</Text>
+  <TextInput
+    style={styles.inputFull}
+    placeholder="Escribe tu ubicación"
+    value={location}
+    onChangeText={setLocation}
+  />
+</View>
+            </View>
+
+            <View style={styles.inputFullContainer}>
+              <Text style={styles.inputLabel}>Nombre a tu mascota</Text>
+              <TextInput
+                style={styles.inputFull}
+                placeholder="Nombre del animal"
+                placeholderTextColor="#999"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            <View style={styles.inputFullContainer}>
+              <Text style={styles.inputLabel}>Descripción</Text>
+              <TextInput
+                style={styles.textArea}
+                value={description}
+                onChangeText={setDescription}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            </View>
+
+            {/* Salud */}
+            <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Salud</Text>
+
+            <TextInput
+              style={styles.inputFull}
+              placeholder="Alergias"
+              placeholderTextColor="#999"
+              value={healthInfo}
+              onChangeText={setHealthInfo}
+            />
+            <TextInput
+              style={styles.inputFull}
+              placeholder="Vacunas"
+              placeholderTextColor="#999"
+            />
+            <TextInput
+              style={styles.inputFull}
+              placeholder="Discapacidad"
+              placeholderTextColor="#999"
+            />
+
+            {/* Contacto */}
+            <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Contacto</Text>
+
+            <TextInput
+              style={styles.inputFull}
+              placeholder="Nombres de Usuarios"
+              placeholderTextColor="#999"
+            />
+            <TextInput
+              style={styles.inputFull}
+              placeholder="Número de Teléfono"
+              placeholderTextColor="#999"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
+          </View>
+
+
+          <View style={styles.rightColumn}>
+          
+            <View style={styles.imageBox}>
+              {img ? (
+                <Image source={{ uri: img }} style={styles.previewImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <MaterialCommunityIcons name="camera"  size={50} color="#D4B37A" />
+                  <Text style={styles.imagePlaceholderText}>Sube una foto de tu mascota</Text>
+                </View>
+              )}
+            </View>
+
+            <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+              <MaterialCommunityIcons name="camera" size={20} color="#D4B37A" style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Subir foto</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.saveButton} onPress={savePet}>
+
+              <Text style={styles.buttonText}>Guardar mascota</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        {img.length > 0 && (
-          <>
-            <ScrollView
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onScroll={(e) =>
-                setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))
-              }
-              scrollEventThrottle={16}
-            >
-              {bannerImages.map((item, idx) => (
-                <View
-                  key={idx}
-                  style={{ width, alignItems: "center", marginVertical: 10 }}
-                >
-                  <Image
-                    source={item.image}
-                    style={[styles.imgD, { width: width * 0.9 }]}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-
-            <View style={styles.BP}>
-              {bannerImages.map((_, i) => (
-                <View
-                  key={i}
-                  style={[styles.dot, bannerPage === i && styles.dotActive]}
-                />
-              ))}
-            </View>
-          </>
-        )}
-
-
-        <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
-          <Text style={styles.imageBtnText}>Insertar Imagen</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.sectionTitle}>Información general</Text>
-
-        <Label style={styles.LabelText}>Tipo de animal</Label>
-        <View style={styles.selectionContainer}>
-          {["perro", "gato"].map((t) => (
-            <TouchableOpacity
-              key={t}
-              style={[
-                styles.selectionButton,
-                type === t && styles.selectionButtonActive,
-              ]}
-              onPress={() => setType(t)}
-            >
-              <Text style={styles.selectionButtonText}>{t}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Label style={styles.LabelText}>Nombre del animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Nombre"
-          value={name}
-          onChangeText={setName}
-        />
-
-        <Label style={styles.LabelText}>Sexo del animal</Label>
-        <View style={styles.selectionContainer}>
-          {["macho", "hembra"].map((s) => (
-            <TouchableOpacity
-              key={s}
-              style={[
-                styles.selectionButton,
-                sex === s && styles.selectionButtonActive,
-              ]}
-              onPress={() => setSex(s)}
-            >
-              <Text style={styles.selectionButtonText}>{s}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Label style={styles.LabelText}>Edad del animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Edad"
-          value={age}
-          onChangeText={setAge}
-        />
-
-        <Label style={styles.LabelText}>Tamaño del animal</Label>
-        <View style={styles.selectionContainer}>
-          {["pequeño", "mediano", "grande"].map((s) => (
-            <TouchableOpacity
-              key={s}
-              style={[
-                styles.selectionButton,
-                size === s && styles.selectionButtonActive,
-              ]}
-              onPress={() => setSize(s)}
-            >
-              <Text style={styles.selectionButtonText}>{s}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Label style={styles.LabelText}>Raza del animal</Label>
-        <TextInput style={styles.input}
-          placeholder="Raza"
-          value={breed}
-          onChangeText={setBreed}
-        />
-
-        <Text style={styles.sectionTitle}>Salud</Text>
-
-        <Label style={styles.LabelText}>Historial clinico del animal</Label>
-        <TextInput
-          style={styles.textArea}
-          placeholder="Salud"
-          value={healthInfo}
-          onChangeText={setHealthInfo}
-          multiline
-        />
-        <Text style={styles.sectionTitle}>Descripción</Text>
-        <Label style={styles.LabelText}>Da una breve descripcion sobre como es</Label>
-        <TextInput
-          style={styles.textArea}
-          placeholder="Descripción"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-        />
-        <Text style={styles.sectionTitle}>Contacto</Text>
-        <Label style={styles.LabelText}>Numero de telefono</Label>
-        <TextInput style={styles.input}
-          placeholder="Teléfono"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
-        <Label style={styles.LabelText}>Ubicación donde se encuentra</Label>
-        <TextInput style={styles.input}
-          placeholder="Ubicación"
-          value={location}
-          onChangeText={setLocation}
-        />
-
-        <TouchableOpacity
-          style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
-          onPress={savePet}
-          disabled={isSaving}
-        >
-          <Text>
-            {isSaving ? "Guardando..." : "Registrar Mascota"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.closeButton}
-          onPress={() => router.back()}>
-          <Text style={{ color: "white" }}>Cancelar</Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView >
   );
 }
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    backgroundColor: "#FDF8F0",
+    paddingBottom: 20,
+  },
+  header: {
+    backgroundColor: "#B7C979",
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    marginBottom: 20,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 10
-  },
-  imgD: {
-    height: BANNER_HEIGHT,
-    borderRadius: 20,
-  },
-  sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-    marginVertical: 8,
-  },
-  b: {
-    width: "100%",
-    height: 60,
-    backgroundColor: "#d4b37a",
-    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 8,
   },
   txtN: {
     color: "#fff",
+    fontSize: 40,
     fontWeight: "bold",
-    fontSize: 25,
-    marginRight: 5
+    marginRight: 10,
   },
-  BP: {
+  headerSubtitle: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.9,
+  },
+  mainContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 8,
+    paddingHorizontal: 20,
+    gap: 20,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#ccc",
-    margin: 5,
+  leftColumn: {
+    flex: 2,
   },
-  dotActive: {
-    backgroundColor: "#000",
+  rightColumn: {
+    flex: 1,
+    alignItems: "center",
   },
-  scrollContainer: {
-    padding: 15,
-    paddingBottom: 30,
-    backgroundColor: "#ffff",
-  },
-  title: {
-    fontSize: 22,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10
+    color: "#2e2e2e",
+    marginBottom: 12,
   },
-  input: {
+  sectionSpacing: {
+    marginTop: 20,
+  },
+
+  rowInputs: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
+  inputHalfContainer: {
+    flex: 1,
+  },
+  inputFullContainer: {
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 4,
+    fontWeight: "500",
+  },
+  inputHalf: {
     borderWidth: 1,
-    borderColor: "#DAC193",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    fontSize: 14,
+    elevation: 2,
+  },
+  inputFull: {
+    borderWidth: 1,
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 12,
+    elevation: 2,
   },
   textArea: {
     borderWidth: 1,
-    borderColor: "#DAC193",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-    height: 80
-  },
-  saveButton: {
-    backgroundColor: "#E5DCCC",
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
     padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10
+    fontSize: 14,
+    height: 100,
+    textAlignVertical: "top",
+    elevation: 2,
   },
-  closeButton: {
-    backgroundColor: "#ef4444",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10
-  },
-  previewImage: {
-    //width:  width - 30,
+  imageBox: {
+    width: "100%",
     height: 200,
-    borderRadius: 10,
-    marginBottom: 10
-  },
-  imageBtn: {
-    backgroundColor: "#E5DCCC",
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
-    marginVertical: 15,
+    borderWidth: 2,
+    borderColor: "#E8E0D0",
+    overflow: "hidden",
+    elevation: 3,
   },
-  imageBtnText: {
-    fontWeight: "bold"
+  imagePlaceholder: {
+    alignItems: "center",
+    padding: 20,
   },
-  LabelText: {
-    color: '#000000'
+  imagePlaceholderText: {
+    color: "#B7C979",
+    marginTop: 10,
+    textAlign: "center",
+    fontSize: 12,
   },
-
-
-  selectionContainer: {
+  previewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 13,
+  },
+  uploadButton: {
+    backgroundColor: "#D4B37A",
+    padding: 14,
+    borderRadius: 15,
+    marginBottom: 12,
+    width: "100%",
+    alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 8,
+    justifyContent: "center",
+    elevation: 3,
   },
-  selectionButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: "#DAC193",
-    borderRadius: 8,
-    backgroundColor: "#fff",
+  saveButton: {
+    backgroundColor: "#B7C979",
+    padding: 14,
+    borderRadius: 15,
+    marginBottom: 12,
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    elevation: 3,
   },
-  selectionButtonActive: {
-    backgroundColor: "#E5DCCC",
-    borderColor: "#DAC193",
+  cancelButton: {
+    backgroundColor: "#E8B4B4",
+    padding: 14,
+    borderRadius: 15,
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    elevation: 3,
   },
-  selectionButtonText: {
-    textTransform: "capitalize",
-    fontWeight: "bold",
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  buttonIcon: {
+    marginRight: 4,
   },
 });
+//añadir animal
