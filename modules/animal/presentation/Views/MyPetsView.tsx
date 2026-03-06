@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getUserPets } from "../../application/getUserPets";
+import { getUserPets } from "../../../user/application/getUserPets";
 
 export default function MyPetsScreen() {
   const [pets, setPets] = useState<any[]>([]);
