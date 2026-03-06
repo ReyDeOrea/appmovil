@@ -1,6 +1,5 @@
-
 import { saveDB, saveS } from "@/modules/animal/presentation/componets/uploadImage";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
@@ -10,13 +9,8 @@ import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, S
 import { addPetUseCase } from "../../application/addPet";
 import { PetSex, PetSize, PetType } from "../../domain/pet";
 
-
 const { width } = Dimensions.get("window");
 const BANNER_HEIGHT = width * 0.42;
-
-type BannerItem = {
-  image: any;
-};
 
 export default function AddPetScreen() {
   const router = useRouter();
@@ -48,6 +42,7 @@ export default function AddPetScreen() {
       setImage([...img, ...uris]);
     }
   };
+
   const bannerImages = img.map((uri) => ({ image: { uri } }));
 
   const clearFields = () => {
@@ -65,24 +60,11 @@ export default function AddPetScreen() {
   };
 
   const savePet = async () => {
-
-    if (isSaving) return; // evita doble click
+    if (isSaving) return;
     setIsSaving(true);
 
     try {
-
-      if (
-        !type.trim() ||
-        !name.trim() ||
-        !sex.trim() ||
-        !age.trim() ||
-        !size.trim() ||
-        !breed.trim() ||
-        !healthInfo.trim() ||
-        !description.trim() ||
-        !phone.trim() ||
-        !location.trim()
-      ) {
+      if (!type || !name || !sex || !age || !size || !breed || !healthInfo || !description || !phone || !location) {
         Alert.alert("Faltan campos", "Todos los campos son obligatorios");
         setIsSaving(false);
         return;
@@ -102,18 +84,15 @@ export default function AddPetScreen() {
       }
 
       const user = JSON.parse(u);
-
       let imageUrl: string[] = [];
 
       for (const uri of img) {
         const url = await saveS({ uri });
-
         if (!url) {
           Alert.alert("Error al subir una imagen");
           setIsSaving(false);
           return;
         }
-
         await saveDB(url);
         imageUrl.push(url);
       }
@@ -145,161 +124,120 @@ export default function AddPetScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.row}>
             <Text style={styles.txtN}>Animaland</Text>
-            <FontAwesome name="paw" size={30} color='#fdfdfd' />
+            <FontAwesome name="paw" size={30} color="#fff" />
           </View>
 
         </View>
 
+        {img.length > 0 && (
+          <>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={(e) => setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+              scrollEventThrottle={16}
+            >
+              {bannerImages.map((item, idx) => (
+                <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
+                  <Image source={item.image} style={[styles.imgD, { width: width * 0.9 }]} />
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.BP}>
+              {bannerImages.map((_, i) => (
+                <View key={i} style={[styles.dot, bannerPage === i && styles.dotActive]} />
+              ))}
+            </View>
+          </>
+        )}
+
         <View style={styles.mainContainer}>
-          {/* Formulario */}
+          {/* Columna Izquierda: Formulario */}
           <View style={styles.leftColumn}>
-            {/* Información Básica */}
             <Text style={styles.sectionTitle}>Información Básica</Text>
 
+            <Text style={styles.inputLabel}>Tipo de animal</Text>
+            <View style={styles.selectionContainer}>
+              {["perro", "gato"].map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  style={[styles.selectionButton, type === t && styles.selectionButtonActive]}
+                  onPress={() => setType(t)}
+                >
+                  <Text style={styles.selectionButtonText}>{t}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.inputLabel}>Nombre del animal</Text>
+            <TextInput style={styles.inputFull} placeholder="Nombre del animal" value={name} onChangeText={setName} />
+
             <View style={styles.rowInputs}>
-            <View style={styles.inputHalfContainer}>
-            <Text style={styles.inputLabel}>Tipo (Perro o Gato)</Text>
-            <TextInput
-              style={styles.inputHalf}
-              value={type}
-              onChangeText={setType}
-                 />
+              <View style={styles.inputHalfContainer}>
+                <Text style={styles.inputLabel}>Sexo</Text>
+                <View style={styles.selectionContainer}>
+                  {["macho", "hembra"].map((s) => (
+                    <TouchableOpacity
+                      key={s}
+                      style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
+                      onPress={() => setSex(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
 
-             <View style={styles.inputHalfContainer}>
-                 <Text style={styles.inputLabel}>Edad</Text>
-                 <TextInput
-                  style={styles.inputHalf}
-                  value={age}
-                  onChangeText={setAge}
-                  />
-                  </View>
-</View>
-
-{/* FILA 2 */}
-<View style={styles.rowInputs}>
-  <View style={styles.inputHalfContainer}>
-    <Text style={styles.inputLabel}>Sexo</Text>
-    <TextInput
-      style={styles.inputHalf}
-      placeholder="M o H"
-      value={sex}
-      onChangeText={setSex}
-    />
-  </View>
-                 <View style={styles.inputHalfContainer}>
-    <Text style={styles.inputLabel}>Tamaño</Text>
-    <TextInput
-      style={styles.inputHalf}
-      placeholder=""
-      value={size}
-      onChangeText={setSize}
-    />
-  </View>
-</View>
-
-           <View style={styles.inputFullContainer}>
-  <Text style={styles.inputLabel}>Raza</Text>
-  <TextInput
-    style={styles.inputFull}
-    placeholder="ej. Chihuahua"
-    value={breed}
-    onChangeText={setBreed}
-  />
-           
-               <View style={styles.inputFullContainer}>
-  <Text style={styles.inputLabel}>Ubicación</Text>
-  <TextInput
-    style={styles.inputFull}
-    placeholder="Escribe tu ubicación"
-    value={location}
-    onChangeText={setLocation}
-  />
-</View>
+              <View style={styles.inputHalfContainer}>
+                <Text style={styles.inputLabel}>Tamaño</Text>
+                <View style={styles.selectionContainer}>
+                  {["pequeño", "mediano", "grande"].map((s) => (
+                    <TouchableOpacity
+                      key={s}
+                      style={[styles.selectionButton, size === s && styles.selectionButtonActive]}
+                      onPress={() => setSize(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
             </View>
 
-            <View style={styles.inputFullContainer}>
-              <Text style={styles.inputLabel}>Nombre a tu mascota</Text>
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Nombre del animal"
-                placeholderTextColor="#999"
-                value={name}
-                onChangeText={setName}
-              />
-            </View>
+            <Text style={styles.inputLabel}>Edad</Text>
+            <TextInput style={styles.inputFull} placeholder="Edad" value={age} onChangeText={setAge} />
 
-            <View style={styles.inputFullContainer}>
-              <Text style={styles.inputLabel}>Descripción</Text>
-              <TextInput
-                style={styles.textArea}
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            </View>
+            <Text style={styles.inputLabel}>Raza</Text>
+            <TextInput style={styles.inputFull} placeholder="Raza" value={breed} onChangeText={setBreed} />
 
-            {/* Salud */}
-            <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Salud</Text>
+            <Text style={styles.inputLabel}>Ubicación</Text>
+            <TextInput style={styles.inputFull} placeholder="Ubicación" value={location} onChangeText={setLocation} />
 
-            <TextInput
-              style={styles.inputFull}
-              placeholder="Alergias"
-              placeholderTextColor="#999"
-              value={healthInfo}
-              onChangeText={setHealthInfo}
-            />
-            <TextInput
-              style={styles.inputFull}
-              placeholder="Vacunas"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.inputFull}
-              placeholder="Discapacidad"
-              placeholderTextColor="#999"
-            />
+            <Text style={styles.inputLabel}>Descripción</Text>
+            <TextInput style={styles.textArea} placeholder="Da una breve descripción" value={description} onChangeText={setDescription} multiline />
 
-            {/* Contacto */}
-            <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Contacto</Text>
+            <Text style={styles.sectionTitle}>Salud</Text>
+            <TextInput style={styles.inputFull} placeholder="Alergias / Vacunas / Discapacidad" value={healthInfo} onChangeText={setHealthInfo} multiline />
 
-            <TextInput
-              style={styles.inputFull}
-              placeholder="Nombres de Usuarios"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.inputFull}
-              placeholder="Número de Teléfono"
-              placeholderTextColor="#999"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-            />
+            <Text style={styles.sectionTitle}>Contacto</Text>
+            <TextInput style={styles.inputFull} placeholder="Número de teléfono" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
           </View>
 
-
+          {/* Columna Derecha: Imagen y Botones */}
           <View style={styles.rightColumn}>
-          
             <View style={styles.imageBox}>
-              {img ? (
-                <Image source={{ uri: img }} style={styles.previewImage} />
+              {img.length > 0 ? (
+                <Image source={{ uri: img[0] }} style={styles.previewImage} />
               ) : (
                 <View style={styles.imagePlaceholder}>
-                  <MaterialCommunityIcons name="camera"  size={50} color="#D4B37A" />
+                  <MaterialCommunityIcons name="camera" size={50} color="#D4B37A" />
                   <Text style={styles.imagePlaceholderText}>Sube una foto de tu mascota</Text>
                 </View>
               )}
@@ -310,9 +248,8 @@ export default function AddPetScreen() {
               <Text style={styles.buttonText}>Subir foto</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveButton} onPress={savePet}>
-
-              <Text style={styles.buttonText}>Guardar mascota</Text>
+            <TouchableOpacity style={[styles.saveButton, isSaving && { opacity: 0.5 }]} onPress={savePet} disabled={isSaving}>
+              <Text style={styles.buttonText}>{isSaving ? "Guardando..." : "Guardar mascota"}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
@@ -321,9 +258,10 @@ export default function AddPetScreen() {
           </View>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView >
+    </KeyboardAvoidingView>
   );
 }
+
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
@@ -351,12 +289,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 10,
   },
-  headerSubtitle: {
-    color: "#fff",
-    fontSize: 14,
-    textAlign: "center",
-    opacity: 0.9,
-  },
   mainContainer: {
     flexDirection: "row",
     paddingHorizontal: 20,
@@ -374,11 +306,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2e2e2e",
     marginBottom: 12,
+    textAlign: "center",
   },
-  sectionSpacing: {
-    marginTop: 20,
-  },
-
   rowInputs: {
     flexDirection: "row",
     gap: 12,
@@ -387,22 +316,11 @@ const styles = StyleSheet.create({
   inputHalfContainer: {
     flex: 1,
   },
-  inputFullContainer: {
-    marginBottom: 12,
-  },
   inputLabel: {
     fontSize: 12,
     color: "#666",
     marginBottom: 4,
     fontWeight: "500",
-  },
-  inputHalf: {
-    borderWidth: 1,
-    borderColor: "#E8E0D0",
-    backgroundColor: "#fff",
-    padding: 12,
-    fontSize: 14,
-    elevation: 2,
   },
   inputFull: {
     borderWidth: 1,
@@ -412,6 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 12,
     elevation: 2,
+    borderRadius: 8,
   },
   textArea: {
     borderWidth: 1,
@@ -422,6 +341,7 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
     elevation: 2,
+    borderRadius: 8,
   },
   imageBox: {
     width: "100%",
@@ -436,6 +356,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     elevation: 3,
   },
+  previewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 13,
+  },
   imagePlaceholder: {
     alignItems: "center",
     padding: 20,
@@ -445,11 +370,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "center",
     fontSize: 12,
-  },
-  previewImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 13,
   },
   uploadButton: {
     backgroundColor: "#D4B37A",
@@ -469,6 +389,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+  },
+  cancelButton: {
+    backgroundColor: "#E8B4B4",
+    padding: 14,
+    borderRadius: 15,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  buttonIcon: {
+    marginRight: 4,
+  },
+  selectionContainer: {
     flexDirection: "row",
     justifyContent: "center",
     elevation: 3,
@@ -492,5 +434,23 @@ const styles = StyleSheet.create({
   buttonIcon: {
     marginRight: 4,
   },
+  BP: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 8,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    margin: 5,
+  },
+  dotActive: {
+    backgroundColor: "#000",
+  },
+  imgD: {
+    height: BANNER_HEIGHT,
+    borderRadius: 20,
+  },
 });
-//añadir animal
