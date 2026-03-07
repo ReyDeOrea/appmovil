@@ -1,5 +1,4 @@
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -111,15 +110,12 @@ export default function CatalogView() {
     return false;
   }
 
-  // SEXO
   if (
     filters.sex.length > 0 &&
     !filters.sex.map(s => s.toLowerCase()).includes(String(p.sex).toLowerCase())
   ) {
     return false;
   }
-
-  // TAMAÑO
   if (
     filters.size.length > 0 &&
     !filters.size.map(s => s.toLowerCase()).includes(String(p.size).toLowerCase())
@@ -274,43 +270,7 @@ export default function CatalogView() {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation - Nuevo */}
-      <View style={styles.bottomNav}>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.replace("/catalog")}
-        >
-          <Feather name="home" size={24} color="#D09100" />
-          <Text style={[styles.navText, styles.navTextActive]}>inicio</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/mypets")}
-        >
-          <FontAwesome name="paw" size={24} color="#999" />
-          <Text style={styles.navText}>mis mascotas</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/favorites")}
-        >
-          <Feather name="heart" size={24} color="#999" />
-          <Text style={styles.navText}>favoritos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => router.push("/account")}
-        >
-          <Feather name="user" size={24} color="#999" />
-          <Text style={styles.navText}>perfil</Text>
-        </TouchableOpacity>
-
-      </View>
-
+      
       <ModalMenu
         visible={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -399,7 +359,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#D09100",
   },
 
-  //cajas de animales
   CC: {
     width: CARD_WIDTH,
     padding: 8,
@@ -468,36 +427,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  //estilos para el bottom navigation
-  bottomNav: {
-    position: "absolute",
-    bottom: 25,
-    left: 10,
-    right: 10,
-    height: 65,
-    backgroundColor: "#FDF8F0",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    paddingBottom: 10,
-    elevation: 5,
-  },
-
-  navItem: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  navText: {
-    fontSize: 11,
-    marginTop: 2,
-    color: "#999",
-    textTransform: "lowercase",
-  },
-
-  navTextActive: {
-    color: "#D09100",
-  },
 });

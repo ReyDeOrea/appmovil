@@ -1,49 +1,138 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import { GetUserRequests } from "../../application/getRequestSent";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { GetRequestsForMyPets } from "../../application/getRequestReceived";
+import { RequestStatus } from "../../application/statusRequest";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
-
 const repository = new AdoptionRepository();
-const getUserRequests = new GetUserRequests(repository);
+const getUserRequests = new GetRequestsForMyPets(repository);
+const updateStatus = new RequestStatus(repository);
 
 export default function RequestsReceived() {
-
   const [requests, setRequests] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     loadRequests();
   }, []);
 
   const loadRequests = async () => {
+    try {
+      const userData = await AsyncStorage.getItem("user");
+      if (!userData) return;
 
-    const userData = await AsyncStorage.getItem("user");
-    const user = JSON.parse(userData!);
+      const user = JSON.parse(userData);
+      const data = await getUserRequests.execute(String(user.id));
+      setRequests(data || []);
+    } catch (error) {
+      console.error("Error cargando solicitudes:", error);
+    }
+  };
 
-    const data = await getUserRequests.execute(user.id);
+  const aceptar = async (id: string) => {
+    await updateStatus.execute(id, "aceptado");
+    loadRequests();
+  };
 
-    setRequests(data);
+  const rechazar = async (id: string) => {
+    await updateStatus.execute(id, "rechazado");
+    loadRequests();
+  };
+
+  const verSolicitud = (request: any) => {
+    router.push({
+      pathname: "/viewRequestForm",
+      params: { request: JSON.stringify(request) }
+    });
   };
 
   return (
-
     <FlatList
       data={requests}
-      keyExtractor={(item) => item.id}
-
+      keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => verSolicitud(item)} 
+        style={styles.card}>
 
-        <View style={{ padding: 20, borderBottomWidth: 1 }}>
+          <Text style={styles.text}>
+            <Text style={styles.label}>Mascota:</Text> 
+            {item.pet_id
+            }</Text>
 
-          <Text>Mascota: {item.pet_id}</Text>
+          <Text style={styles.text}>
+            <Text style={styles.label}>Adoptante:</Text> 
+            {item.adoptante_nombre} 
+            {item.adoptante_apellido}
+            </Text>
 
-          <Text>Estado: {item.estado}</Text>
+          <Text style={styles.text}>
+            <Text style={styles.label}>Estado:</Text> 
+            {item.estado}
+            </Text>
 
-        </View>
+          {item.estado === "en_proceso" && (
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity onPress={() => aceptar(item.id)} 
+              style={[styles.button, styles.accept]}>
+                <Text style={styles.buttonText}>Aceptar</Text>
 
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => rechazar(item.id)} 
+              style={[styles.button, styles.reject]}>
+                <Text style={styles.buttonText}>Rechazar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </TouchableOpacity>
       )}
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>No hay solicitudes</Text>
+      }
+      contentContainerStyle={{ paddingBottom: 100 }}
     />
-
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    backgroundColor: "#fff"
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5
+  },
+  label: {
+    fontWeight: "bold"
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    marginTop: 10
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5
+  },
+  accept: {
+    backgroundColor: "#A4D4AE",
+    marginRight: 10
+  },
+  reject: {
+    backgroundColor: "#F2A7A7"
+  },
+  buttonText: {
+    color: "#000",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#555"
+  }
+});

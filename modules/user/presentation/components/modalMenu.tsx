@@ -1,3 +1,4 @@
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -21,24 +22,114 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-    >
+    <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalBackground}>
+
         <View style={styles.modalContainer}>
-          
+
           <Text style={styles.modalTitle}>Menú</Text>
 
-          {user && (
+          <View style={styles.optionsContainer}>
+
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: "red" }]}
-              onPress={logout}
+              style={styles.navItem}
+              onPress={() => {
+                onClose();
+                router.push("/catalog");
+              }}
             >
-              <Text style={styles.btnText}>Cerrar sesión</Text>
+              <Feather name="home" size={24} color="#D09100" />
+              <Text style={[styles.navText, styles.navTextActive]}>Inicio</Text>
             </TouchableOpacity>
-          )}
+
+            {!user && (
+              <>
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/login");
+                  }}
+                >
+                  <Ionicons name="log-in" size={26} color="#999" />
+                  <Text style={styles.navText}>Login</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/signUp");
+                  }}
+                >
+                  <Ionicons name="person-add" size={26} color="#999" />
+                  <Text style={styles.navText}>Registro</Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+            {user && (
+              <>
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/mypets");
+                    onUpdate?.();
+                  }}
+                >
+                  <FontAwesome name="paw" size={24} color="#999" />
+                  <Text style={styles.navText}>Mis mascotas</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/favorites");
+                  }}
+                >
+                  <Feather name="heart" size={24} color="#999" />
+                  <Text style={styles.navText}>Favoritos</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/requests");
+                  }}
+                >
+                  <Feather name="clipboard" size={24} color="#999" />
+                  <Text style={styles.navText}>Solicitudes</Text>
+                   <Text style={styles.navText}>de adopción</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.navItem}
+                  onPress={() => {
+                    onClose();
+                    router.push("/account");
+                  }}
+                >
+
+                  <Feather name="user" size={24} color="#999" />
+                  <Text style={styles.navText}>Perfil</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={logout}
+                >
+                  <Ionicons name="log-out" size={26} color="red" />
+                  <Text style={[styles.optionText, { color: "red" }]}>
+                    Salir
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+          </View>
 
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.cancelText}>Cancelar</Text>
@@ -51,43 +142,73 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
 }
 
 const styles = StyleSheet.create({
+
   modalBackground: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
-
   modalContainer: {
-    width: "80%",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 12,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  bottomNav: {
+    position: "absolute",
+    bottom: 25,
+    left: 10,
+    right: 10,
+    height: 65,
+    backgroundColor: "#FDF8F0",
+    flexDirection: "row",
+    justifyContent: "space-around",
     alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingBottom: 10,
+    elevation: 5,
   },
 
+  navItem: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  navText: {
+    fontSize: 11,
+    marginTop: 2,
+    color: "#999",
+    textTransform: "lowercase",
+  },
+
+  navTextActive: {
+    color: "#D09100",
+  },
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
-
-  modalButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginBottom: 15,
-    width: "100%",
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: 20,
   },
-
-  btnText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
+  option: {
+    alignItems: "center",
   },
-
+  optionText: {
+    marginTop: 5,
+    fontSize: 12,
+    color: "#444",
+  },
   cancelText: {
-    color: "gray",
     textAlign: "center",
-  },
+    color: "gray",
+    marginTop: 10,
+  }
+
 });
