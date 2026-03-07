@@ -6,7 +6,7 @@ export class GetRequestsForMyPets {
 
   async execute(ownerId: string): Promise<AdoptionForm[]> {
     if (!ownerId) return [];
-    const data = await this.repository.getRequestsForOwner(ownerId); // <-- aquí sí usamos owner_id
+    const data = await this.repository.getRequestsForOwner(ownerId); 
     return data || [];
   }
 }

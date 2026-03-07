@@ -22,7 +22,15 @@ export default function RequestsSent() {
       if (!userData) return;
 
       const user = JSON.parse(userData);
-      const data = await getUserRequests.execute(user.id);
+      let data = await getUserRequests.execute(user.id);
+
+      data = await Promise.all(
+        data.map(async (request: any) => {
+          const pet = await repository.getPetById(request.pet_id);
+          return { ...request, pet_name: pet?.name || "Desconocida" };
+        })
+      );
+
       setRequests(data || []);
     } catch (error) {
       console.error("Error cargando solicitudes enviadas:", error);
@@ -42,8 +50,12 @@ export default function RequestsSent() {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <TouchableOpacity onPress={() => verSolicitud(item)} style={styles.card}>
-          <Text style={styles.text}><Text style={styles.label}>Mascota:</Text> {item.pet_name || item.pet_id}</Text>
-          <Text style={styles.text}><Text style={styles.label}>Estado:</Text> {item.estado}</Text>
+          <Text style={styles.text}>
+            <Text style={styles.label}>Mascota:</Text> {item.pet_name}
+          </Text>
+          <Text style={styles.text}>
+            <Text style={styles.label}>Estado:</Text> {item.estado}
+          </Text>
         </TouchableOpacity>
       )}
       ListEmptyComponent={

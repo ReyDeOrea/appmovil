@@ -1,5 +1,6 @@
 //repositorio del crud
 
+import { Pet } from "@/modules/animal/domain/pet";
 import { AdoptionForm } from "./adoption";
 
 export interface AdoptionRequestRepository {
@@ -17,8 +18,7 @@ export interface AdoptionRequestRepository {
         status: "en_proceso" | "aceptado" | "rechazado"
     ): Promise<boolean>;
 
-    /**
-     * Eliminar solicitud (opcional)
-     */
-    deleteRequest(requestId: string): Promise<boolean>;
+    getPetById(petId: string): Promise<Pet | null>;
+    
+   // deleteRequest(requestId: string): Promise<boolean>;
 }

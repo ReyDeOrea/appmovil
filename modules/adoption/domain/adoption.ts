@@ -19,6 +19,10 @@ export interface AdoptionForm {
   pregunta_7: string,
   pregunta_8: string,
   pregunta_9: string,
+  pregunta_10: string,
+  pregunta_11: string,
+  pregunta_12: string,
+  pregunta_13: string,
 
   estado: "en_proceso" | "aceptado" | "rechazado"
 }

@@ -28,6 +28,10 @@ export default function AdoptionForm() {
   const [pregunta_7, setPregunta7] = useState("");
   const [pregunta_8, setPregunta8] = useState("");
   const [pregunta_9, setPregunta9] = useState("");
+  const [pregunta_10, setPregunta10] = useState("");
+  const [pregunta_11, setPregunta11] = useState("");
+  const [pregunta_12, setPregunta12] = useState("");
+  const [pregunta_13, setPregunta13] = useState("");
 
   const enviarSolicitud = async () => {
 
@@ -45,7 +49,7 @@ export default function AdoptionForm() {
       await createRequest.execute({
         pet_id: pet.id,
         user_id: user.id,
-        owner_id: pet.owner_id,
+        owner_id: pet.user,
         adoptante_nombre: nombre,
         adoptante_apellido: apellido,
         adoptante_edad: Number(edad),
@@ -59,7 +63,11 @@ export default function AdoptionForm() {
         pregunta_6,
         pregunta_7,
         pregunta_8,
-        pregunta_9
+        pregunta_9,
+        pregunta_10,
+        pregunta_11,
+        pregunta_12,
+        pregunta_13,
       });
 
      const existing = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
@@ -103,49 +111,67 @@ export default function AdoptionForm() {
       <TextInput onChangeText={setTelefono}
         style={{ borderWidth: 1 }}
       />
-
-      <Text>¿Vives en casa o departamento?</Text>
+<Text> ¿Por qué quieres adoptar una mascota?</Text>
       <TextInput onChangeText={setPregunta1}
         style={{ borderWidth: 1 }}
       />
-
-      <Text>Si es rentado ¿te permiten mascotas?</Text>
+      <Text>¿Vives en casa o departamento?</Text>
       <TextInput onChangeText={setPregunta2}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Has tenido mascotas antes?</Text>
+      <Text>Si es rentado ¿te permiten mascotas?</Text>
       <TextInput onChangeText={setPregunta3}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Qué pasó con esas mascotas?</Text>
+        <Text>¿Tienes jardín o espacio exterior?</Text>
       <TextInput onChangeText={setPregunta4}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Actualmente tienes mascotas?</Text>
+      <Text>¿Has tenido mascotas antes?</Text>
       <TextInput onChangeText={setPregunta5}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Qué tipo y cuántas?</Text>
+      <Text>¿Qué pasó con esas mascotas?</Text>
       <TextInput onChangeText={setPregunta6}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Cuánto tiempo estará sola la mascota?</Text>
+      <Text>¿Actualmente tienes mascotas?</Text>
       <TextInput onChangeText={setPregunta7}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Todos en casa están de acuerdo?</Text>
+      <Text>¿Qué tipo y cuántas?</Text>
       <TextInput onChangeText={setPregunta8}
         style={{ borderWidth: 1 }}
       />
 
-      <Text>¿Puedes mantener económicamente a la mascota?</Text>
+      <Text>¿Cuánto tiempo estará sola la mascota?</Text>
       <TextInput onChangeText={setPregunta9}
+        style={{ borderWidth: 1 }}
+      />
+
+       <Text>¿Quién cuidará de la mascota cuando no estés</Text>
+      <TextInput onChangeText={setPregunta10}
+        style={{ borderWidth: 1 }}
+      />
+
+      <Text>¿Todos en casa están de acuerdo con la dopción?</Text>
+      <TextInput onChangeText={setPregunta11}
+        style={{ borderWidth: 1 }}
+      />
+
+      <Text>¿Cuál es tu presupuesto mensual para la mascota?</Text>
+      <TextInput onChangeText={setPregunta12}
+        style={{ borderWidth: 1 }}
+      />
+
+      <Text>¿Aceptas esterilización/castración si es necesario?</Text>
+      <TextInput onChangeText={setPregunta13}
         style={{ borderWidth: 1 }}
       />
 
