@@ -1,13 +1,10 @@
-//repositorio implementadoimport { supabase } from "@/lib/supabase";
+
 import { supabase } from "@/lib/supabase";
 import { AdoptionForm } from "../domain/adoption";
 import { AdoptionRequestRepository } from "../domain/adoptionRepository";
 
 export class AdoptionRepository implements AdoptionRequestRepository {
 
-  /**
-   * Crear solicitud de adopción
-   */
   async createRequest(
     request: Omit<AdoptionForm, "id" | "estado">
   ): Promise<AdoptionForm | null> {
@@ -16,7 +13,8 @@ export class AdoptionRepository implements AdoptionRequestRepository {
       .from("adoption_requests")
       .insert({
         ...request,
-        estado: "en_proceso"
+        estado: "en_proceso",
+         owner_id: request.owner_id,
       })
       .select()
       .single();
@@ -29,11 +27,12 @@ export class AdoptionRepository implements AdoptionRequestRepository {
     return data as AdoptionForm;
   }
 
-  /**
-   * Obtener solicitudes de una mascota
-   */
-  async getRequestsByPet(petId: string): Promise<AdoptionForm[]> {
 
+  async getRequestsByPet(petId: string) {
+    if (!petId) {
+      console.error("petId es undefined");
+      return [];
+    }
     const { data, error } = await supabase
       .from("adoption_requests")
       .select("*")
@@ -47,11 +46,12 @@ export class AdoptionRepository implements AdoptionRequestRepository {
     return data as AdoptionForm[];
   }
 
-  /**
-   * Obtener solicitudes enviadas por un usuario
-   */
-  async getRequestsByUser(userId: string): Promise<AdoptionForm[]> {
+  async getRequestsByUser(userId: string) {
 
+    if (!userId) {
+      console.error("userId es undefined");
+      return [];
+    }
     const { data, error } = await supabase
       .from("adoption_requests")
       .select("*")
@@ -99,6 +99,19 @@ export class AdoptionRepository implements AdoptionRequestRepository {
 
     return true;
   }
+
+async getRequestsForOwner(ownerId: string) {
+  const { data, error } = await supabase
+    .from("adoption_requests")
+    .select("*")
+    .eq("owner_id", ownerId);
+
+  if (error) {
+    console.error("Error obteniendo solicitudes del dueño:", error);
+    return [];
+  }
+  return data;
+}
 
   async deleteRequest(requestId: string): Promise<boolean> {
 

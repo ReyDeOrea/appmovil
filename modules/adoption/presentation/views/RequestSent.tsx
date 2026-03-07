@@ -1,88 +1,79 @@
-import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { GetPetRequestsReceived } from "../../application/getRequestReceived";
-import { RequestStatus } from "../../application/statusRequest";
+import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { GetUserRequests } from "../../application/getRequestSent";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
-
 const repository = new AdoptionRepository();
-
-const getPetRequests = new GetPetRequestsReceived(repository);
-const updateStatus = new RequestStatus(repository);
+const getUserRequests = new GetUserRequests(repository);
 
 export default function RequestsSent() {
-
-  const params = useLocalSearchParams();
-  const petId = params.petId as string;
-
   const [requests, setRequests] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     loadRequests();
   }, []);
 
   const loadRequests = async () => {
+    try {
+      const userData = await AsyncStorage.getItem("user");
+      if (!userData) return;
 
-    const data = await getPetRequests.execute(petId);
-
-    setRequests(data);
+      const user = JSON.parse(userData);
+      const data = await getUserRequests.execute(user.id);
+      setRequests(data || []);
+    } catch (error) {
+      console.error("Error cargando solicitudes enviadas:", error);
+    }
   };
 
-  const aceptar = async (id: string) => {
-
-    await updateStatus.execute(id, "aceptado");
-    loadRequests();
-  };
-
-  const rechazar = async (id: string) => {
-
-    await updateStatus.execute(id, "rechazado");
-    loadRequests();
+  const verSolicitud = (request: any) => {
+    router.push({
+      pathname: "/viewRequestForm",
+      params: { request: JSON.stringify(request) }
+    });
   };
 
   return (
-
     <FlatList
       data={requests}
-      keyExtractor={(item) => item.id}
-
+      keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-
-        <View style={{ padding: 20, borderBottomWidth: 1 }}>
-
-          <Text>
-            {item.nombre} {item.apellido}
-          </Text>
-
-          <Text>Edad: {item.edad}</Text>
-
-          <Text>Estado: {item.estado}</Text>
-
-          {item.estado === "en_proceso" && (
-
-            <View style={{ flexDirection: "row" }}>
-
-              <TouchableOpacity
-                onPress={() => aceptar(item.id)}
-                style={{ marginRight: 20 }}
-              >
-                <Text>Aceptar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => rechazar(item.id)}
-              >
-                <Text>Rechazar</Text>
-              </TouchableOpacity>
-
-            </View>
-
-          )}
-
-        </View>
-
+        <TouchableOpacity onPress={() => verSolicitud(item)} style={styles.card}>
+          <Text style={styles.text}><Text style={styles.label}>Mascota:</Text> {item.pet_name || item.pet_id}</Text>
+          <Text style={styles.text}><Text style={styles.label}>Estado:</Text> {item.estado}</Text>
+        </TouchableOpacity>
       )}
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>
+          No has enviado solicitudes
+        </Text>
+      }
+      contentContainerStyle={{ paddingBottom: 100 }}
     />
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    backgroundColor: "#fff"
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5
+  },
+  label: {
+    fontWeight: "bold"
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#555"
+  }
+});

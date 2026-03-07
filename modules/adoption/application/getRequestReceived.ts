@@ -1,11 +1,12 @@
 import { AdoptionForm } from "../domain/adoption";
-import { AdoptionRequestRepository } from "../domain/adoptionRepository";
+import { AdoptionRepository } from "../infraestructure/adoptionDataSource";
 
-export class GetPetRequestsReceived {
+export class GetRequestsForMyPets {
+  constructor(private repository: AdoptionRepository) {}
 
-  constructor(private repository: AdoptionRequestRepository) {}
-
-  async execute(petId: string): Promise<AdoptionForm[]> {
-    return await this.repository.getRequestsByPet(petId);
+  async execute(ownerId: string): Promise<AdoptionForm[]> {
+    if (!ownerId) return [];
+    const data = await this.repository.getRequestsForOwner(ownerId); // <-- aquí sí usamos owner_id
+    return data || [];
   }
 }
