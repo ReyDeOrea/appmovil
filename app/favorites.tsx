@@ -1,6 +1,6 @@
 import FavoritesPet from "@/modules/animal/presentation/Views/FavoritesPet";
 
-export default function CatalogScreen(){
+export default function FavoritesScreen(){
     return(
         <FavoritesPet/>
     );

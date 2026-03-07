@@ -1,5 +1,5 @@
 import { ProfileAnimal } from "@/modules/animal/presentation/Views/ProfileAnimalView";
-export default function CatalogScreen(){
+export default function ProfileAnimalScreen(){
     return(
         <ProfileAnimal/>
     );

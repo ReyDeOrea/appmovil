@@ -1,4 +1,3 @@
-//aqui van las funciones del CRUD
 import { supabase } from "@/lib/supabase";
 import { Pet } from "../../domain/pet";
 
