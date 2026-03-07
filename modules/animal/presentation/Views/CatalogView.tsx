@@ -1,4 +1,5 @@
 import Feather from "@expo/vector-icons/Feather";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -162,9 +163,11 @@ export default function CatalogView() {
     );
   };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
+ return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <ScrollView style={styles.container}
+  contentContainerStyle={{ paddingBottom: 120 }}
+  keyboardShouldPersistTaps="handled">
         <View style={styles.b}>
           <View style={styles.row}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -179,15 +182,14 @@ export default function CatalogView() {
         </View>
 
         <View style={styles.S}>
+          <Feather name="search" size={20} color="#5B4000" style={{ marginRight: 10 }} />
           <TextInput
-            placeholder="Buscar por nombre, tipo, sexo o tamaño"
+            placeholder="Buscar"
+            placeholderTextColor="#999"
             style={styles.TI}
             value={search}
             onChangeText={setSearch}
           />
-          <TouchableOpacity>
-            <Feather name="search" size={20} color="#5B4000" />
-          </TouchableOpacity>
           <TouchableOpacity style={styles.F} onPress={() => setFilterOpen(true)}>
             <Ionicons name="filter-outline" size={24} color="#D09100" />
           </TouchableOpacity>
@@ -250,6 +252,43 @@ export default function CatalogView() {
         </View>
       </ScrollView>
 
+      {/* Bottom Navigation - Nuevo */}
+     <View style={styles.bottomNav}>
+  
+  <TouchableOpacity
+    style={styles.navItem}
+    onPress={() => router.replace("/catalog")}
+  >
+    <Feather name="home" size={24} color="#D09100" />
+    <Text style={[styles.navText, styles.navTextActive]}>inicio</Text>
+  </TouchableOpacity>
+  
+  <TouchableOpacity
+    style={styles.navItem}
+    onPress={() => router.push("/mypets")}
+  >
+   <FontAwesome name="paw" size={24} color="#999" />
+    <Text style={styles.navText}>mis mascotas</Text>
+  </TouchableOpacity>
+  
+  <TouchableOpacity
+    style={styles.navItem}
+    onPress={() => router.push("/favorites")}
+  >
+    <Feather name="heart" size={24} color="#999" />
+    <Text style={styles.navText}>favoritos</Text>
+  </TouchableOpacity>
+  
+  <TouchableOpacity
+    style={styles.navItem}
+    onPress={() => router.push("/account")}
+  >
+    <Feather name="user" size={24} color="#999" />
+    <Text style={styles.navText}>perfil</Text>
+  </TouchableOpacity>
+
+</View>
+
       <ModalMenu
         visible={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -269,7 +308,7 @@ export default function CatalogView() {
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#fff" },
+  container: { backgroundColor: "#FDF8F0" },
 
   row: {
     flexDirection: "row",
@@ -282,7 +321,7 @@ const styles = StyleSheet.create({
   b: {
     width: "100%",
     height: 100,
-    backgroundColor: "#d4b37a",
+    backgroundColor: "#B7C979",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
@@ -299,20 +338,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#FFE4BB",
+    borderColor: "#7E6950",
     borderRadius: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     margin: 10,
-    backgroundColor: "#FFF8EC",
+    backgroundColor: "#E5DCCC",
   },
 
   TI: {
     flex: 1,
-    height: 40,
+    height: 45,
     color: "#333",
+    fontSize: 16,
   },
 
-  F: { left: 10 },
+  F: { marginLeft: 10 },
 
   imgD: {
     height: BANNER_HEIGHT,
@@ -334,25 +374,39 @@ const styles = StyleSheet.create({
   },
 
   dotActive: {
-    backgroundColor: "#000",
+    backgroundColor: "#D09100",
   },
 
+  //cajas de animales
   CC: {
     width: CARD_WIDTH,
-    padding: 5,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 20,
+    padding: 8,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 15,
     alignItems: "center",
+    shadowColor: "#000",
+    elevation: 2,
   },
 
   img: {
     width: IMAGE_SIZE,
     height: IMAGE_SIZE,
-    borderRadius: 20,
+    borderRadius: 15,
+    marginBottom: 5,
   },
 
-  N: { fontSize: 15, textAlign: "center" },
-  D: { fontSize: 12, textAlign: "center" },
+  N: { 
+    fontSize: 14, 
+    textAlign: "center",
+    fontWeight: "600",
+    marginBottom: 2,
+  },
+  
+  D: { 
+    fontSize: 11, 
+    textAlign: "center",
+    color: "#666",
+  },
 
   badge: {
     position: "absolute",
@@ -365,7 +419,7 @@ const styles = StyleSheet.create({
   },
 
   badgeText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "bold",
     color: "#000",
   },
@@ -390,5 +444,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  //estilos para el bottom navigation
+  bottomNav: {
+  position: "absolute",
+  bottom: 25, 
+  left: 10,
+  right: 10,
+  height: 65,
+  backgroundColor: "#FDF8F0",
+  flexDirection: "row",
+  justifyContent: "space-around",
+  alignItems: "center",
+  borderTopWidth: 1,
+  borderTopColor: "#eee",
+  paddingBottom: 10,
+  elevation: 5,
+},
+
+  navItem: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  navText: {
+    fontSize: 11,
+    marginTop: 2,
+    color: "#999",
+    textTransform: "lowercase",
+  },
+
+  navTextActive: {
+    color: "#D09100",
   },
 });
