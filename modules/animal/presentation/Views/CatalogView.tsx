@@ -51,22 +51,22 @@ export default function CatalogView() {
   }, []);
 
   useFocusEffect(
-  useCallback(() => {
-    const fetchPets = async () => {
-      try {
-        setLoading(true);
-        const data = await getPetsUseCase();
-        setPets(data);
-      } catch (err) {
-        console.error("ERROR fetching pets:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    useCallback(() => {
+      const fetchPets = async () => {
+        try {
+          setLoading(true);
+          const data = await getPetsUseCase();
+          setPets(data);
+        } catch (err) {
+          console.error("ERROR fetching pets:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchPets();
-  }, [])
-);
+      fetchPets();
+    }, [])
+  );
 
   if (loading)
     return (
@@ -104,6 +104,28 @@ export default function CatalogView() {
         return false;
     }
 
+ if (
+    filters.type.length > 0 &&
+    !filters.type.map(t => t.toLowerCase()).includes(String(p.type).toLowerCase())
+  ) {
+    return false;
+  }
+
+  // SEXO
+  if (
+    filters.sex.length > 0 &&
+    !filters.sex.map(s => s.toLowerCase()).includes(String(p.sex).toLowerCase())
+  ) {
+    return false;
+  }
+
+  // TAMAÑO
+  if (
+    filters.size.length > 0 &&
+    !filters.size.map(s => s.toLowerCase()).includes(String(p.size).toLowerCase())
+  ) {
+    return false;
+  }
     if (filters.adopted) {
       if (p.adopted !== true) return false;
     } else {
@@ -163,11 +185,11 @@ export default function CatalogView() {
     );
   };
 
- return (
+  return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView style={styles.container}
-  contentContainerStyle={{ paddingBottom: 120 }}
-  keyboardShouldPersistTaps="handled">
+        contentContainerStyle={{ paddingBottom: 120 }}
+        keyboardShouldPersistTaps="handled">
         <View style={styles.b}>
           <View style={styles.row}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -253,41 +275,41 @@ export default function CatalogView() {
       </ScrollView>
 
       {/* Bottom Navigation - Nuevo */}
-     <View style={styles.bottomNav}>
-  
-  <TouchableOpacity
-    style={styles.navItem}
-    onPress={() => router.replace("/catalog")}
-  >
-    <Feather name="home" size={24} color="#D09100" />
-    <Text style={[styles.navText, styles.navTextActive]}>inicio</Text>
-  </TouchableOpacity>
-  
-  <TouchableOpacity
-    style={styles.navItem}
-    onPress={() => router.push("/mypets")}
-  >
-   <FontAwesome name="paw" size={24} color="#999" />
-    <Text style={styles.navText}>mis mascotas</Text>
-  </TouchableOpacity>
-  
-  <TouchableOpacity
-    style={styles.navItem}
-    onPress={() => router.push("/favorites")}
-  >
-    <Feather name="heart" size={24} color="#999" />
-    <Text style={styles.navText}>favoritos</Text>
-  </TouchableOpacity>
-  
-  <TouchableOpacity
-    style={styles.navItem}
-    onPress={() => router.push("/account")}
-  >
-    <Feather name="user" size={24} color="#999" />
-    <Text style={styles.navText}>perfil</Text>
-  </TouchableOpacity>
+      <View style={styles.bottomNav}>
 
-</View>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.replace("/catalog")}
+        >
+          <Feather name="home" size={24} color="#D09100" />
+          <Text style={[styles.navText, styles.navTextActive]}>inicio</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/mypets")}
+        >
+          <FontAwesome name="paw" size={24} color="#999" />
+          <Text style={styles.navText}>mis mascotas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/favorites")}
+        >
+          <Feather name="heart" size={24} color="#999" />
+          <Text style={styles.navText}>favoritos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/account")}
+        >
+          <Feather name="user" size={24} color="#999" />
+          <Text style={styles.navText}>perfil</Text>
+        </TouchableOpacity>
+
+      </View>
 
       <ModalMenu
         visible={modalOpen}
@@ -395,15 +417,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 
-  N: { 
-    fontSize: 14, 
+  N: {
+    fontSize: 14,
     textAlign: "center",
     fontWeight: "600",
     marginBottom: 2,
   },
-  
-  D: { 
-    fontSize: 11, 
+
+  D: {
+    fontSize: 11,
     textAlign: "center",
     color: "#666",
   },
@@ -448,20 +470,20 @@ const styles = StyleSheet.create({
 
   //estilos para el bottom navigation
   bottomNav: {
-  position: "absolute",
-  bottom: 25, 
-  left: 10,
-  right: 10,
-  height: 65,
-  backgroundColor: "#FDF8F0",
-  flexDirection: "row",
-  justifyContent: "space-around",
-  alignItems: "center",
-  borderTopWidth: 1,
-  borderTopColor: "#eee",
-  paddingBottom: 10,
-  elevation: 5,
-},
+    position: "absolute",
+    bottom: 25,
+    left: 10,
+    right: 10,
+    height: 65,
+    backgroundColor: "#FDF8F0",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingBottom: 10,
+    elevation: 5,
+  },
 
   navItem: {
     alignItems: "center",
