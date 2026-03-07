@@ -5,16 +5,12 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
-import * as Print from "expo-print";
-import * as Sharing from "expo-sharing";
 
-import { uploadForm } from "../../application/uploadForm";
 import { Pet } from "../../domain/pet";
 
 export function ProfileAnimal() {
@@ -24,8 +20,8 @@ export function ProfileAnimal() {
     const [tab, setTab] = useState<"info" | "salud" | "personalidad">("info");
     const [isFavorite, setIsFavorite] = useState(false);
     const [imagePage, setImagePage] = useState(0);
-
-
+    const [hasRequested, setHasRequested] = useState(false);
+    const [userLogged, setUserLogged] = useState(false);
 
     const verificarUsuario = async () => {
         const userSession = await AsyncStorage.getItem("user");
@@ -34,23 +30,16 @@ export function ProfileAnimal() {
                 "Debes iniciar sesión",
                 "Necesitas iniciar sesión para agregar favoritos",
                 [
-                    {
-                        text: "Cancelar",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Ir a Login",
-                        onPress: () => router.push("/login")
-                    }
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Ir a Login", onPress: () => router.push("/login") }
                 ]
             );
             return false;
         }
-
         return true;
     };
-    let mascota: Pet | null = null;
 
+    let mascota: Pet | null = null;
     if (typeof params.pet === "string") {
         try {
             mascota = JSON.parse(params.pet);
@@ -62,30 +51,41 @@ export function ProfileAnimal() {
     useEffect(() => {
         if (mascota) {
             checkIfFavorite();
+            checkUserAndRequest();
         }
     }, []);
 
     const checkIfFavorite = async () => {
         const userData = await AsyncStorage.getItem("user");
         const user = userData ? JSON.parse(userData) : null;
-
         if (!user) return;
 
         const data = await AsyncStorage.getItem(`favorites_${user.id}`);
         const favorites = data ? JSON.parse(data) : [];
-
         const exists = favorites.some((pet: Pet) => pet.id === mascota?.id);
         setIsFavorite(exists);
     };
 
-    const toggleFavorite = async () => {
+    const checkUserAndRequest = async () => {
+        const userData = await AsyncStorage.getItem("user");
+        if (!userData) return setUserLogged(false);
 
+        setUserLogged(true);
+        const user = JSON.parse(userData);
+
+        const data = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
+        const requests = data ? JSON.parse(data) : [];
+
+        const exists = requests.some((pet: Pet) => pet.id === mascota?.id);
+        setHasRequested(exists);
+    };
+
+    const toggleFavorite = async () => {
         const autorizado = await verificarUsuario();
         if (!autorizado) return;
 
         const userData = await AsyncStorage.getItem("user");
         const user = userData ? JSON.parse(userData) : null;
-
         if (!user) return;
 
         const data = await AsyncStorage.getItem(`favorites_${user.id}`);
@@ -99,11 +99,7 @@ export function ProfileAnimal() {
             Alert.alert("Agregado", "Se agregó a favoritos");
         }
 
-        await AsyncStorage.setItem(
-            `favorites_${user.id}`,
-            JSON.stringify(favorites)
-        );
-
+        await AsyncStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
         setIsFavorite(!isFavorite);
     };
 
@@ -125,84 +121,6 @@ export function ProfileAnimal() {
         Alert.alert("Enlace copiado", "El enlace fue copiado");
     };
 
-
- 
-
-    const descargarFormulario = async () => {
-
-        const enlacePerfil = `https://app.com/animal/${mascota.id}`;
-        const estadoAnimal = mascota.adopted ? "Adoptado" : "No adoptado";
-        const fecha = new Date().toLocaleDateString();
-
-        const html = `
-          <html>
-    <body style="font-family: Arial; padding: 25px;">
-
-        <h1 style="text-align:center;">FORMULARIO</h1>
-        <h2 style="text-align:center;">Animaland</h2>
-        <p style="text-align:right;">Fecha: ${fecha}</p>
-
-        <hr/>
-
-        <h2>Animal a Adoptar</h2>
-
-        <img src="${mascota.image_url}" 
-             style="width:250px;height:200px;object-fit:cover;margin-bottom:10px;" />
-
-        <p><strong>Nombre del animal:</strong> ${mascota.name}</p>
-        <p><strong>URL del perfil:</strong> ${enlacePerfil}</p>
-        <p><strong>Estado del animal:</strong> ${estadoAnimal}</p>
-
-        <hr/>
-
-        <h2>Datos del adoptante</h2>
-
-        <p>Nombre: ____________________________________________</p>
-        <p>Apellido: ____________________________________________</p>
-        <p>Edad: _______________________________________________</p>
-        <p>Ubicación: ___________________________________________</p>
-        <p>Teléfono: ____________________________________________</p>
-
-        <hr/>
-
-        <p>1. ¿Vives en casa o departamento?, ¿Propio o rentado?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>2. En caso de que sea rentado, ¿Tienes autorizado tener mascotas?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>3. ¿Anteriormente haz tenido mascotas?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>4. En caso de hayas respondido que sí, ¿Qué sucedió con esas mascotas?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>5. ¿Actualmente tienes mascotas?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>6. En caso de hayas respondido que sí, ¿Qué tipo de mascotas y cuántas?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>7. ¿Al día cuánto tiempo se quedará sola la mascota?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>8. En caso de que vivas con otras personas, ¿Todos están de acuerdo con la idea de adoptar una mascota?</p>
-        <p>________________________________________________________________________</p>
-
-        <p>9. Económicamente, ¿Te sientes capaz de mantener a la mascota?, ¿Por qué?</p>
-        <p>________________________________________________________________________</p>
-
-        <br/><br/>
-        <p>Firma del adoptante: ________________________________________________</p>
-
-    </body>
-    </html>
-    `;
-
-        const { uri } = await Print.printToFileAsync({ html });
-        await Sharing.shareAsync(uri);
-    };
-
     const images: string[] = (() => {
         if (Array.isArray(mascota.image_url)) {
             return mascota.image_url.filter(Boolean);
@@ -222,15 +140,13 @@ export function ProfileAnimal() {
 
             <View style={styles.b}>
                 <View style={styles.row}>
-                    <TouchableOpacity
-                        onPress={() => router.back()}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <AntDesign name="arrow-left" size={24} color="white" />
                     </TouchableOpacity>
 
                     <Text style={styles.txtN}>{mascota.name}</Text>
 
-                    <TouchableOpacity
-                        onPress={toggleFavorite}>
+                    <TouchableOpacity onPress={toggleFavorite}>
                         <FontAwesome
                             name={isFavorite ? "star" : "star-o"}
                             size={28}
@@ -263,13 +179,7 @@ export function ProfileAnimal() {
 
                 <View style={styles.dotsContainer}>
                     {images.map((_, idx) => (
-                        <View
-                            key={idx}
-                            style={[
-                                styles.dot,
-                                imagePage === idx && styles.dotActive,
-                            ]}
-                        />
+                        <View key={idx} style={[styles.dot, imagePage === idx && styles.dotActive]} />
                     ))}
                 </View>
 
@@ -287,30 +197,17 @@ export function ProfileAnimal() {
             </View>
 
             {mascota.adopted && (
-                <Text style={styles.adoptedText}>
-                    Esta mascota ya fue adoptada
-                </Text>
+                <Text style={styles.adoptedText}>Esta mascota ya fue adoptada</Text>
             )}
 
             <View style={styles.B}>
-                <TouchableOpacity
-                    style={tab === "info" ? styles.IBS : styles.I}
-                    onPress={() => setTab("info")}
-                >
+                <TouchableOpacity style={tab === "info" ? styles.IBS : styles.I} onPress={() => setTab("info")}>
                     <Text>Información</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={tab === "salud" ? styles.IBS : styles.I}
-                    onPress={() => setTab("salud")}
-                >
+                <TouchableOpacity style={tab === "salud" ? styles.IBS : styles.I} onPress={() => setTab("salud")}>
                     <Text>Salud</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={tab === "personalidad" ? styles.IBS : styles.I}
-                    onPress={() => setTab("personalidad")}
-                >
+                <TouchableOpacity style={tab === "personalidad" ? styles.IBS : styles.I} onPress={() => setTab("personalidad")}>
                     <Text>Personalidad</Text>
                 </TouchableOpacity>
             </View>
@@ -336,10 +233,7 @@ export function ProfileAnimal() {
                             </View>
 
                             <View style={styles.RI}>
-                                <FontAwesome5
-                                    name={mascota.type === "perro" ? "dog" : "cat"}
-                                    size={24}
-                                />
+                                <FontAwesome5 name={mascota.type === "perro" ? "dog" : "cat"} size={24} />
                                 <Text>{mascota.breed}</Text>
                             </View>
                         </View>
@@ -357,16 +251,28 @@ export function ProfileAnimal() {
 
                         <View style={styles.descargarContainer}>
                             <TouchableOpacity
-                                style={styles.botonDescargar}
-                                onPress={descargarFormulario}
+                                style={[
+                                    styles.botonDescargar,
+                                    (!userLogged || hasRequested) && { backgroundColor: "#ccc" }
+                                ]}
+                                onPress={() => {
+                                    if (!userLogged) {
+                                        Alert.alert("Debes iniciar sesión", "Necesitas iniciar sesión para enviar la solicitud");
+                                        return;
+                                    }
+                                    router.push({
+                                        pathname: "/adoptionRequest",
+                                        params: { pet: JSON.stringify(mascota) }
+                                    });
+                                }}
+                                disabled={!userLogged || hasRequested}
                             >
                                 <Text style={styles.textoBoton}>
-                                    Descargar formulario
+                                    {hasRequested ? "Solicitud enviada" : "Mandar solicitud de adopción"}
                                 </Text>
                             </TouchableOpacity>
-
-                        
                         </View>
+
                     </>
                 )}
 
@@ -377,6 +283,7 @@ export function ProfileAnimal() {
         </ScrollView>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
@@ -394,22 +301,21 @@ const styles = StyleSheet.create({
     },
     dotsContainer: {
         position: "absolute",
-        bottom: 10,
-        left: 0,
+        bottom: 10, left: 0,
         right: 0,
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     dot: {
         width: 8,
         height: 8,
         borderRadius: 4,
         backgroundColor: "#ccc",
-        marginHorizontal: 3,
+        marginHorizontal: 3
     },
     dotActive: {
-        backgroundColor: "#fff",
+        backgroundColor: "#fff"
     },
     row: {
         flexDirection: "row",
@@ -428,6 +334,7 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         position: "relative"
+
     },
     copyIconButton: {
         position: "absolute",
@@ -435,7 +342,7 @@ const styles = StyleSheet.create({
         right: 15,
         backgroundColor: "rgba(0,0,0,0.4)",
         padding: 10,
-        borderRadius: 25,
+        borderRadius: 25
     },
     txtU: {
         flexDirection: "row",
@@ -496,7 +403,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#E5DCCC",
         padding: 12,
         borderRadius: 25,
-        marginVertical: 8,
+        marginVertical: 8
     },
     textoBoton: {
         fontWeight: "bold"
