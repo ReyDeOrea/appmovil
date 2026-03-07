@@ -11,7 +11,7 @@ export async function ImgS(): Promise<string[]> {
       .list('pet');
     if (error)
       throw error;
-    return data.map(item => `https://hrojphcqktmijvagyrha.storage.supabase.co/storage/v1/object/public/IMG/pet/${item.name}`);
+    return data.map(item => `https://hrojphcqktmijvagyrha.supabase.co/storage/v1/object/public/IMG/pet/${item.name}`);
   }
   catch (e) {
     console.log(e);
@@ -59,7 +59,7 @@ export async function saveS(file: { uri: string }): Promise<string | null> {
       });
 
     if (error) throw error;
-    return `https://hrojphcqktmijvagyrha.storage.supabase.co/storage/v1/object/public/IMG/pet/${fileName}`;
+    return `https://hrojphcqktmijvagyrha.supabase.co/storage/v1/object/public/IMG/pet/${fileName}`;
   } catch (e) {
     console.log('ERROR EN saveS:', e);
     return null;

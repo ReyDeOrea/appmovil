@@ -27,4 +27,4 @@ export interface Pet {
 
 export type CreatePet = Omit<Pet,"id" | "adopted">;
 
-export type UpdatePet = Omit<Pet, "user_id">;
+export type UpdatePet = Omit<Pet, "user">;

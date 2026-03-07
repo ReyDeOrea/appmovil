@@ -24,8 +24,26 @@ export default function RequestsReceived() {
       if (!userData) return;
 
       const user = JSON.parse(userData);
-      const data = await getUserRequests.execute(String(user.id));
-      setRequests(data || []);
+
+      let data = await getUserRequests.execute(user.id);
+
+      if (!data) {
+        setRequests([]);
+        return;
+      }
+
+      data = await Promise.all(
+        data.map(async (request: any) => {
+          const pet = await repository.getPetById(request.pet_id);
+
+          return {
+            ...request,
+            pet_name: pet?.name || "Desconocida"
+          };
+        })
+      );
+
+      setRequests(data);
     } catch (error) {
       console.error("Error cargando solicitudes:", error);
     }
@@ -53,42 +71,47 @@ export default function RequestsReceived() {
       data={requests}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => verSolicitud(item)} 
-        style={styles.card}>
+        <TouchableOpacity onPress={() => verSolicitud(item)} style={styles.card}>
 
           <Text style={styles.text}>
-            <Text style={styles.label}>Mascota:</Text> 
-            {item.pet_id
-            }</Text>
+            <Text style={styles.label}>Mascota: </Text>
+            {item.pet_name}
+          </Text>
 
           <Text style={styles.text}>
-            <Text style={styles.label}>Adoptante:</Text> 
-            {item.adoptante_nombre} 
-            {item.adoptante_apellido}
-            </Text>
+            <Text style={styles.label}>Adoptante: </Text>
+            {item.adoptante_nombre} {item.adoptante_apellido}
+          </Text>
 
           <Text style={styles.text}>
-            <Text style={styles.label}>Estado:</Text> 
+            <Text style={styles.label}>Estado: </Text>
             {item.estado}
-            </Text>
+          </Text>
 
           {item.estado === "en_proceso" && (
             <View style={styles.buttonsContainer}>
-              <TouchableOpacity onPress={() => aceptar(item.id)} 
-              style={[styles.button, styles.accept]}>
+              <TouchableOpacity
+                onPress={() => aceptar(item.id)}
+                style={[styles.button, styles.accept]}
+              >
                 <Text style={styles.buttonText}>Aceptar</Text>
-
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => rechazar(item.id)} 
-              style={[styles.button, styles.reject]}>
+
+              <TouchableOpacity
+                onPress={() => rechazar(item.id)}
+                style={[styles.button, styles.reject]}
+              >
                 <Text style={styles.buttonText}>Rechazar</Text>
               </TouchableOpacity>
             </View>
           )}
+
         </TouchableOpacity>
       )}
       ListEmptyComponent={
-        <Text style={styles.emptyText}>No hay solicitudes</Text>
+        <Text style={styles.emptyText}>
+          No hay solicitudes
+        </Text>
       }
       contentContainerStyle={{ paddingBottom: 100 }}
     />

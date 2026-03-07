@@ -1,9 +1,13 @@
 
 import { supabase } from "@/lib/supabase";
+import { Pet } from "@/modules/animal/domain/pet";
 import { AdoptionForm } from "../domain/adoption";
 import { AdoptionRequestRepository } from "../domain/adoptionRepository";
 
 export class AdoptionRepository implements AdoptionRequestRepository {
+  deleteRequest(requestId: string): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
 
   async createRequest(
     request: Omit<AdoptionForm, "id" | "estado">
@@ -14,7 +18,6 @@ export class AdoptionRepository implements AdoptionRequestRepository {
       .insert({
         ...request,
         estado: "en_proceso",
-         owner_id: request.owner_id,
       })
       .select()
       .single();
@@ -113,18 +116,34 @@ async getRequestsForOwner(ownerId: string) {
   return data;
 }
 
-  async deleteRequest(requestId: string): Promise<boolean> {
 
-    const { error } = await supabase
-      .from("adoption_requests")
-      .delete()
-      .eq("id", requestId);
+ async getPetById(petId: string): Promise<Pet | null> {
+    const { data, error } = await supabase
+      .from("pets") 
+      .select("*")
+      .eq("id", petId)
+      .single();
 
     if (error) {
-      console.error("Error eliminando solicitud:", error);
-      return false;
+      console.error("Error obteniendo mascota:", error);
+      return null;
     }
 
-    return true;
+    return data;
   }
+
+  //async deleteRequest(requestId: string): Promise<boolean> {
+
+   // const { error } = await supabase
+   //   .from("adoption_requests")
+   //   .delete()
+   //   .eq("id", requestId);
+
+   // if (error) {
+   //   console.error("Error eliminando solicitud:", error);
+  //    return false;
+  //  }
+
+ //   return true;
+ // }
 }
