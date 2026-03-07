@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getUserPets } from "../../../user/application/getUserPets";
+import { uploadImagesPet } from "../../application/uploadImagesPet";
 
 export default function MyPetsScreen() {
   const [pets, setPets] = useState<any[]>([]);
@@ -35,17 +36,7 @@ const loadPets = async () => {
   };
 
   const renderItem = ({ item }: any) => {
-    let images: string[] = [];
-
-    try {
-      images = JSON.parse(item.image_url || "[]");
-
-      if (!Array.isArray(images)) {
-        images = [images];
-      }
-    } catch {
-      images = item.image_url ? [item.image_url] : [];
-    }
+    const images = uploadImagesPet(item.image_url);
 
     return (
       <View style={styles.card}>
