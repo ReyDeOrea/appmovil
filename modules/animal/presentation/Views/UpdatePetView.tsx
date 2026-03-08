@@ -310,14 +310,18 @@ const handleUpdatePet = async () => {
         />
 
         <TouchableOpacity style={styles.saveButton} onPress={handleUpdatePet}>
-          <Text>Actualizar</Text>
+         <Text style={{ color:"#fff", fontWeight:"600" }}>
+Actualizar
+</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => router.back()}
         >
-          <Text style={{ color: "white" }}>Cancelar</Text>
+     <Text style={{ color:"#fff", fontWeight:"600" }}>
+Cancelar
+</Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -326,98 +330,135 @@ const handleUpdatePet = async () => {
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    padding: 15,
+    paddingBottom: 30,
+    backgroundColor: "#FDF8F0",
+  },
+
   row: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 10
+    alignItems: "center",
   },
+
   b: {
     width: "100%",
-    height: 60,
-    backgroundColor: "#d4b37a",
+    height: 70,
+    backgroundColor: "#B7C979",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 15,
   },
+
   txtN: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 25,
-    marginRight: 5
+    fontSize: 30,
+    marginRight: 6,
   },
+
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#2e2e2e",
+    marginVertical: 10,
+    textAlign: "center",
+  },
+
+  LabelText: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 4,
+    fontWeight: "500",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 12,
+    elevation: 2,
+    borderRadius: 8,
+  },
+
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    fontSize: 14,
+    height: 100,
+    textAlignVertical: "top",
+    elevation: 2,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+
+  imgD: {
+    height: BANNER_HEIGHT,
+    borderRadius: 20,
+  },
+
   BP: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 8,
   },
-  sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-    marginVertical: 8,
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#ccc",
+    margin: 5,
   },
-  scrollContainer: {
-    padding: 15,
-    paddingBottom: 30,
-    backgroundColor: '#fff',
+
+  dotActive: {
+    backgroundColor: "#000",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#DAC193",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: "#DAC193",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-    height: 80
-  },
-  saveButton: {
-    backgroundColor: "#E5DCCC",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10
-  },
-  cancelButton: {
-    backgroundColor: "#ef4444",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10
-  },
-  previewImage: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10
-  },
+
   imageBtn: {
-    backgroundColor: "#E5DCCC",
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: "#D4B37A",
+    padding: 14,
+    borderRadius: 15,
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 15,
+    elevation: 3,
   },
+
   imageBtnText: {
-    fontWeight: "bold"
+    color: "#fff",
+    fontWeight: "600",
   },
-  LabelText: {
-    color: '#000000'
+
+  saveButton: {
+    backgroundColor: "#B7C979",
+    padding: 14,
+    borderRadius: 15,
+    marginTop: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
   },
-  imgD: {
-    height: BANNER_HEIGHT,
-    borderRadius: 20,
+
+  cancelButton: {
+    backgroundColor: "#E8B4B4",
+    padding: 14,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 10,
+    elevation: 3,
   },
+
   selectionContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 8,
+    marginBottom: 10,
   },
+
   selectionButton: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -426,29 +467,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
   },
+
   selectionButtonActive: {
     backgroundColor: "#E5DCCC",
     borderColor: "#DAC193",
   },
+
   selectionButtonText: {
     textTransform: "capitalize",
     fontWeight: "bold",
-  },
-
-
-  dotsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 5
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#ccc",
-    marginHorizontal: 3,
-  },
-  dotActive: {
-    backgroundColor: "#000",
   },
 });
