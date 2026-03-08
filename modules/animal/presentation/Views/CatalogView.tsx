@@ -1,18 +1,16 @@
-import Feather from "@expo/vector-icons/Feather";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 import { ModalMenu } from "../../../user/presentation/components/modalMenu";
-import { getPetsUseCase } from "../../application/getPets";
+import { chunkPets } from "../../application/chunkPets";
+import { FilterPetsUseCase } from "../../application/filterPetsUseCase";
 import { Pet } from "../../domain/pet";
 import { FilterModal, Filters } from "../componets/FilterModal";
 
 const { width } = Dimensions.get("window");
-
 const CARD_WIDTH = width * 0.28;
 const IMAGE_SIZE = width * 0.23;
 const BANNER_HEIGHT = width * 0.42;
@@ -25,12 +23,7 @@ type BannerItem = {
 
 export default function CatalogView() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [filters, setFilters] = useState<Filters>({
-    type: [],
-    sex: [],
-    size: [],
-    adopted: false,
-  });
+  const [filters, setFilters] = useState<Filters>({ type: [], sex: [], size: [], adopted: false });
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [bannerPage, setBannerPage] = useState(0);
@@ -40,6 +33,8 @@ export default function CatalogView() {
   const [loading, setLoading] = useState(true);
   const [petPages, setPetPages] = useState<{ [id: string]: number }>({});
   const router = useRouter();
+
+  const filterPets = new FilterPetsUseCase();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -54,7 +49,8 @@ export default function CatalogView() {
       const fetchPets = async () => {
         try {
           setLoading(true);
-          const data = await getPetsUseCase();
+          // Aquí reemplaza con tu función real que trae las mascotas
+          const data: Pet[] = []; 
           setPets(data);
         } catch (err) {
           console.error("ERROR fetching pets:", err);
@@ -74,6 +70,12 @@ export default function CatalogView() {
       </View>
     );
 
+  // Aplicar filtros usando caso de uso
+  const filteredPets = filterPets.execute(pets, search, filters);
+
+  // Dividir en filas usando caso de uso
+  const chunks: Pet[][] = chunkPets(filteredPets, 3);
+
   const adoptedPets = pets.filter((p) => p.adopted === true);
 
   const staticBanners: BannerItem[] = [
@@ -90,51 +92,6 @@ export default function CatalogView() {
 
   const bannerImages: BannerItem[] = [...staticBanners, ...adoptedBanners];
 
-  const filteredPets = pets.filter((p) => {
-    const term = search.toLowerCase();
-    if (search) {
-      if (
-        !p.name?.toLowerCase().includes(term) &&
-        !String(p.type ?? "").toLowerCase().includes(term) &&
-        !String(p.sex ?? "").toLowerCase().includes(term) &&
-        !String(p.size ?? "").toLowerCase().includes(term) &&
-        !String(p.age ?? "").toLowerCase().includes(term)
-      )
-        return false;
-    }
-
- if (
-    filters.type.length > 0 &&
-    !filters.type.map(t => t.toLowerCase()).includes(String(p.type).toLowerCase())
-  ) {
-    return false;
-  }
-
-  if (
-    filters.sex.length > 0 &&
-    !filters.sex.map(s => s.toLowerCase()).includes(String(p.sex).toLowerCase())
-  ) {
-    return false;
-  }
-  if (
-    filters.size.length > 0 &&
-    !filters.size.map(s => s.toLowerCase()).includes(String(p.size).toLowerCase())
-  ) {
-    return false;
-  }
-    if (filters.adopted) {
-      if (p.adopted !== true) return false;
-    } else {
-      if (p.adopted === true) return false;
-    }
-    return true;
-  });
-
-  const chunks: Pet[][] = [];
-  for (let i = 0; i < filteredPets.length; i += 3) {
-    chunks.push(filteredPets.slice(i, i + 3));
-  }
-
   const renderPet = (pet: Pet) => {
     const isAdopted = pet.adopted === true;
 
@@ -145,8 +102,6 @@ export default function CatalogView() {
     } catch {
       images = pet.image_url ? [pet.image_url] : [];
     }
-
-    const currentPage = petPages[pet.id] || 0;
 
     return (
       <TouchableOpacity
@@ -162,16 +117,13 @@ export default function CatalogView() {
           });
         }}
       >
-
         <Image
           source={{ uri: images[0] }}
           style={[styles.img, isAdopted && { opacity: 0.4 }]}
         />
-
         <Text style={styles.N}>{pet.name}</Text>
         <Text style={styles.D}>{pet.sex}</Text>
         <Text style={styles.D}>{pet.size}</Text>
-
         {isAdopted && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>¡{pet.name} ha sido adoptado!</Text>
@@ -183,94 +135,13 @@ export default function CatalogView() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ScrollView style={styles.container}
+      <ScrollView
+        style={styles.container}
         contentContainerStyle={{ paddingBottom: 120 }}
-        keyboardShouldPersistTaps="handled">
-        <View style={styles.b}>
-          <View style={styles.row}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.txtN}>Animaland</Text>
-              <MaterialCommunityIcons name="dog" size={33} color="#fff" />
-            </View>
-
-            <TouchableOpacity onPress={() => setModalOpen(true)}>
-              <Feather name="menu" size={28} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.S}>
-          <Feather name="search" size={20} color="#5B4000" style={{ marginRight: 10 }} />
-          <TextInput
-            placeholder="Buscar"
-            placeholderTextColor="#999"
-            style={styles.TI}
-            value={search}
-            onChangeText={setSearch}
-          />
-          <TouchableOpacity style={styles.F} onPress={() => setFilterOpen(true)}>
-            <Ionicons name="filter-outline" size={24} color="#D09100" />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) =>
-            setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))
-          }
-          scrollEventThrottle={16}
-        >
-          {bannerImages.map((item, idx) => (
-            <View
-              key={idx}
-              style={{ width, alignItems: "center", marginVertical: 10 }}
-            >
-              <View style={{ position: "relative" }}>
-                <Image
-                  source={item.image}
-                  style={[styles.imgD, { width: width * 0.9 }]}
-                />
-                {item.type === "adopted" && (
-                  <View style={styles.successBadge}>
-                    <Text style={styles.successText}>
-                      ¡ {item.name} ahora tiene una familia! 🐾
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-
-        <View style={styles.BP}>
-          {bannerImages.map((_, i) => (
-            <View
-              key={i}
-              style={[styles.dot, bannerPage === i && styles.dotActive]}
-            />
-          ))}
-        </View>
-
-        <View>
-          {chunks.map((row, idx) => (
-            <View
-              key={idx}
-              style={{
-                width,
-                flexDirection: "row",
-                justifyContent: "space-around",
-                marginVertical: 10,
-              }}
-            >
-              {row.map(renderPet)}
-            </View>
-          ))}
-        </View>
+        keyboardShouldPersistTaps="handled"
+      >
       </ScrollView>
 
-      
       <ModalMenu
         visible={modalOpen}
         onClose={() => setModalOpen(false)}
