@@ -107,6 +107,11 @@ const handleUpdatePet = async () => {
     Alert.alert("No hay mascota seleccionada");
     return;
   }
+  
+  if (images.length !== 5) {
+    Alert.alert("Debes seleccionar exactamente 5 imágenes");
+    return;
+  }
 
   try {
     let imageUrl: string[] = [];
@@ -137,7 +142,7 @@ const handleUpdatePet = async () => {
       description: description.trim(),
       phone: phone.replace(/[^0-9]/g, ""),
       location: location.trim(),
-      image_url: JSON.stringify(imageUrl), // todas las imágenes juntas
+      image_url: JSON.stringify(imageUrl), 
       adopted,
     });
 

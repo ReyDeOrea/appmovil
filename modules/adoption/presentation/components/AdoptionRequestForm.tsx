@@ -109,6 +109,7 @@ export default function AdoptionForm() {
 
       <Text>Teléfono</Text>
       <TextInput onChangeText={setTelefono}
+       keyboardType="phone-pad"
         style={{ borderWidth: 1 }}
       />
 <Text> ¿Por qué quieres adoptar una mascota?</Text>

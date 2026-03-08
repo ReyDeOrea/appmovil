@@ -78,8 +78,28 @@ export async function deletePet(id: string): Promise<boolean> {
     if (error) throw error;
 
     return true;
-  } catch (e) {
+  }
+   catch (e) {
     console.log("ERROR deletePet:", e);
     return false;
   }
 }
+
+ export async function adoptPet(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("pets")
+      .update({ adopted: true })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return true;
+  } catch (e) {
+    console.log("ERROR adoptPet:", e);
+    return false;
+  }
+}
+

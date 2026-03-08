@@ -31,6 +31,7 @@ export default function FavoritesPet() {
     } catch {
       images = item.image_url ? [item.image_url] : [];
     }
+    
     return (
       <TouchableOpacity
         activeOpacity={isAdopted ? 1 : 0.7}
