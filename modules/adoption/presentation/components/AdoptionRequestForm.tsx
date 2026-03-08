@@ -1,7 +1,8 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { CreateAdoptionRequest } from "../../application/createAdoption";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
@@ -9,7 +10,6 @@ const repository = new AdoptionRepository();
 const createRequest = new CreateAdoptionRequest(repository);
 
 export default function AdoptionForm() {
-
   const router = useRouter();
   const params = useLocalSearchParams();
 
@@ -34,7 +34,6 @@ export default function AdoptionForm() {
   const [pregunta_13, setPregunta13] = useState("");
 
   const enviarSolicitud = async () => {
-
     const userData = await AsyncStorage.getItem("user");
     const user = JSON.parse(userData!);
 
@@ -45,7 +44,6 @@ export default function AdoptionForm() {
     }
 
     try {
-
       await createRequest.execute({
         pet_id: pet.id,
         user_id: user.id,
@@ -70,119 +68,192 @@ export default function AdoptionForm() {
         pregunta_13,
       });
 
-     const existing = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
-    const requests = existing ? JSON.parse(existing) : [];
-    requests.push({ id: pet.id, pet }); 
-    await AsyncStorage.setItem(`adoptionRequest_${user.id}`, JSON.stringify(requests));
+      const existing = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
+      const requests = existing ? JSON.parse(existing) : [];
+      requests.push({ id: pet.id, pet });
 
-    Alert.alert("Solicitud enviada");
-    router.back();
+      await AsyncStorage.setItem(
+        `adoptionRequest_${user.id}`,
+        JSON.stringify(requests)
+      );
 
-  } catch (error: any) {
-    Alert.alert(error.message);
-  }
-};
+      Alert.alert("Solicitud enviada");
+      router.back();
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
+    <ScrollView style={styles.container}>
 
-    <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+        </TouchableOpacity>
 
-      <Text>Nombre</Text>
-      <TextInput onChangeText={setNombre}
-        style={{ borderWidth: 1 }}
-      />
+        <View style={styles.headerCenter}>
+          <Text style={styles.title}>Animaland</Text>
+          <MaterialCommunityIcons name="dog" size={30} color="#fff" />
+        </View>
+      </View>
 
-      <Text>Apellido</Text>
-      <TextInput onChangeText={setApellido}
-        style={{ borderWidth: 1 }}
-      />
+      <View style={styles.form}>
 
-      <Text>Edad</Text>
-      <TextInput onChangeText={setEdad}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.section}>Datos personales</Text>
 
-      <Text>Ubicación</Text>
-      <TextInput onChangeText={setUbicacion}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput style={styles.input} onChangeText={setNombre} />
 
-      <Text>Teléfono</Text>
-      <TextInput onChangeText={setTelefono}
-       keyboardType="phone-pad"
-        style={{ borderWidth: 1 }}
-      />
-<Text> ¿Por qué quieres adoptar una mascota?</Text>
-      <TextInput onChangeText={setPregunta1}
-        style={{ borderWidth: 1 }}
-      />
-      <Text>¿Vives en casa o departamento?</Text>
-      <TextInput onChangeText={setPregunta2}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Apellido</Text>
+        <TextInput style={styles.input} onChangeText={setApellido} />
 
-      <Text>Si es rentado ¿te permiten mascotas?</Text>
-      <TextInput onChangeText={setPregunta3}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Edad</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          onChangeText={setEdad}
+        />
 
-        <Text>¿Tienes jardín o espacio exterior?</Text>
-      <TextInput onChangeText={setPregunta4}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Ubicación</Text>
+        <TextInput style={styles.input} onChangeText={setUbicacion} />
 
-      <Text>¿Has tenido mascotas antes?</Text>
-      <TextInput onChangeText={setPregunta5}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="phone-pad"
+          onChangeText={setTelefono}
+        />
 
-      <Text>¿Qué pasó con esas mascotas?</Text>
-      <TextInput onChangeText={setPregunta6}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.section}>Preguntas</Text>
 
-      <Text>¿Actualmente tienes mascotas?</Text>
-      <TextInput onChangeText={setPregunta7}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Por qué quieres adoptar una mascota?</Text>
+        <TextInput style={styles.textArea} multiline onChangeText={setPregunta1} />
 
-      <Text>¿Qué tipo y cuántas?</Text>
-      <TextInput onChangeText={setPregunta8}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Vives en casa o departamento?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta2} />
 
-      <Text>¿Cuánto tiempo estará sola la mascota?</Text>
-      <TextInput onChangeText={setPregunta9}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>Si es rentado ¿te permiten mascotas?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta3} />
 
-       <Text>¿Quién cuidará de la mascota cuando no estés</Text>
-      <TextInput onChangeText={setPregunta10}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Tienes jardín o espacio exterior?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta4} />
 
-      <Text>¿Todos en casa están de acuerdo con la dopción?</Text>
-      <TextInput onChangeText={setPregunta11}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Has tenido mascotas antes?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta5} />
 
-      <Text>¿Cuál es tu presupuesto mensual para la mascota?</Text>
-      <TextInput onChangeText={setPregunta12}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Qué pasó con esas mascotas?</Text>
+        <TextInput style={styles.textArea} multiline onChangeText={setPregunta6} />
 
-      <Text>¿Aceptas esterilización/castración si es necesario?</Text>
-      <TextInput onChangeText={setPregunta13}
-        style={{ borderWidth: 1 }}
-      />
+        <Text style={styles.label}>¿Actualmente tienes mascotas?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta7} />
 
-      <TouchableOpacity
-        onPress={enviarSolicitud}
-        style={{ backgroundColor: "#E5DCCC", padding: 15, marginTop: 10 }}
-      >
-        <Text>Enviar solicitud</Text>
-      </TouchableOpacity>
+        <Text style={styles.label}>¿Qué tipo y cuántas?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta8} />
 
+        <Text style={styles.label}>¿Cuánto tiempo estará sola la mascota?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta9} />
+
+        <Text style={styles.label}>¿Quién cuidará cuando no estés?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta10} />
+
+        <Text style={styles.label}>¿Todos están de acuerdo con la adopción?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta11} />
+
+        <Text style={styles.label}>¿Presupuesto mensual para la mascota?</Text>
+        <TextInput style={styles.input} onChangeText={setPregunta12} />
+
+        <Text style={styles.label}>
+          ¿Aceptas esterilización/castración si es necesario?
+        </Text>
+        <TextInput style={styles.input} onChangeText={setPregunta13} />
+
+        <TouchableOpacity style={styles.button} onPress={enviarSolicitud}>
+          <Text style={styles.buttonText}>Enviar solicitud</Text>
+        </TouchableOpacity>
+
+      </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FDF8F0",
+  },
+
+  header: {
+    backgroundColor: "#B7C979",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 15,
+  },
+
+  headerCenter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+
+  title: {
+    fontSize: 28,
+    color: "#fff",
+    fontWeight: "bold",
+    marginRight: 8,
+  },
+
+  form: {
+    padding: 20,
+  },
+
+  section: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  label: {
+    marginBottom: 4,
+    color: "#444",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#E8E0D0",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 10,
+    height: 90,
+    textAlignVertical: "top",
+    marginBottom: 12,
+  },
+
+  button: {
+    backgroundColor: "#E5DCCC",
+    padding: 16,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 40,
+  },
+
+  buttonText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});
