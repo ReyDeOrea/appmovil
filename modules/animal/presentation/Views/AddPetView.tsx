@@ -201,22 +201,48 @@ export default function AddPetScreen() {
             </View>
 
             <Text style={styles.inputLabel}>Edad</Text>
-            <TextInput style={styles.inputFull} placeholder="Edad" value={age} onChangeText={setAge} />
+            <TextInput style={styles.inputFull}
+              placeholder="Edad"
+              value={age}
+              onChangeText={setAge}
+            />
 
             <Text style={styles.inputLabel}>Raza</Text>
-            <TextInput style={styles.inputFull} placeholder="Raza" value={breed} onChangeText={setBreed} />
+            <TextInput style={styles.inputFull}
+              placeholder="Raza"
+              value={breed}
+              onChangeText={setBreed}
+            />
 
             <Text style={styles.inputLabel}>Ubicación</Text>
-            <TextInput style={styles.inputFull} placeholder="Ubicación" value={location} onChangeText={setLocation} />
+            <TextInput style={styles.inputFull}
+              placeholder="Ubicación"
+              value={location}
+              onChangeText={setLocation}
+            />
 
             <Text style={styles.inputLabel}>Descripción</Text>
-            <TextInput style={styles.textArea} placeholder="Da una breve descripción" value={description} onChangeText={setDescription} multiline />
+            <TextInput style={styles.textArea}
+              placeholder="Da una breve descripción"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
 
             <Text style={styles.sectionTitle}>Salud</Text>
-            <TextInput style={styles.inputFull} placeholder="Alergias / Vacunas / Discapacidad" value={healthInfo} onChangeText={setHealthInfo} multiline />
+            <TextInput style={styles.inputFull}
+              placeholder="Alergias / Vacunas / Discapacidad"
+              value={healthInfo}
+              onChangeText={setHealthInfo} multiline
+            />
 
             <Text style={styles.sectionTitle}>Contacto</Text>
-            <TextInput style={styles.inputFull} placeholder="Número de teléfono" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+            <TextInput style={styles.inputFull}
+              placeholder="Número de teléfono"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
           </View>
 
           <View style={styles.rightColumn}>
@@ -236,7 +262,9 @@ export default function AddPetScreen() {
               <Text style={styles.buttonText}>Subir foto</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.saveButton, isSaving && { opacity: 0.5 }]} onPress={savePet} disabled={isSaving}>
+            <TouchableOpacity style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
+              onPress={savePet}
+              disabled={isSaving}>
               <Text style={styles.buttonText}>{isSaving ? "Guardando..." : "Guardar mascota"}</Text>
             </TouchableOpacity>
 
