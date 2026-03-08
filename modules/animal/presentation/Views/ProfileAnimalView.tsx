@@ -7,17 +7,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    Alert,
-    Dimensions,
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 import { Pet } from "../../domain/pet";
@@ -219,12 +209,6 @@ export function ProfileAnimal() {
         <EvilIcons name="location" size={24} color="black" />
         <Text style={{ flex: 1 }}>{mascota.location}</Text>
       </View>
-
-      {mascota.adopted && (
-        <Text style={styles.adoptedText}>
-          Esta mascota ya fue adoptada
-        </Text>
-      )}
 
       <View style={styles.B}>
         <TouchableOpacity

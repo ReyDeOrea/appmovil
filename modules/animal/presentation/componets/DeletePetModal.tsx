@@ -11,30 +11,23 @@ interface DeletePetModalProps {
 
 export default function DeletePetModal({ visible, onClose, petId, onDeleted }: DeletePetModalProps) {
 
- const handleDeletePet = async () => {
-  if (!petId) return;
+  const handleDeletePet = async () => {
+    if (!petId) return;
 
-  try {
-    await deletePetUseCase(petId);
+    try {
+      await deletePetUseCase(petId);
 
-    Alert.alert("Mascota eliminada");
-    onClose();
-    onDeleted && onDeleted();
+      Alert.alert("Mascota eliminada");
+      onClose();
+      onDeleted && onDeleted();
 
-  } catch (error: any) {
-    Alert.alert("Error", error.message);
-  }
-};
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
+  };
 
   const confirmDelete = () => {
-    Alert.alert(
-      "Confirmar eliminación",
-      "¿Estás seguro de querer eliminar esta mascota? Esta acción no se puede deshacer.",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Eliminar", style: "destructive", onPress: handleDeletePet },
-      ]
-    );
+    handleDeletePet();
   };
 
   return (

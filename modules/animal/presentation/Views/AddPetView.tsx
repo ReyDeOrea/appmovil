@@ -12,13 +12,16 @@ import { PetSex, PetSize, PetType } from "../../domain/pet";
 const { width } = Dimensions.get("window");
 const BANNER_HEIGHT = width * 0.42;
 
+const petTypes: PetType[] = ["perro", "gato"];
+const petSex: PetSex[] = ["macho", "hembra"];
+
 export default function AddPetScreen() {
   const router = useRouter();
-  const [type, setType] = useState("");
+  const [type, setType] = useState<PetType | "">("");
   const [name, setName] = useState("");
-  const [sex, setSex] = useState("");
+  const [sex, setSex] = useState<PetSex | "">("");
+  const [size, setSize] = useState<PetSize | "">("");
   const [age, setAge] = useState("");
-  const [size, setSize] = useState("");
   const [breed, setBreed] = useState("");
   const [healthInfo, setHealthInfo] = useState("");
   const [description, setDescription] = useState("");
@@ -60,22 +63,16 @@ export default function AddPetScreen() {
   };
 
   const savePet = async () => {
+
+    if (img.length !== 5) {
+      Alert.alert("Debes seleccionar exactamente 5 imágenes");
+      setIsSaving(false);
+      return;
+    }
     if (isSaving) return;
     setIsSaving(true);
 
     try {
-      if (!type || !name || !sex || !age || !size || !breed || !healthInfo || !description || !phone || !location) {
-        Alert.alert("Faltan campos", "Todos los campos son obligatorios");
-        setIsSaving(false);
-        return;
-      }
-
-      if (img.length < 5) {
-        Alert.alert("Debe seleccionar mínimo 5 imágenes");
-        setIsSaving(false);
-        return;
-      }
-
       const u = await AsyncStorage.getItem("user");
       if (!u) {
         Alert.alert("No hay sesión iniciada");
@@ -105,7 +102,7 @@ export default function AddPetScreen() {
         breed: breed.trim(),
         health_info: healthInfo.trim(),
         description: description.trim(),
-        image_url: JSON.stringify(imageUrl), // todas las imágenes juntas
+        image_url: JSON.stringify(imageUrl),
         phone: phone.trim(),
         location: location.trim(),
       });
@@ -161,7 +158,7 @@ export default function AddPetScreen() {
 
             <Text style={styles.inputLabel}>Tipo de animal</Text>
             <View style={styles.selectionContainer}>
-              {["perro", "gato"].map((t) => (
+              {petTypes.map((t) => (
                 <TouchableOpacity
                   key={t}
                   style={[styles.selectionButton, type === t && styles.selectionButtonActive]}
@@ -178,7 +175,7 @@ export default function AddPetScreen() {
             <View style={{ marginBottom: 12 }}>
               <Text style={styles.inputLabel}>Sexo</Text>
               <View style={styles.selectionContainer}>
-                {["macho", "hembra"].map((s) => (
+                {petSex.map((s) => (
                   <TouchableOpacity
                     key={s}
                     style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
@@ -191,7 +188,7 @@ export default function AddPetScreen() {
 
               <Text style={styles.inputLabel}>Tamaño</Text>
               <View style={styles.selectionContainer}>
-                {["pequeño", "mediano", "grande"].map((s) => (
+                {Object.values(PetSize).map((s) => (
                   <TouchableOpacity
                     key={s}
                     style={[styles.selectionButton, size === s && styles.selectionButtonActive]}

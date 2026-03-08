@@ -3,62 +3,102 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { sendPasswordResetEmail } from "../../application/sendPasswordResetEmail";
-import { validateEmail } from "../../application/validateEmail";
+import { ResetPasswordUseCase } from '../../application/resetPassword';
+import { VerifyUserUseCase } from '../../application/verifyUserCase';
+import { UserProfile } from "../../domain/user";
+import { SupabaseUserRepository } from '../../infraestructure/userDataSource';
+import NewPasswordModal from './NewPasswordModal';
 
 export default function Password() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const userRepo = new SupabaseUserRepository();
+  const verifyUserUseCase = new VerifyUserUseCase(userRepo);
+  const resetPasswordUseCase = new ResetPasswordUseCase(userRepo);
 
-const handleReset = async () => {
-  try {
-    setLoading(true);
-    validateEmail(email); 
-    await sendPasswordResetEmail(email); 
-    Alert.alert("Listo", "Te enviamos un correo para cambiar tu contraseña");
-    router.back();
-  } catch (err: any) {
-    Alert.alert("Error", err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  const handleVerify = async () => {
+    try {
+      setLoading(true);
+      const user = await verifyUserUseCase.execute(username, email);
+      setProfile(user);
+      setModalVisible(true);
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const handlePasswordChange = async (newPass: string, confirmPass: string) => {
+    if (!profile) return;
+
+    try {
+       await resetPasswordUseCase.execute({
+      user: profile,
+      newPassword: newPass,
+      confirmPassword: confirmPass,
+      });
+
+      Alert.alert("Listo", "Contraseña actualizada correctamente");
+      setModalVisible(false);
+      router.back();
+    }
+    catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
       <View>
 
+        {/* Header */}
         <View style={styles.BC}>
           <View style={styles.BR}>
-            <Text style={styles.txtSU}>
-              Animaland
-            </Text>
-            <MaterialCommunityIcons name="dog" size={30} color="white"
-            />
+            <Text style={styles.txtSU}>Animaland</Text>
+            <MaterialCommunityIcons name="dog" size={30} color="white" />
           </View>
         </View>
 
-        <Image style={styles.img}
-          source={require('../../../../assets/images/Cat.jpeg')}
-        />
+        <Image style={styles.img} source={require('../../../../assets/images/Cat.jpeg')} />
 
-        <Text style={styles.subtitle}>Ingresa tu correo</Text>
+        <Text style={styles.subtitle}>Ingresa tu usuario y correo</Text>
+
+        {/* Input usuario */}
+        <View style={styles.BI}>
+          <TextInput
+            placeholder="Usuario"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            style={{ flex: 1 }}
+          />
+        </View>
 
         <View style={styles.BI}>
-          <MaterialIcons name="email" size={24} color="#FFE8A3"
-          />
+          <MaterialIcons name="email" size={24} color="#FFE8A3" />
           <TextInput
             placeholder="Correo electrónico"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            style={{ flex: 1 }}
           />
         </View>
+
         <TouchableOpacity style={styles.button}
-          onPress={handleReset}
-          disabled={loading}>
-          {loading ? <ActivityIndicator color="white" /> : <Text style={styles.txtBtn}>Enviar enlace</Text>}
+          onPress={handleVerify} disabled={loading}>
+          {loading ? <ActivityIndicator color="white" /> : <Text style={styles.txtBtn}>Verificar</Text>}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -67,19 +107,22 @@ const handleReset = async () => {
         </TouchableOpacity>
 
       </View>
+
+      <NewPasswordModal
+        visible={modalVisible}
+        loading={loading}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handlePasswordChange}
+      />
+
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 30,
     flexGrow: 1,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
@@ -147,4 +190,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
   },
-})
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+  },
+});
