@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
@@ -43,6 +44,7 @@ export default function FavoritesPet() {
           });
         }}
       >
+        
         <View style={[styles.card, isAdopted && styles.cardDisabled]}>
           <View style={{ position: "relative" }}>
             <Image
@@ -65,12 +67,24 @@ export default function FavoritesPet() {
             <Text style={styles.unavailable}>No disponible</Text>
           )}
         </View>
+
+        
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
+
+    <View style={styles.b}>
+      <View style={styles.row}>
+        <Text style={styles.txtN}>Animaland</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <MaterialCommunityIcons name="dog" size={33} color="#fff" />
+        </View>
+      </View>
+    </View>
+      
       {favorites.length === 0 ? (
         <Text>No tienes favoritos aún</Text>
       ) : (
@@ -85,16 +99,36 @@ export default function FavoritesPet() {
 }
 
 const styles = StyleSheet.create({
+   row: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10
+  },
+  b: {
+    width: "100%",
+    height: 60,
+    backgroundColor: "#B7C979",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  txtN: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 25,
+    marginRight: 5
+  },
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: '#fff'
+    backgroundColor: "#FDF8F0"
   },
   card: {
     backgroundColor: "white",
+    borderColor: "#000",
     padding: 10,
     marginBottom: 15,
-    borderRadius: 12,
+    borderRadius: 25,
+     marginHorizontal: 25,    
     elevation: 3,
   },
   cardDisabled: {
@@ -103,12 +137,14 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 200,
-    borderRadius: 10,
+    borderRadius: 25,
   },
   name: {
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
+    textAlign:"center",
+    color: "#291110"
   },
   badge: {
     position: "absolute",

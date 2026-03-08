@@ -92,7 +92,9 @@ const loadPets = async () => {
             <View style={styles.b}>
               <View style={styles.row}>
                 <Text style={styles.txtN}>Animaland</Text>
+                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialCommunityIcons name="dog" size={33} color="#fff" />
+                </View>
               </View>
             </View>
           </>
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
   b: {
     width: "100%",
     height: 60,
-    backgroundColor: "#d4b37a",
+    backgroundColor: "#B7C979",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#f5f5f5"
+    backgroundColor: "#FDF8F0"
   },
   title: {
     fontSize: 22,
