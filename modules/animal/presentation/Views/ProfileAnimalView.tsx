@@ -1,15 +1,28 @@
+import * as Clipboard from "expo-clipboard";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Dimensions,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import * as Clipboard from "expo-clipboard";
+import { checkAdoptionRequest } from "../../application/checkAdoptionRequest";
+import { checkFavoritePet } from "../../application/checkFavoritePet";
+import { checkUserSession, getUserData } from "../../application/checkUserSession";
+import { toggleFavoritePet } from "../../application/toggleFavoritePet";
 import { Pet } from "../../domain/pet";
 
 export function ProfileAnimal() {
@@ -23,24 +36,6 @@ export function ProfileAnimal() {
   const [hasRequested, setHasRequested] = useState(false);
   const [userLogged, setUserLogged] = useState(false);
 
-  const verificarUsuario = async () => {
-    const userSession = await AsyncStorage.getItem("user");
-
-    if (!userSession) {
-      Alert.alert(
-        "Debes iniciar sesión",
-        "Necesitas iniciar sesión para agregar favoritos",
-        [
-          { text: "Cancelar", style: "cancel" },
-          { text: "Ir a Login", onPress: () => router.push("/login") },
-        ]
-      );
-      return false;
-    }
-
-    return true;
-  };
-
   let mascota: Pet | null = null;
 
   if (typeof params.pet === "string") {
@@ -52,65 +47,68 @@ export function ProfileAnimal() {
   }
 
   useEffect(() => {
-    if (mascota) {
-      checkIfFavorite();
-      checkUserAndRequest();
-    }
+    if (!mascota) return;
+    initialize();
   }, []);
 
-  const checkIfFavorite = async () => {
-    const userData = await AsyncStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
+  const initialize = async () => {
+    const logged = await checkUserSession();
+    setUserLogged(logged);
+
+    if (!logged) return;
+
+    const user = await getUserData();
     if (!user) return;
 
-    const data = await AsyncStorage.getItem(`favorites_${user.id}`);
-    const favorites = data ? JSON.parse(data) : [];
+    const fav = await checkFavoritePet(user.id.toString(), mascota!.id.toString());
+    setIsFavorite(fav);
 
-    const exists = favorites.some((pet: Pet) => pet.id === mascota?.id);
-    setIsFavorite(exists);
+    const requested = await checkAdoptionRequest(user.id.toString(), mascota!.id.toString());
+    setHasRequested(requested);
   };
 
-  const checkUserAndRequest = async () => {
-    const userData = await AsyncStorage.getItem("user");
-
-    if (!userData) return setUserLogged(false);
-
-    setUserLogged(true);
-    const user = JSON.parse(userData);
-
-    const data = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
-    const requests = data ? JSON.parse(data) : [];
-
-    const exists = requests.some((pet: Pet) => pet.id === mascota?.id);
-    setHasRequested(exists);
-  };
-
-  const toggleFavorite = async () => {
-    const autorizado = await verificarUsuario();
-    if (!autorizado) return;
-
-    const userData = await AsyncStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
-    if (!user) return;
-
-    const data = await AsyncStorage.getItem(`favorites_${user.id}`);
-    let favorites = data ? JSON.parse(data) : [];
-
-    if (isFavorite) {
-      favorites = favorites.filter((pet: Pet) => pet.id !== mascota?.id);
-      Alert.alert("Eliminado", "Se quitó de favoritos");
-    } else {
-      favorites.push(mascota);
-      Alert.alert("Agregado", "Se agregó a favoritos");
+  const handleToggleFavorite = async () => {
+    if (!(await checkUserSession())) {
+      Alert.alert(
+        "Debes iniciar sesión",
+        "Necesitas iniciar sesión para agregar favoritos"
+      );
+      return;
     }
 
-    await AsyncStorage.setItem(
-      `favorites_${user.id}`,
-      JSON.stringify(favorites)
-    );
+    const user = await getUserData();
+    if (!user || !mascota) return;
 
-    setIsFavorite(!isFavorite);
+    const newStatus = await toggleFavoritePet(user.id.toString(), mascota);
+    setIsFavorite(newStatus);
+
+    Alert.alert(
+      newStatus ? "Agregado" : "Eliminado",
+      newStatus ? "Se agregó a favoritos" : "Se quitó de favoritos"
+    );
   };
+
+  const llamar = () => Linking.openURL(`tel:${mascota?.phone}`);
+
+  const copiarEnlace = async () => {
+    if (!mascota) return;
+    await Clipboard.setStringAsync(`https://app.com/animal/${mascota.id}`);
+    Alert.alert("Enlace copiado", "El enlace fue copiado");
+  };
+
+  const images: string[] = (() => {
+    if (!mascota) return [];
+    if (Array.isArray(mascota.image_url)) return mascota.image_url.filter(Boolean);
+    if (typeof mascota.image_url === "string") {
+      try {
+        const parsed = JSON.parse(mascota.image_url);
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [mascota.image_url];
+      } catch {
+        return [mascota.image_url];
+      }
+    }
+    return [];
+  })();
 
   if (!mascota) {
     return (
@@ -120,46 +118,16 @@ export function ProfileAnimal() {
     );
   }
 
-  const llamar = () => {
-    Linking.openURL(`tel:${mascota.phone}`);
-  };
-
-  const copiarEnlace = async () => {
-    const enlace = `https://app.com/animal/${mascota.id}`;
-    await Clipboard.setStringAsync(enlace);
-    Alert.alert("Enlace copiado", "El enlace fue copiado");
-  };
-
-  const images: string[] = (() => {
-    if (Array.isArray(mascota.image_url)) {
-      return mascota.image_url.filter(Boolean);
-    } else if (typeof mascota.image_url === "string") {
-      try {
-        const parsed = JSON.parse(mascota.image_url);
-        if (Array.isArray(parsed)) return parsed.filter(Boolean);
-      } catch {
-        return [mascota.image_url].filter(Boolean);
-      }
-    }
-    return [];
-  })();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <AntDesign name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{mascota.name}</Text>
 
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={toggleFavorite}
-        >
+        <TouchableOpacity style={styles.favoriteButton} onPress={handleToggleFavorite}>
           <FontAwesome
             name={isFavorite ? "heart" : "heart-o"}
             size={26}
@@ -173,12 +141,9 @@ export function ProfileAnimal() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={(e) => {
-            const page = Math.round(
-              e.nativeEvent.contentOffset.x / screenWidth
-            );
-            setImagePage(page);
-          }}
+          onScroll={(e) =>
+            setImagePage(Math.round(e.nativeEvent.contentOffset.x / screenWidth))
+          }
           scrollEventThrottle={16}
         >
           {images.map((uri, idx) => (
@@ -210,6 +175,10 @@ export function ProfileAnimal() {
         <Text style={{ flex: 1 }}>{mascota.location}</Text>
       </View>
 
+      {mascota.adopted && (
+        <Text style={styles.adoptedText}>Esta mascota ya fue adoptada</Text>
+      )}
+
       <View style={styles.B}>
         <TouchableOpacity
           style={tab === "info" ? styles.IBS : styles.I}
@@ -217,7 +186,6 @@ export function ProfileAnimal() {
         >
           <Text>Información</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={tab === "salud" ? styles.IBS : styles.I}
           onPress={() => setTab("salud")}
@@ -234,17 +202,14 @@ export function ProfileAnimal() {
                 <FontAwesome name="intersex" size={24} />
                 <Text>{mascota.sex}</Text>
               </View>
-
               <View style={styles.RI}>
                 <Entypo name="ruler" size={24} />
                 <Text>{mascota.size}</Text>
               </View>
-
               <View style={styles.RI}>
                 <FontAwesome5 name="calendar-alt" size={24} />
                 <Text>{mascota.age}</Text>
               </View>
-
               <View style={styles.RI}>
                 <FontAwesome5
                   name={mascota.type === "perro" ? "dog" : "cat"}
@@ -254,18 +219,16 @@ export function ProfileAnimal() {
               </View>
             </View>
 
-          
             <View style={styles.separador} />
 
             <Text style={styles.txtC}>Descripción</Text>
-
             <View style={styles.descripcionBox}>
               <Text>{mascota.description}</Text>
             </View>
-  <View style={styles.separador} />
+
+            <View style={styles.separador} />
 
             <Text style={styles.txtC}>Contacto</Text>
-
             <View style={styles.BRI}>
               <TouchableOpacity style={styles.RI} onPress={llamar}>
                 <Feather name="phone" size={24} />
@@ -277,9 +240,7 @@ export function ProfileAnimal() {
               <TouchableOpacity
                 style={[
                   styles.botonDescargar,
-                  (!userLogged || hasRequested) && {
-                    backgroundColor: "#ccc",
-                  },
+                  (!userLogged || hasRequested) && { backgroundColor: "#ccc" },
                 ]}
                 onPress={() => {
                   if (!userLogged) {
@@ -343,6 +304,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 20,
     bottom: 20,
+    zIndex: 10,
   },
 
   favoriteButton: {
