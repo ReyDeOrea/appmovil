@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import * as Crypto from 'expo-crypto';
 import { UserProfile } from "../domain/user";
 import { UserRepository } from "../domain/userRepository";
 
@@ -18,7 +19,7 @@ export class SupabaseUserRepository implements UserRepository {
   async updateProfile(profile: UserProfile): Promise<void> {
     const { error } = await supabase
       .from("clients")
-      .update(profile)
+        .update({ password: profile.password })
       .eq("id", profile.id);
 
     if (error) throw error;
@@ -33,8 +34,31 @@ export class SupabaseUserRepository implements UserRepository {
   }
 
   async login(username: string, password: string): Promise<UserProfile | null> {
-    return null;
-  }
+  const { data, error } = await supabase
+    .from("clients")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (error || !data) return null;
+
+  const passwordHash = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    password
+  );
+
+  if (passwordHash !== data.password) return null;
+
+  const userProfile: UserProfile = {
+    id: data.id,
+    username: data.username,
+    phone: data.phone ?? "",     
+    email: data.email,
+    password: data.password       
+  };
+
+  return userProfile;
+}
 
   async verifyUserEmail(username: string, email: string): Promise<UserProfile | null> {
   const { data, error } = await supabase
