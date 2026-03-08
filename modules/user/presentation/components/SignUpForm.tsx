@@ -24,14 +24,18 @@ export default function SignUp() {
 const handleRegister = async () => {
   try {
     setLoading(true);
+
     validateSignUpData({ username: usuario, phone: numt, email, password, confirmPassword });
     await checkUserExists(email, usuario, numt);
+
     const newUser = await registerUser({ email, username: usuario, password, phone: numt, avatar_url: avatarUrl });
     Alert.alert("Cuenta creada 🎉");
     router.replace("/catalog");
-  } catch (err: any) {
+  } 
+  catch (err: any) {
     Alert.alert("Error", err.message);
-  } finally {
+  }
+   finally {
     setLoading(false);
   }
 };
