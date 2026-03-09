@@ -59,15 +59,15 @@ export default function ViewRequest() {
   }, [params.request]);
 
   const getStatusStyle = (estado: string) => {
-    switch (estado) {
-      case "aprobada":
-        return { backgroundColor: "#B7E4C7", color: "#1B4332" };
-      case "rechazada":
-        return { backgroundColor: "#F8C8C8", color: "#7A1C1C" };
-      default:
-        return { backgroundColor: "#FFF3BF", color: "#7A5C00" };
-    }
+      const key = estado?.trim().toLowerCase() || "en espera";
+    return statusColors[key] ?? statusColors["en espera"];
   };
+  const statusColors: Record<string, { background: string; text: string }> = {
+    aceptado: { background: "#B7E4C7", text: "#1B4332" },
+    rechazado: { background: "#F8C8C8", text: "#7A1C1C" },
+    "en espera": { background: "#FFF3BF", text: "#7A5C00" },
+  };
+
 
   if (!request) {
     return (
@@ -153,8 +153,8 @@ export default function ViewRequest() {
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Estado de la solicitud</Text>
 
-            <View style={[styles.statusBadge, { backgroundColor: statusStyle.backgroundColor }]}>
-              <Text style={{ color: statusStyle.color, fontWeight: "bold" }}>
+            <View style={[styles.statusBadge, { backgroundColor: statusStyle.background }]}>
+              <Text style={{ color: statusStyle.text, fontWeight: "bold" }}>
                 {request.estado?.toUpperCase()}
               </Text>
             </View>
