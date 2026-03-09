@@ -49,7 +49,8 @@ export default function RequestsSent() {
       data={requests}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => verSolicitud(item)} style={styles.card}>
+        <TouchableOpacity
+         onPress={() => verSolicitud(item)} style={styles.card}>
           <Text style={styles.text}>
             <Text style={styles.label}>Mascota:</Text> {item.pet_name}
           </Text>

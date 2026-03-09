@@ -5,18 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { ModalMenu } from "../../../user/presentation/components/modalMenu";
 import { getPetsUseCase } from "../../application/getPets";
 import { Pet } from "../../domain/pet";
@@ -140,7 +129,6 @@ export default function CatalogView() {
     return true;
   });
 
-  // Dividir en filas
   const chunks: Pet[][] = [];
   for (let i = 0; i < filteredPets.length; i += 3) {
     chunks.push(filteredPets.slice(i, i + 3));
@@ -223,7 +211,8 @@ export default function CatalogView() {
             value={search}
             onChangeText={setSearch}
           />
-          <TouchableOpacity style={styles.F} onPress={() => setFilterOpen(true)}>
+          <TouchableOpacity style={styles.F}
+           onPress={() => setFilterOpen(true)}>
             <Ionicons name="filter-outline" size={24} color="#D09100" />
           </TouchableOpacity>
         </View>

@@ -215,7 +215,8 @@ const handleUpdatePet = async () => {
           </>
         )}
 
-        <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
+        <TouchableOpacity style={styles.imageBtn} 
+        onPress={pickImage}>
           <Text style={styles.imageBtnText}>Insertar Imagen</Text>
         </TouchableOpacity>
 
@@ -237,7 +238,11 @@ const handleUpdatePet = async () => {
           ))}
         </View>
         <Label style={styles.LabelText}>Nombre del animal</Label>
-        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
+        <TextInput style={styles.input} 
+        placeholder="Nombre"
+         value={name} 
+         onChangeText={setName}
+          />
         <Label style={styles.LabelText}>Sexo del animal</Label>
         <View style={styles.selectionContainer}>
           {["macho", "hembra"].map((s) => (
@@ -254,7 +259,11 @@ const handleUpdatePet = async () => {
           ))}
         </View>
         <Label style={styles.LabelText}>Edad del animal</Label>
-        <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} />
+        <TextInput style={styles.input} 
+        placeholder="Edad" 
+        value={age} 
+        onChangeText={setAge} 
+        />
         <Label style={styles.LabelText}>Tamaño del animal</Label>
         <View style={styles.selectionContainer}>
           {["pequeño", "mediano", "grande"].map((s) => (
@@ -271,7 +280,11 @@ const handleUpdatePet = async () => {
           ))}
         </View>
         <Label style={styles.LabelText}>Raza del animal</Label>
-        <TextInput style={styles.input} placeholder="Raza" value={breed} onChangeText={setBreed} />
+        <TextInput style={styles.input} 
+        placeholder="Raza"
+         value={breed}
+         onChangeText={setBreed}
+          />
 
         <Text style={styles.sectionTitle}>Salud</Text>
         <TextInput
@@ -335,13 +348,11 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     backgroundColor: "#FDF8F0",
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-
   b: {
     width: "100%",
     height: 70,
@@ -350,14 +361,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-
   txtN: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 30,
     marginRight: 6,
   },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -365,14 +374,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: "center",
   },
-
   LabelText: {
     fontSize: 12,
     color: "#666",
     marginBottom: 4,
     fontWeight: "500",
   },
-
   input: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -383,7 +390,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 8,
   },
-
   textArea: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -396,18 +402,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
-
   imgD: {
     height: BANNER_HEIGHT,
     borderRadius: 20,
   },
-
   BP: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 8,
   },
-
   dot: {
     width: 8,
     height: 8,
@@ -415,11 +418,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     margin: 5,
   },
-
   dotActive: {
     backgroundColor: "#000",
   },
-
   imageBtn: {
     backgroundColor: "#D4B37A",
     padding: 14,
@@ -428,12 +429,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     elevation: 3,
   },
-
   imageBtnText: {
     color: "#fff",
     fontWeight: "600",
   },
-
   saveButton: {
     backgroundColor: "#B7C979",
     padding: 14,
@@ -443,7 +442,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 3,
   },
-
   cancelButton: {
     backgroundColor: "#E8B4B4",
     padding: 14,
@@ -452,13 +450,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     elevation: 3,
   },
-
   selectionContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 10,
   },
-
   selectionButton: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -467,12 +463,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
   },
-
   selectionButtonActive: {
     backgroundColor: "#E5DCCC",
     borderColor: "#DAC193",
   },
-
   selectionButtonText: {
     textTransform: "capitalize",
     fontWeight: "bold",

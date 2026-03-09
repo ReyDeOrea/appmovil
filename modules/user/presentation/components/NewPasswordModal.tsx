@@ -13,13 +13,16 @@ export default function NewPasswordModal({ visible, loading, onClose, onSubmit }
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = () => {
-     onSubmit(newPassword, confirmPassword);
+    onSubmit(newPassword, confirmPassword);
     setNewPassword("");
     setConfirmPassword("");
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
 

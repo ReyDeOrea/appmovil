@@ -29,7 +29,7 @@ const handleRegister = async () => {
     await checkUserExists(email, usuario, numt);
 
     const newUser = await registerUser({ email, username: usuario, password, phone: numt, avatar_url: avatarUrl });
-    Alert.alert("Cuenta creada 🎉");
+    Alert.alert("Cuenta creada");
     router.replace("/catalog");
   } 
   catch (err: any) {
