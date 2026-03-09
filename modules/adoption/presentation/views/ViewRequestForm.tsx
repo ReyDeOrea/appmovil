@@ -31,26 +31,26 @@ export default function ViewRequest() {
   useEffect(() => {
     const loadRequestAndPet = async () => {
       if (params.request && typeof params.request === "string") {
-        let parsedRequest = null;
-
-  
-          parsedRequest = JSON.parse(params.request);
+        try {
+          const parsedRequest = JSON.parse(params.request);
           setRequest(parsedRequest);
 
-        const pet = await repository.getPetById(parsedRequest.pet_id);
+          const pet = await repository.getPetById(parsedRequest.pet_id);
+          if (pet) {
+            const images = Array.isArray(pet.image_url)
+              ? pet.image_url
+              : typeof pet.image_url === "string"
+                ? JSON.parse(pet.image_url)
+                : [pet.image_url];
 
-        if (pet) {
-          const images = Array.isArray(pet.image_url)
-            ? pet.image_url
-            : typeof pet.image_url === "string"
-            ? JSON.parse(pet.image_url)
-            : [pet.image_url];
-
-          setRequest((prev: any) => ({
-            ...prev,
-            pet_name: pet.name,
-            pet_images: images,
-          }));
+            setRequest((prev: any) => ({
+              ...prev,
+              pet_name: pet.name,
+              pet_images: images,
+            }));
+          }
+        } catch (error) {
+          console.error("Error parseando la solicitud:", error);
         }
       }
     };
@@ -85,7 +85,6 @@ export default function ViewRequest() {
 
       <ScrollView style={styles.container}>
 
-        {/* HEADER */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
@@ -99,7 +98,6 @@ export default function ViewRequest() {
 
         <View style={styles.content}>
 
-          {/* Mascota */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Mascota</Text>
 
@@ -119,7 +117,6 @@ export default function ViewRequest() {
             )}
           </View>
 
-          {/* Adoptante */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Datos del adoptante</Text>
 
@@ -138,7 +135,6 @@ export default function ViewRequest() {
             <Text style={styles.value}>{request.adoptante_telefono}</Text>
           </View>
 
-          {/* Preguntas */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Preguntas del formulario</Text>
 

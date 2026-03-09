@@ -156,28 +156,16 @@ export default function AddPetScreen() {
         )}
 
         <View style={styles.mainContainer}>
-
           <View style={styles.rightColumn}>
 
-            <View style={styles.imageBox}>
-              {img.length > 0 ? (
-                <Image source={{ uri: img[0] }} style={styles.previewImage} />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <MaterialCommunityIcons name="camera" size={50} color="#D4B37A" />
-                  <Text style={styles.imagePlaceholderText}>Sube una foto de tu mascota</Text>
-                </View>
-              )}
-            </View>
-
-            <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+            <TouchableOpacity style={styles.uploadButton} 
+            onPress={pickImage}>
               <MaterialCommunityIcons name="camera" size={20} color="#D4B37A" style={styles.buttonIcon} />
               <Text style={styles.buttonText}>Subir foto</Text>
             </TouchableOpacity>
 
           </View>
 
-          {/* FORMULARIO */}
           <View style={styles.leftColumn}>
 
             <Text style={styles.sectionTitle}>Información Básica</Text>
@@ -225,28 +213,56 @@ export default function AddPetScreen() {
             </View>
 
             <Text style={styles.inputLabel}>Edad</Text>
-            <TextInput style={styles.inputFull} placeholder="Edad" value={age} onChangeText={setAge} />
+            <TextInput style={styles.inputFull}
+              placeholder="Edad"
+              value={age}
+              onChangeText={setAge}
+            />
 
             <Text style={styles.inputLabel}>Raza</Text>
-            <TextInput style={styles.inputFull} placeholder="Raza" value={breed} onChangeText={setBreed} />
+            <TextInput style={styles.inputFull}
+              placeholder="Raza" value={breed}
+              onChangeText={setBreed}
+            />
 
             <Text style={styles.inputLabel}>Ubicación</Text>
-            <TextInput style={styles.inputFull} placeholder="Ubicación" value={location} onChangeText={setLocation} />
+            <TextInput style={styles.inputFull}
+              placeholder="Ubicación"
+              value={location}
+              onChangeText={setLocation}
+            />
 
             <Text style={styles.inputLabel}>Descripción</Text>
-            <TextInput style={styles.textArea} placeholder="Da una breve descripción" value={description} onChangeText={setDescription} multiline />
+            <TextInput style={styles.textArea}
+              placeholder="Da una breve descripción"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
 
             <Text style={styles.sectionTitle}>Salud</Text>
-            <TextInput style={styles.inputFull} placeholder="Alergias / Vacunas / Discapacidad" value={healthInfo} onChangeText={setHealthInfo} multiline />
+            <TextInput style={styles.inputFull}
+              placeholder="Alergias / Vacunas / Discapacidad"
+              value={healthInfo}
+              onChangeText={setHealthInfo}
+              multiline
+            />
 
             <Text style={styles.sectionTitle}>Contacto</Text>
-            <TextInput style={styles.inputFull} placeholder="Número de teléfono" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+            <TextInput style={styles.inputFull}
+              placeholder="Número de teléfono"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
 
-            <TouchableOpacity style={[styles.saveButton, isSaving && { opacity: 0.5 }]} onPress={savePet} disabled={isSaving}>
+            <TouchableOpacity style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
+              onPress={savePet} disabled={isSaving}>
               <Text style={styles.buttonText}>{isSaving ? "Guardando..." : "Guardar mascota"}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
+            <TouchableOpacity style={styles.cancelButton}
+              onPress={() => router.back()}>
               <Text style={styles.buttonText}>Cancelar</Text>
             </TouchableOpacity>
 

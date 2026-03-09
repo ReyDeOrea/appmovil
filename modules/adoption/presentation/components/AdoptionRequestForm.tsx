@@ -119,10 +119,14 @@ const enviarSolicitud = async () => {
         <Text style={styles.section}>Datos personales</Text>
 
         <Text style={styles.label}>Nombre</Text>
-        <TextInput style={styles.input} onChangeText={setNombre} />
+        <TextInput style={styles.input} 
+        
+        onChangeText={setNombre} />
 
         <Text style={styles.label}>Apellido</Text>
-        <TextInput style={styles.input} onChangeText={setApellido} />
+        <TextInput style={styles.input}
+         onChangeText={setApellido} 
+         />
 
         <Text style={styles.label}>Edad</Text>
         <TextInput
@@ -132,7 +136,9 @@ const enviarSolicitud = async () => {
         />
 
         <Text style={styles.label}>Ubicación</Text>
-        <TextInput style={styles.input} onChangeText={setUbicacion} />
+        <TextInput style={styles.input}
+         onChangeText={setUbicacion} 
+         />
 
         <Text style={styles.label}>Teléfono</Text>
         <TextInput
@@ -144,47 +150,76 @@ const enviarSolicitud = async () => {
         <Text style={styles.section}>Preguntas</Text>
 
         <Text style={styles.label}>¿Por qué quieres adoptar una mascota?</Text>
-        <TextInput style={styles.textArea} multiline onChangeText={setPregunta1} />
+        <TextInput style={styles.textArea} 
+        multiline
+         onChangeText={setPregunta1}
+          />
 
         <Text style={styles.label}>¿Vives en casa o departamento?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta2} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta2} 
+        />
 
         <Text style={styles.label}>Si es rentado ¿te permiten mascotas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta3} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta3}
+         />
 
         <Text style={styles.label}>¿Tienes jardín o espacio exterior?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta4} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta4}
+         />
 
         <Text style={styles.label}>¿Has tenido mascotas antes?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta5} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta5} 
+        />
 
         <Text style={styles.label}>¿Qué pasó con esas mascotas?</Text>
-        <TextInput style={styles.textArea} multiline onChangeText={setPregunta6} />
+        <TextInput style={styles.textArea}
+         multiline 
+         onChangeText={setPregunta6} 
+         />
 
         <Text style={styles.label}>¿Actualmente tienes mascotas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta7} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta7} 
+        />
 
         <Text style={styles.label}>¿Qué tipo y cuántas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta8} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta8} 
+        />
 
         <Text style={styles.label}>¿Cuánto tiempo estará sola la mascota?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta9} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta9} 
+        />
 
         <Text style={styles.label}>¿Quién cuidará cuando no estés?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta10} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta10} 
+        />
 
         <Text style={styles.label}>¿Todos están de acuerdo con la adopción?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta11} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta11} 
+        />
 
         <Text style={styles.label}>¿Presupuesto mensual para la mascota?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta12} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta12}
+         />
 
         <Text style={styles.label}>
           ¿Aceptas esterilización/castración si es necesario?
         </Text>
-        <TextInput style={styles.input} onChangeText={setPregunta13} />
+        <TextInput style={styles.input}
+         onChangeText={setPregunta13} 
+         />
 
-        <TouchableOpacity style={styles.button} onPress={enviarSolicitud}>
+        <TouchableOpacity style={styles.button} 
+        onPress={enviarSolicitud}>
           <Text style={styles.buttonText}>Enviar solicitud</Text>
         </TouchableOpacity>
 

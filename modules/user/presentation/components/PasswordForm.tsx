@@ -61,7 +61,6 @@ export default function Password() {
     <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
       <View>
 
-        {/* Header */}
         <View style={styles.BC}>
           <View style={styles.BR}>
             <Text style={styles.txtSU}>Animaland</Text>
@@ -73,7 +72,6 @@ export default function Password() {
 
         <Text style={styles.subtitle}>Ingresa tu usuario y correo</Text>
 
-        {/* Input usuario */}
         <View style={styles.BI}>
           <TextInput
             placeholder="Usuario"
@@ -97,7 +95,8 @@ export default function Password() {
         </View>
 
         <TouchableOpacity style={styles.button}
-          onPress={handleVerify} disabled={loading}>
+          onPress={handleVerify} 
+          disabled={loading}>
           {loading ? <ActivityIndicator color="white" /> : <Text style={styles.txtBtn}>Verificar</Text>}
         </TouchableOpacity>
 
