@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { validateAdoptionForm } from "../../application/adoptionFormValidator";
 import { CreateAdoptionRequest } from "../../application/createAdoption";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
@@ -33,7 +34,31 @@ export default function AdoptionForm() {
   const [pregunta_12, setPregunta12] = useState("");
   const [pregunta_13, setPregunta13] = useState("");
 
-  const enviarSolicitud = async () => {
+const enviarSolicitud = async () => {
+
+  try {
+
+    validateAdoptionForm({
+      nombre,
+      apellido,
+      edad,
+      ubicacion,
+      telefono,
+      pregunta_1,
+      pregunta_2,
+      pregunta_3,
+      pregunta_4,
+      pregunta_5,
+      pregunta_6,
+      pregunta_7,
+      pregunta_8,
+      pregunta_9,
+      pregunta_10,
+      pregunta_11,
+      pregunta_12,
+      pregunta_13,
+    });
+
     const userData = await AsyncStorage.getItem("user");
     const user = JSON.parse(userData!);
 
@@ -43,51 +68,41 @@ export default function AdoptionForm() {
       pet = JSON.parse(params.pet);
     }
 
-    try {
-      await createRequest.execute({
-        pet_id: pet.id,
-        user_id: user.id,
-        owner_id: pet.user,
-        adoptante_nombre: nombre,
-        adoptante_apellido: apellido,
-        adoptante_edad: Number(edad),
-        adoptante_ubicacion: ubicacion,
-        adoptante_telefono: telefono,
-        pregunta_1,
-        pregunta_2,
-        pregunta_3,
-        pregunta_4,
-        pregunta_5,
-        pregunta_6,
-        pregunta_7,
-        pregunta_8,
-        pregunta_9,
-        pregunta_10,
-        pregunta_11,
-        pregunta_12,
-        pregunta_13,
-      });
+    await createRequest.execute({
+      pet_id: pet.id,
+      user_id: user.id,
+      owner_id: pet.user,
+      adoptante_nombre: nombre,
+      adoptante_apellido: apellido,
+      adoptante_edad: Number(edad),
+      adoptante_ubicacion: ubicacion,
+      adoptante_telefono: telefono,
+      pregunta_1,
+      pregunta_2,
+      pregunta_3,
+      pregunta_4,
+      pregunta_5,
+      pregunta_6,
+      pregunta_7,
+      pregunta_8,
+      pregunta_9,
+      pregunta_10,
+      pregunta_11,
+      pregunta_12,
+      pregunta_13,
+    });
 
-      const existing = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
-      const requests = existing ? JSON.parse(existing) : [];
-      requests.push({ id: pet.id, pet });
+    Alert.alert("Solicitud enviada");
+    router.back();
 
-      await AsyncStorage.setItem(
-        `adoptionRequest_${user.id}`,
-        JSON.stringify(requests)
-      );
-
-      Alert.alert("Solicitud enviada");
-      router.back();
-    } catch (error: any) {
-      Alert.alert(error.message);
-    }
-  };
+  } catch (error: any) {
+    Alert.alert(error.message);
+  }
+};
 
   return (
     <ScrollView style={styles.container}>
 
-      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />

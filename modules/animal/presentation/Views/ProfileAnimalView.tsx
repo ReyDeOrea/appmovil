@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { useFocusEffect } from "@react-navigation/native";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -46,10 +48,12 @@ export function ProfileAnimal() {
     }
   }
 
-  useEffect(() => {
-    if (!mascota) return;
-    initialize();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!mascota) return;
+      initialize();
+    }, [])
+  );
 
   const initialize = async () => {
     const logged = await checkUserSession();
@@ -63,7 +67,10 @@ export function ProfileAnimal() {
     const fav = await checkFavoritePet(user.id.toString(), mascota!.id.toString());
     setIsFavorite(fav);
 
-    const requested = await checkAdoptionRequest(user.id.toString(), mascota!.id.toString());
+    const requested = await checkAdoptionRequest(
+      user.id.toString(),
+      mascota!.id.toString()
+    );
     setHasRequested(requested);
   };
 
