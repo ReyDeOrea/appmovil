@@ -57,7 +57,10 @@ export function FilterModal({ visible, onClose, filters, setFilters }: FilterMod
   );
 
   return (
-    <Modal visible={visible} animationType="slide">
+    <Modal
+      visible={visible}
+      animationType="slide">
+
       <View style={styles.container}>
         <Text style={styles.title}>Filtros</Text>
 
@@ -70,7 +73,7 @@ export function FilterModal({ visible, onClose, filters, setFilters }: FilterMod
         <Text>Tamaño</Text>
         {renderButtons("size", ["Pequeño", "Mediano", "Grande"])}
 
-       <Text>Animales adoptados</Text>
+        <Text>Animales adoptados</Text>
         <TouchableOpacity style={[styles.btn, filters.adopted && styles.btnActive]}
           onPress={() => setFilters({ ...filters, adopted: !filters.adopted })}
         >

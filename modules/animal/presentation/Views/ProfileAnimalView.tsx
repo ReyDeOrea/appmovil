@@ -1,24 +1,14 @@
-import * as Clipboard from "expo-clipboard";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Dimensions,
-  Image,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useFocusEffect } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 import { checkAdoptionRequest } from "../../application/checkAdoptionRequest";
 import { checkFavoritePet } from "../../application/checkFavoritePet";
 import { checkUserSession, getUserData } from "../../application/checkUserSession";
@@ -46,10 +36,12 @@ export function ProfileAnimal() {
     }
   }
 
-  useEffect(() => {
-    if (!mascota) return;
-    initialize();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!mascota) return;
+      initialize();
+    }, [])
+  );
 
   const initialize = async () => {
     const logged = await checkUserSession();
@@ -63,7 +55,10 @@ export function ProfileAnimal() {
     const fav = await checkFavoritePet(user.id.toString(), mascota!.id.toString());
     setIsFavorite(fav);
 
-    const requested = await checkAdoptionRequest(user.id.toString(), mascota!.id.toString());
+    const requested = await checkAdoptionRequest(
+      user.id.toString(),
+      mascota!.id.toString()
+    );
     setHasRequested(requested);
   };
 
@@ -120,14 +115,17 @@ export function ProfileAnimal() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} 
+        onPress={() => router.back()}>
           <AntDesign name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{mascota.name}</Text>
 
-        <TouchableOpacity style={styles.favoriteButton} onPress={handleToggleFavorite}>
+        <TouchableOpacity style={styles.favoriteButton} 
+        onPress={handleToggleFavorite}>
           <FontAwesome
             name={isFavorite ? "heart" : "heart-o"}
             size={26}
@@ -165,7 +163,8 @@ export function ProfileAnimal() {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.copyIconButton} onPress={copiarEnlace}>
+        <TouchableOpacity style={styles.copyIconButton} 
+        onPress={copiarEnlace}>
           <Feather name="link" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -279,47 +278,40 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#F3F2ED",
   },
-
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
   header: {
     height: 110,
     backgroundColor: "#B8C76F",
     justifyContent: "flex-end",
     paddingBottom: 20,
   },
-
   headerTitle: {
     fontSize: 26,
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
   },
-
   backButton: {
     position: "absolute",
     left: 20,
     bottom: 20,
     zIndex: 10,
   },
-
   favoriteButton: {
     position: "absolute",
     right: 20,
     bottom: 20,
   },
-
   imageContainer: {
     marginTop: 15,
     marginHorizontal: 15,
     borderRadius: 20,
     overflow: "hidden",
   },
-
   dotsContainer: {
     position: "absolute",
     bottom: 10,
@@ -328,7 +320,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-
   dot: {
     width: 8,
     height: 8,
@@ -336,11 +327,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
     marginHorizontal: 4,
   },
-
   dotActive: {
     backgroundColor: "#000",
   },
-
   copyIconButton: {
     position: "absolute",
     top: 15,
@@ -349,14 +338,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 25,
   },
-
   txtU: {
     flexDirection: "row",
     alignItems: "center",
     marginHorizontal: 20,
     marginTop: 10,
   },
-
   adoptedText: {
     textAlign: "center",
     color: "red",
@@ -369,14 +356,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E5DCCC",
     marginVertical: 20,
   },
-
-  txtC: {
+  txtC:{
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 10,
   },
-
   B: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -385,13 +370,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 25,
   },
-
   I: {
     flex: 1,
     padding: 10,
     alignItems: "center",
   },
-
   IBS: {
     flex: 1,
     padding: 10,
@@ -399,7 +382,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
   },
-
   RI: {
     flex: 1,
     alignItems: "center",
@@ -410,17 +392,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5DCCC",
   },
-
   BRI: {
     flexDirection: "row",
     justifyContent: "space-around",
   },
-
   descargarContainer: {
     alignItems: "center",
     marginVertical: 15,
   },
-
   botonDescargar: {
     backgroundColor: "#D4B37A",
     paddingVertical: 14,
@@ -428,12 +407,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginVertical: 15,
   },
-
   textoBoton: {
     fontWeight: "bold",
     color: "#fff",
   },
-
   descripcionBox: {
     backgroundColor: "#fff",
     padding: 15,

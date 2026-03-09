@@ -24,7 +24,7 @@ export async function saveDB(pet: Partial<Pet>): Promise<Pet | null> {
     const { data, error } = await supabase
       .from("pets")
       .insert([{
-        type: pet.type ?? "dog",      // valor por defecto si no se pasa
+        type: pet.type ?? "dog", 
         name: pet.name ?? "Sin nombre",
         sex: pet.sex ?? "m",
         adopted: pet.adopted ?? false,

@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { validateAdoptionForm } from "../../application/adoptionFormValidator";
 import { CreateAdoptionRequest } from "../../application/createAdoption";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
@@ -33,7 +34,31 @@ export default function AdoptionForm() {
   const [pregunta_12, setPregunta12] = useState("");
   const [pregunta_13, setPregunta13] = useState("");
 
-  const enviarSolicitud = async () => {
+const enviarSolicitud = async () => {
+
+  try {
+
+    validateAdoptionForm({
+      nombre,
+      apellido,
+      edad,
+      ubicacion,
+      telefono,
+      pregunta_1,
+      pregunta_2,
+      pregunta_3,
+      pregunta_4,
+      pregunta_5,
+      pregunta_6,
+      pregunta_7,
+      pregunta_8,
+      pregunta_9,
+      pregunta_10,
+      pregunta_11,
+      pregunta_12,
+      pregunta_13,
+    });
+
     const userData = await AsyncStorage.getItem("user");
     const user = JSON.parse(userData!);
 
@@ -43,51 +68,41 @@ export default function AdoptionForm() {
       pet = JSON.parse(params.pet);
     }
 
-    try {
-      await createRequest.execute({
-        pet_id: pet.id,
-        user_id: user.id,
-        owner_id: pet.user,
-        adoptante_nombre: nombre,
-        adoptante_apellido: apellido,
-        adoptante_edad: Number(edad),
-        adoptante_ubicacion: ubicacion,
-        adoptante_telefono: telefono,
-        pregunta_1,
-        pregunta_2,
-        pregunta_3,
-        pregunta_4,
-        pregunta_5,
-        pregunta_6,
-        pregunta_7,
-        pregunta_8,
-        pregunta_9,
-        pregunta_10,
-        pregunta_11,
-        pregunta_12,
-        pregunta_13,
-      });
+    await createRequest.execute({
+      pet_id: pet.id,
+      user_id: user.id,
+      owner_id: pet.user,
+      adoptante_nombre: nombre,
+      adoptante_apellido: apellido,
+      adoptante_edad: Number(edad),
+      adoptante_ubicacion: ubicacion,
+      adoptante_telefono: telefono,
+      pregunta_1,
+      pregunta_2,
+      pregunta_3,
+      pregunta_4,
+      pregunta_5,
+      pregunta_6,
+      pregunta_7,
+      pregunta_8,
+      pregunta_9,
+      pregunta_10,
+      pregunta_11,
+      pregunta_12,
+      pregunta_13,
+    });
 
-      const existing = await AsyncStorage.getItem(`adoptionRequest_${user.id}`);
-      const requests = existing ? JSON.parse(existing) : [];
-      requests.push({ id: pet.id, pet });
+    Alert.alert("Solicitud enviada");
+    router.back();
 
-      await AsyncStorage.setItem(
-        `adoptionRequest_${user.id}`,
-        JSON.stringify(requests)
-      );
-
-      Alert.alert("Solicitud enviada");
-      router.back();
-    } catch (error: any) {
-      Alert.alert(error.message);
-    }
-  };
+  } catch (error: any) {
+    Alert.alert(error.message);
+  }
+};
 
   return (
     <ScrollView style={styles.container}>
 
-      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
@@ -104,10 +119,14 @@ export default function AdoptionForm() {
         <Text style={styles.section}>Datos personales</Text>
 
         <Text style={styles.label}>Nombre</Text>
-        <TextInput style={styles.input} onChangeText={setNombre} />
+        <TextInput style={styles.input} 
+        
+        onChangeText={setNombre} />
 
         <Text style={styles.label}>Apellido</Text>
-        <TextInput style={styles.input} onChangeText={setApellido} />
+        <TextInput style={styles.input}
+         onChangeText={setApellido} 
+         />
 
         <Text style={styles.label}>Edad</Text>
         <TextInput
@@ -117,7 +136,9 @@ export default function AdoptionForm() {
         />
 
         <Text style={styles.label}>Ubicación</Text>
-        <TextInput style={styles.input} onChangeText={setUbicacion} />
+        <TextInput style={styles.input}
+         onChangeText={setUbicacion} 
+         />
 
         <Text style={styles.label}>Teléfono</Text>
         <TextInput
@@ -129,47 +150,76 @@ export default function AdoptionForm() {
         <Text style={styles.section}>Preguntas</Text>
 
         <Text style={styles.label}>¿Por qué quieres adoptar una mascota?</Text>
-        <TextInput style={styles.textArea} multiline onChangeText={setPregunta1} />
+        <TextInput style={styles.textArea} 
+        multiline
+         onChangeText={setPregunta1}
+          />
 
         <Text style={styles.label}>¿Vives en casa o departamento?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta2} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta2} 
+        />
 
         <Text style={styles.label}>Si es rentado ¿te permiten mascotas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta3} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta3}
+         />
 
         <Text style={styles.label}>¿Tienes jardín o espacio exterior?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta4} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta4}
+         />
 
         <Text style={styles.label}>¿Has tenido mascotas antes?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta5} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta5} 
+        />
 
         <Text style={styles.label}>¿Qué pasó con esas mascotas?</Text>
-        <TextInput style={styles.textArea} multiline onChangeText={setPregunta6} />
+        <TextInput style={styles.textArea}
+         multiline 
+         onChangeText={setPregunta6} 
+         />
 
         <Text style={styles.label}>¿Actualmente tienes mascotas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta7} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta7} 
+        />
 
         <Text style={styles.label}>¿Qué tipo y cuántas?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta8} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta8} 
+        />
 
         <Text style={styles.label}>¿Cuánto tiempo estará sola la mascota?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta9} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta9} 
+        />
 
         <Text style={styles.label}>¿Quién cuidará cuando no estés?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta10} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta10} 
+        />
 
         <Text style={styles.label}>¿Todos están de acuerdo con la adopción?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta11} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta11} 
+        />
 
         <Text style={styles.label}>¿Presupuesto mensual para la mascota?</Text>
-        <TextInput style={styles.input} onChangeText={setPregunta12} />
+        <TextInput style={styles.input} 
+        onChangeText={setPregunta12}
+         />
 
         <Text style={styles.label}>
           ¿Aceptas esterilización/castración si es necesario?
         </Text>
-        <TextInput style={styles.input} onChangeText={setPregunta13} />
+        <TextInput style={styles.input}
+         onChangeText={setPregunta13} 
+         />
 
-        <TouchableOpacity style={styles.button} onPress={enviarSolicitud}>
+        <TouchableOpacity style={styles.button} 
+        onPress={enviarSolicitud}>
           <Text style={styles.buttonText}>Enviar solicitud</Text>
         </TouchableOpacity>
 

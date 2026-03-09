@@ -31,7 +31,10 @@ export default function DeletePetModal({ visible, onClose, petId, onDeleted }: D
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent animationType="slide"
+      onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
         <View style={styles.modalContainer}>
 
@@ -45,11 +48,13 @@ export default function DeletePetModal({ visible, onClose, petId, onDeleted }: D
           <Text style={{ marginBottom: 20 }}>¿Estas seguro de querer eliminar el perfil del animal?</Text>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+            <TouchableOpacity style={[styles.button, styles.cancelButton]}
+              onPress={onClose}>
               <Text style={styles.txtBC}>No</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={confirmDelete}>
+            <TouchableOpacity style={[styles.button, styles.deleteButton]}
+              onPress={confirmDelete}>
               <Text style={styles.buttonText}>Si</Text>
             </TouchableOpacity>
           </View>
