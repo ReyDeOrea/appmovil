@@ -2,52 +2,82 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { loginUser } from '../../application/loginUser';
 import { validateLoginData } from '../../application/validateLoginData';
 
 export default function LoginForm() {
+
   const router = useRouter()
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
+
     try {
+
       setLoading(true);
+
       validateLoginData(username, password);
+
       await loginUser(username, password);
+
       router.replace("/catalog");
+
     } catch (err: any) {
+
       Alert.alert("Error", err.message);
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
-      <View>
 
-        <View style={styles.BC}>
-          <View style={styles.BR}>
-            <Text style={styles.txtSU}>Animaland</Text>
-            <MaterialCommunityIcons name="dog" size={30} color="white" />
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+
+      <ScrollView contentContainerStyle={styles.container}>
+
+        {/* HEADER */}
+        <View style={styles.header}>
+
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => router.back()}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+          </TouchableOpacity>
+
+          <View style={styles.rowHeader}>
+            <Text style={styles.title}>Animaland</Text>
+            <MaterialCommunityIcons name="dog" size={30} color="#fff" />
           </View>
+
         </View>
 
+        {/* AVATAR */}
         <View style={styles.avatarBox}>
-          <FontAwesome name="user-circle-o" size={180} color="#FFE8A3" />
+          <FontAwesome name="user-circle-o" size={170} color="#E5DCCC" />
         </View>
 
-        <Text style={styles.txt}>Accede a tu cuenta para continuar</Text>
+        <Text style={styles.txt}>
+          Accede a tu cuenta para continuar
+        </Text>
 
+        {/* INPUTS */}
         <View style={styles.BE}>
+
           <View style={styles.BI}>
-            <FontAwesome name="user" size={24} color="#FFE8A3"
-            />
+            <FontAwesome name="user" size={22} color="#D4B37A" />
+
             <TextInput
               style={styles.txtI}
               placeholder="Usuario"
@@ -58,127 +88,172 @@ export default function LoginForm() {
           </View>
 
           <View style={styles.BI}>
-            <MaterialIcons name="password" size={24} color="#FFE8A3" />
+            <MaterialIcons name="password" size={22} color="#D4B37A" />
+
             <TextInput
               style={styles.txtI}
-              placeholder=" Contraseña"
+              placeholder="Contraseña"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
           </View>
+
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+       
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.txtB}>Entrar</Text>
           )}
+
         </TouchableOpacity>
 
+   
         <View style={styles.rp}>
-          <FontAwesome6 name="shield-dog" size={30} color="#FFE8A3" />
+
+          <FontAwesome6 name="shield-dog" size={26} color="#B7C979" />
+
           <TouchableOpacity onPress={() => router.push('/password')}>
-            <Text style={styles.txtRP}>¿Olvidaste tu contraseña?</Text>
+            <Text style={styles.txtRP}>
+              ¿Olvidaste tu contraseña?
+            </Text>
           </TouchableOpacity>
+
         </View>
 
         <View style={styles.row}>
+
           <Text>¿No tienes cuenta?</Text>
+
           <TouchableOpacity onPress={() => router.push('/signUp')}>
             <Text style={styles.txtSI}> Regístrate</Text>
           </TouchableOpacity>
+
         </View>
 
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
+
   )
 }
+
 const styles = StyleSheet.create({
 
   container: {
-    paddingBottom: 30,
     flexGrow: 1,
+    backgroundColor: "#FDF8F0",
+    paddingBottom: 40,
   },
+
+  header: {
+    width: "100%",
+    height: 90,
+    paddingTop: 35,
+    backgroundColor: "#B7C979",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  rowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  title: {
+    fontWeight: 'bold',
+    fontSize: 30,
+    color: '#fff',
+    marginRight: 6,
+  },
+
+  backBtn: {
+    position: "absolute",
+    left: 15,
+    top: 45,
+  },
+
   avatarBox: {
     alignItems: "center",
     marginVertical: 10,
   },
-  txtSI: {
-    fontWeight: 'bold',
-    textDecorationLine: 'underline'
-  },
+
   txt: {
     textAlign: "center",
     marginVertical: 10,
     fontSize: 16,
-    color: "#6B7280",
+    color: "#555",
   },
-  txtSU: {
-    fontWeight: 'bold',
-    fontSize: 35,
-    textAlign: 'center',
-    color: 'rgb(255, 255, 255)'
-  },
+
   BE: {
-    marginHorizontal: 16,
+    marginHorizontal: 20,
     marginTop: 10,
   },
-  BC: {
-    backgroundColor: "#D4B37A",
-    paddingVertical: 12,
-    paddingHorizontal: 100,
-  },
-  BR: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
+
   BI: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#DAC193',
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginVertical: 6,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginVertical: 8,
+    backgroundColor: "#fff",
   },
+
   txtI: {
-    fontSize: 18,
+    fontSize: 16,
     flex: 1,
     marginLeft: 8,
   },
+
   button: {
-    backgroundColor: '#E5DCCC',
-    borderRadius: 25,
-    paddingVertical: 12,
+    backgroundColor: '#E8B4B4',
+    borderRadius: 20,
+    paddingVertical: 14,
     paddingHorizontal: 60,
     alignSelf: 'center',
-    marginVertical: 15,
+    marginVertical: 20,
+    elevation: 2,
   },
+
   txtB: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
   },
+
   row: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 15,
   },
-  txtRP: {
-    textAlign: "center",
-    color: "#2ABAFD",
-    fontWeight: "bold",
-    marginBottom: 10,
+
+  txtSI: {
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
+
+  txtRP: {
+    color: "#00aeff",
+    fontWeight: "bold",
+    marginLeft: 6,
+  },
+
   rp: {
     flexDirection: 'row',
     alignItems: "center",
     justifyContent: "center",
     marginTop: 5,
   },
-})
+
+});
