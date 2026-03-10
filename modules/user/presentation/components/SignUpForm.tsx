@@ -2,7 +2,7 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { checkUserExists } from "../../application/checkUserExists";
@@ -10,6 +10,7 @@ import { registerUser } from "../../application/registerUser";
 import { validateSignUpData } from "../../application/validateSignUpData";
 
 export default function SignUp() {
+
   const router = useRouter();
 
   const [usuario, setUsuario] = useState('');
@@ -20,66 +21,95 @@ export default function SignUp() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handleRegister = async () => {
 
-const handleRegister = async () => {
-  try {
-    setLoading(true);
+    try {
 
-    validateSignUpData({ username: usuario, phone: numt, email, password, confirmPassword });
-    await checkUserExists(email, usuario, numt);
+      setLoading(true);
 
-    const newUser = await registerUser({ email, username: usuario, password, phone: numt, avatar_url: avatarUrl });
-    Alert.alert("Cuenta creada");
-    router.replace("/catalog");
-  } 
-  catch (err: any) {
-    Alert.alert("Error", err.message);
-  }
-   finally {
-    setLoading(false);
-  }
-};
+      validateSignUpData({
+        username: usuario,
+        phone: numt,
+        email,
+        password,
+        confirmPassword
+      });
+
+      await checkUserExists(email, usuario, numt);
+
+      await registerUser({
+        email,
+        username: usuario,
+        password,
+        phone: numt,
+        avatar_url: avatarUrl
+      });
+
+      Alert.alert("Cuenta creada");
+      router.replace("/catalog");
+
+    } catch (err: any) {
+
+      Alert.alert("Error", err.message);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: "#fff" }}>
-      <View>
 
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
 
-        <View style={styles.BC}>
-          <View style={styles.BR}>
-            <Text style={styles.txtSU}>
-              Animaland
-            </Text>
-            <MaterialCommunityIcons name="dog" size={30} color="white"
-            />
+      <ScrollView contentContainerStyle={styles.container}>
+
+        {/* HEADER */}
+        <View style={styles.header}>
+
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => router.back()}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+          </TouchableOpacity>
+
+          <View style={styles.rowHeader}>
+            <Text style={styles.title}>Animaland</Text>
+            <MaterialCommunityIcons name="dog" size={30} color="#fff" />
           </View>
+
         </View>
 
-
-        <Image style={styles.img}
+        <Image
+          style={styles.img}
           source={require('../../../../assets/images/DogAndCat.jpeg')}
         />
 
         <Text style={styles.txt}>
           Crea una nueva cuenta ahora
         </Text>
+
         <View style={styles.BE}>
 
           <View style={styles.BI}>
-            <FontAwesome name="user" size={24} color="#FFE8A3"
-            />
-            <TextInput style={styles.txtI}
-              placeholder=" Usuario"
+            <FontAwesome name="user" size={22} color="#D4B37A" />
+            <TextInput
+              style={styles.txtI}
+              placeholder="Usuario"
               value={usuario}
               onChangeText={setUsuario}
             />
           </View>
 
           <View style={styles.BI}>
-            <Feather name="phone" size={24} color="#FFE8A3"
-            />
-            <TextInput style={styles.txtI}
-              placeholder=" Número de Teléfono"
+            <Feather name="phone" size={22} color="#D4B37A" />
+            <TextInput
+              style={styles.txtI}
+              placeholder="Número de teléfono"
               value={numt}
               onChangeText={setNumT}
               keyboardType="phone-pad"
@@ -87,19 +117,20 @@ const handleRegister = async () => {
           </View>
 
           <View style={styles.BI}>
-            <MaterialIcons name="email" size={24} color="#FFE8A3"
-            />
-            <TextInput style={styles.txtI}
-              placeholder=" Email"
+            <MaterialIcons name="email" size={22} color="#D4B37A" />
+            <TextInput
+              style={styles.txtI}
+              placeholder="Email"
               value={email}
-              onChangeText={setEmail} />
+              onChangeText={setEmail}
+            />
           </View>
 
           <View style={styles.BI}>
-            <MaterialIcons name="password" size={24} color="#FFE8A3"
-            />
-            <TextInput style={styles.txtI}
-              placeholder=" Contraseña"
+            <MaterialIcons name="password" size={22} color="#D4B37A" />
+            <TextInput
+              style={styles.txtI}
+              placeholder="Contraseña"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -107,135 +138,157 @@ const handleRegister = async () => {
           </View>
 
           <View style={styles.BI}>
-            <MaterialIcons name="password" size={24} color="#FFE8A3"
-            />
-            <TextInput style={styles.txtI}
-              placeholder=" Confirmar Contraseña"
+            <MaterialIcons name="password" size={22} color="#D4B37A" />
+            <TextInput
+              style={styles.txtI}
+              placeholder="Confirmar contraseña"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
             />
           </View>
+
         </View>
 
         <View style={styles.row}>
-          <Image style={styles.imgD}
+
+          <Image
+            style={styles.imgD}
             source={require('../../../../assets/images/DOG.png')}
           />
 
-          <TouchableOpacity style={styles.button}
+          <TouchableOpacity
+            style={styles.button}
             onPress={handleRegister}
-            disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.txtB}>
-              Crear cuenta
-            </Text>}
+            disabled={loading}
+          >
+
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.txtB}>Crear cuenta</Text>
+            }
+
           </TouchableOpacity>
+
         </View>
 
         <View style={styles.row}>
-          <Text>
-            ¿Ya tienes una cuenta?
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/login")}>
-            <Text style={styles.txtSI}>
-              Iniciar Sesión
-            </Text>
+
+          <Text>¿Ya tienes una cuenta?</Text>
+
+          <TouchableOpacity onPress={() => router.push("/login")}>
+            <Text style={styles.txtSI}> Iniciar sesión</Text>
           </TouchableOpacity>
+
         </View>
 
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
+
 const styles = StyleSheet.create({
+
   container: {
-    paddingBottom: 30,
     flexGrow: 1,
+    backgroundColor: "#FDF8F0",
+    paddingBottom: 40,
   },
-  txtSU: {
+
+  header: {
+    width: "100%",
+    height: 90,
+    paddingTop: 35,
+    backgroundColor: "#B7C979",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+
+  rowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  title: {
     fontWeight: 'bold',
-    fontSize: 35,
-    textAlign: 'center',
-    color: 'rgb(255, 255, 255)'
+    fontSize: 30,
+    color: "#fff",
+    marginRight: 6,
   },
+
+  backBtn: {
+    position: "absolute",
+    left: 15,
+    top: 45,
+  },
+
   img: {
     width: '90%',
     height: 200,
     alignSelf: 'center',
     marginVertical: 10,
+    borderRadius: 10,
   },
-  BC: {
-    backgroundColor: "#D4B37A",
-    paddingVertical: 12,
-    paddingHorizontal: 100,
-  },
-  BR: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
+
   txt: {
     textAlign: 'center',
-    marginVertical: 20,
     fontSize: 16,
-    marginTop: 4,
-    marginBottom: 6,
-    color: "#6B7280",
+    color: "#555",
+    marginBottom: 10,
   },
+
   BE: {
-    marginHorizontal: 16
+    marginHorizontal: 20,
   },
+
   BI: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#DAC193',
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    padding: 2,
-    marginVertical: 6,
-  },
-  II: {
-    marginRight: 10,
-  },
-  txtI: {
-    fontSize: 18,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     marginVertical: 8,
-    flex: 1,
+    backgroundColor: "#fff",
   },
+
+  txtI: {
+    fontSize: 16,
+    flex: 1,
+    marginLeft: 8,
+  },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10,
     alignItems: 'center',
+    marginVertical: 12,
   },
-  txtC: {
-    marginLeft: 8,
-  },
+
   button: {
-    backgroundColor: '#E5DCCC',
+    backgroundColor: '#E8B4B4',
     borderRadius: 20,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 50,
-    marginVertical: 10,
   },
+
   txtB: {
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'black'
+    fontSize: 18,
+    color: "white",
+    fontWeight: "bold",
   },
+
   imgD: {
     width: 60,
     height: 60,
     marginRight: 12,
   },
+
   txtSI: {
     fontWeight: 'bold',
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
   },
-  buttonSI: {
-    marginHorizontal: 5
-  },
-})
+
+});
