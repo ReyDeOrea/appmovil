@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#E8B4B4',
+    backgroundColor: '#dee8b4',
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 60,
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
 
   txtB: {
     fontSize: 18,
-    color: 'white',
-    fontWeight: 'bold',
+    color: 'black',
+   
   },
 
   row: {

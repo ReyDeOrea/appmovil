@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#8cb56e",
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
 
   editBtn: {
-    backgroundColor: "#E5DCCC",
+    backgroundColor: "#ffdfba",
     padding: 8,
     borderRadius: 8,
     flex: 1,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   deleteBtn: {
-    backgroundColor: "#E5DCCC",
+    backgroundColor: "#d3a9a9",
     padding: 8,
     borderRadius: 8,
     flex: 1,

@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "#E8B4B4",
+    backgroundColor: "#dee8b4",
     borderRadius: 20,
     paddingVertical: 14,
     marginHorizontal: 80,
@@ -255,8 +255,7 @@ const styles = StyleSheet.create({
   },
 
   txtBtn: {
-    color: "white",
-    fontWeight: "bold",
+    color: "black",
     textAlign: "center",
     fontSize: 16,
   },

@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   cancelButton: {
-    backgroundColor: "#ff0000"
+    backgroundColor: "#d3a9a9"
   },
   txtBC: {
     color: 'white'
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   deleteButton: {
-    backgroundColor: "#E5DCCC"
+    backgroundColor: "#dee8b4"
   },
   buttonText: {
     fontWeight: "bold"
