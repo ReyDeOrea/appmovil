@@ -81,11 +81,21 @@ export default function CatalogView() {
     { type: "static", image: require("../../../../assets/images/DOG.png") },
   ];
 
-  const adoptedBanners: BannerItem[] = adoptedPets.map((p) => ({
+ const adoptedBanners: BannerItem[] = adoptedPets.map((p) => {
+  let images: string[] = [];
+  try {
+    images = JSON.parse(p.image_url || "[]");
+    if (!Array.isArray(images)) images = [images];
+  } 
+  catch {
+    images = p.image_url ? [p.image_url] : [];
+  }
+  return {
     type: "adopted",
-    image: { uri: p.image_url },
+    image: { uri: images[0] },
     name: p.name,
-  }));
+  };
+});
 
   const bannerImages: BannerItem[] = [...staticBanners, ...adoptedBanners];
 

@@ -37,44 +37,52 @@ export default function MyPetsScreen() {
 
   const renderItem = ({ item }: any) => {
     const images = uploadImagesPet(item.image_url);
+    const isAdopted = item.adopted === true;
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, isAdopted && styles.cardAdopted]}>
         {images.length > 0 && (
-          <Image source={{ uri: images[0] }} style={styles.image} />
+          <Image source={{ uri: images[0] }} style={[styles.image, isAdopted && styles.imageAdopted]} />
         )}
 
         <Text style={styles.name}>{item.name}</Text>
 
-        <View style={styles.cardButtons}>
+        {isAdopted && (
+          <Text style={styles.adoptedText}>
+            🐾 Esta mascota ya fue adoptada
+          </Text>
+        )}
 
-          <TouchableOpacity
-            style={styles.editBtn}
-            onPress={() =>
-              router.push({
-                pathname: "/updatePet",
-                params: { pet: JSON.stringify(item) },
-              })
-            }
-          >
-            <Text style={styles.btnText}>Editar</Text>
-          </TouchableOpacity>
+        {!isAdopted && (
+          <View style={styles.cardButtons}>
 
-          <TouchableOpacity
-            style={styles.deleteBtn}
-            onPress={() => openDeleteModal(item.id)}
-          >
-            <Text style={styles.btnText}>Eliminar</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.editBtn}
+              onPress={() =>
+                router.push({
+                  pathname: "/updatePet",
+                  params: { pet: JSON.stringify(item) },
+                })
+              }
+            >
+              <Text style={styles.btnText}>Editar</Text>
+            </TouchableOpacity>
 
-        </View>
+            <TouchableOpacity
+              style={styles.deleteBtn}
+              onPress={() => openDeleteModal(item.id)}
+            >
+              <Text style={styles.btnText}>Eliminar</Text>
+            </TouchableOpacity>
+
+          </View>
+        )}
       </View>
     );
   };
 
   return (
     <>
-      {/* QUITA LA BARRA NEGRA */}
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.container}>
@@ -138,7 +146,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#FDF8F0"
   },
-
+ imageAdopted: { 
+    opacity: 0.5
+  },
   b: {
     width: "100%",
     height: 100,
@@ -148,26 +158,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10
   },
-
+ cardAdopted: { 
+    opacity: 0.5
+  },
   row: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center"
   },
-
   txtN: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 25,
     marginRight: 5
   },
-
+adoptedText: { 
+    color: "green",
+    fontWeight: "bold",
+    marginTop: 5
+  },
   backBtn: {
     position: "absolute",
     left: 15,
     top: 40
   },
-
   card: {
     backgroundColor: "white",
     padding: 10,
@@ -175,22 +189,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 2
   },
-
   image: {
     width: "100%",
     height: 150,
     borderRadius: 10
   },
-
   name: {
     fontWeight: "bold",
     fontSize: 16,
     marginTop: 5
   },
-
   fab: {
     position: "absolute",
-    bottom: 20,
+    bottom: 60,
     right: 20,
     backgroundColor: "#8cb56e",
     width: 60,
@@ -199,18 +210,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-
   fabText: {
     color: "white",
     fontSize: 30
   },
-
   cardButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10
   },
-
   editBtn: {
     backgroundColor: "#ffdfba",
     padding: 8,
@@ -219,7 +227,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
     alignItems: "center"
   },
-
   deleteBtn: {
     backgroundColor: "#d3a9a9",
     padding: 8,
@@ -228,7 +235,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     alignItems: "center"
   },
-
   btnText: {
     fontWeight: "bold"
   },
