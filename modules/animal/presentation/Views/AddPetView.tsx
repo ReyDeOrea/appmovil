@@ -322,16 +322,11 @@ export default function AddPetScreen() {
               </TouchableOpacity>
 
             </View>
-
           </View>
-
         </ScrollView>
-
       </KeyboardAvoidingView>
-
     </>
   );
-
 }
 const styles = StyleSheet.create({
 
@@ -352,35 +347,29 @@ backBtn: {
     marginBottom: 20,
     alignItems: "center",
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-
   txtN: {
     color: "#fff",
     fontSize: 32,
     fontWeight: "bold",
     marginRight: 10,
   },
-
   mainContainer: {
     flexDirection: "column",
     paddingHorizontal: 20,
     gap: 20,
   },
-
   leftColumn: {
     width: "100%",
   },
-
   rightColumn: {
     width: "100%",
     alignItems: "center",
   },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -388,14 +377,12 @@ backBtn: {
     marginBottom: 12,
     textAlign: "center",
   },
-
   inputLabel: {
     fontSize: 12,
     color: "#666",
     marginBottom: 4,
     fontWeight: "500",
   },
-
   inputFull: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -406,7 +393,6 @@ backBtn: {
     elevation: 2,
     borderRadius: 8,
   },
-
   textArea: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -418,7 +404,6 @@ backBtn: {
     elevation: 2,
     borderRadius: 8,
   },
-
   imageBox: {
     width: "100%",
     height: 200,
@@ -432,25 +417,21 @@ backBtn: {
     overflow: "hidden",
     elevation: 3,
   },
-
   previewImage: {
     width: "100%",
     height: "100%",
     borderRadius: 13,
   },
-
   imagePlaceholder: {
     alignItems: "center",
     padding: 20,
   },
-
   imagePlaceholderText: {
     color: "#B7C979",
     marginTop: 10,
     textAlign: "center",
     fontSize: 12,
   },
-
   uploadButton: {
     backgroundColor: "#D4B37A",
     padding: 14,
@@ -462,7 +443,6 @@ backBtn: {
     justifyContent: "center",
     elevation: 3,
   },
-
   saveButton: {
     backgroundColor: "#B7C979",
     padding: 14,
@@ -473,7 +453,6 @@ backBtn: {
     justifyContent: "center",
     elevation: 3,
   },
-
   cancelButton: {
     backgroundColor: "#E8B4B4",
     padding: 14,
@@ -483,24 +462,20 @@ backBtn: {
     justifyContent: "center",
     elevation: 3,
   },
-
   buttonText: {
     color: "#fff",
     fontWeight: "600",
     fontSize: 14,
     marginLeft: 8,
   },
-
   buttonIcon: {
     marginRight: 4,
   },
-
   selectionContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
   },
-
   selectionButton: {
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -509,23 +484,19 @@ backBtn: {
     borderRadius: 8,
     backgroundColor: "#fff",
   },
-
   selectionButtonActive: {
     backgroundColor: "#E5DCCC",
     borderColor: "#DAC193",
   },
-
   selectionButtonText: {
     textTransform: "capitalize",
     fontWeight: "bold",
   },
-
   BP: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 8,
   },
-
   dot: {
     width: 8,
     height: 8,
@@ -533,11 +504,9 @@ backBtn: {
     backgroundColor: "#ccc",
     margin: 5,
   },
-
   dotActive: {
     backgroundColor: "#000",
   },
-
   imgD: {
     height: BANNER_HEIGHT,
     borderRadius: 20,

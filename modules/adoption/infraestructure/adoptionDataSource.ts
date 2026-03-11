@@ -132,6 +132,20 @@ async getRequestsForOwner(ownerId: string) {
     return data;
   }
 
+  async updateStatusPet(petId: number, data: Partial<Pet>): Promise<boolean> {
+  const { error } = await supabase
+    .from("pets")
+    .update(data)
+    .eq("id", petId);
+
+  if (error) {
+    console.error("Error actualizando mascota:", error);
+    return false;
+  }
+
+  return true;
+}
+
   //async deleteRequest(requestId: string): Promise<boolean> {
 
    // const { error } = await supabase

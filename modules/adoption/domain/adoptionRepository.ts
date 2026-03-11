@@ -1,4 +1,3 @@
-//repositorio del crud
 
 import { Pet } from "@/modules/animal/domain/pet";
 import { AdoptionForm } from "./adoption";

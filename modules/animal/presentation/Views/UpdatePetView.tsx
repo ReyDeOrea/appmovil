@@ -4,7 +4,7 @@ import { Label } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { updatePetUseCase } from "../../application/updatePet";
 import { PetSex, PetSize, PetType } from "../../domain/pet";
 
@@ -33,7 +33,6 @@ export default function UpdatePetsScreen() {
   const [imagePage, setImagePage] = useState(0);
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [adopted, setAdopted] = useState(false);
 
   useEffect(() => {
 
@@ -66,8 +65,6 @@ export default function UpdatePetsScreen() {
         }
       }
 
-      setAdopted(petParam.adopted ?? false);
-
     }
 
   }, [petParam]);
@@ -86,7 +83,6 @@ export default function UpdatePetsScreen() {
     setLocation("");
     setImages([]);
     setSelectedPet(null);
-    setAdopted(false);
 
   };
 
@@ -166,7 +162,6 @@ export default function UpdatePetsScreen() {
         phone: phone.replace(/[^0-9]/g, ""),
         location: location.trim(),
         image_url: JSON.stringify(imageUrl),
-        adopted,
 
       });
 
@@ -209,16 +204,6 @@ export default function UpdatePetsScreen() {
               <MaterialCommunityIcons name="dog" size={33} color="#fff" />
             </View>
 
-          </View>
-
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
-            <Text style={{ marginRight: 10 }}>¿Adoptada?</Text>
-            <Switch
-              value={adopted}
-              onValueChange={setAdopted}
-              trackColor={{ false: "#767577", true: "#22c55e" }}
-              thumbColor={adopted ? "#ffffff" : "#f4f3f4"}
-            />
           </View>
 
           {images.length > 0 && (

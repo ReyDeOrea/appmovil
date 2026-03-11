@@ -49,14 +49,26 @@ export default function RequestsReceived() {
     }
   };
 
-  const aceptar = async (id: string) => {
-    await updateStatus.execute(id, "aceptado");
-    loadRequests();
+  const aceptar = async (Rid: string, pet_id: number) => {
+    try {
+
+      await updateStatus.execute(Rid, "aceptado");
+
+      await repository.updateStatusPet(pet_id, { adopted: true });
+      loadRequests();
+    }
+    catch (error) {
+      console.error("Error al aceptar solicitud:", error);
+    }
   };
 
   const rechazar = async (id: string) => {
+     try {
     await updateStatus.execute(id, "rechazado");
     loadRequests();
+   } catch (error) {
+      console.error("Error al rechazar solicitud:", error);
+    }
   };
 
   const verSolicitud = (request: any) => {
@@ -71,8 +83,10 @@ export default function RequestsReceived() {
       data={requests}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <TouchableOpacity 
-        onPress={() => verSolicitud(item)} style={styles.card}>
+        <TouchableOpacity
+          onPress={() => verSolicitud(item)} 
+          style={styles.card}
+          >
 
           <Text style={styles.text}>
             <Text style={styles.label}>Mascota: </Text>
@@ -92,7 +106,7 @@ export default function RequestsReceived() {
           {item.estado === "en_proceso" && (
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
-                onPress={() => aceptar(item.id)}
+                onPress={() => aceptar(item.id, item.pet_id)}
                 style={[styles.button, styles.accept]}
               >
                 <Text style={styles.buttonText}>Aceptar</Text>
