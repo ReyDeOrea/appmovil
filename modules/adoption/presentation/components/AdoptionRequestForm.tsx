@@ -91,6 +91,20 @@ const enviarSolicitud = async () => {
       pregunta_12,
       pregunta_13,
     });
+     const key = `adoptionRequest_${user.id}`;
+
+    const data = await AsyncStorage.getItem(key);
+    const requests = data ? JSON.parse(data) : [];
+
+    const exists = requests.some((p: any) => String(p.id) === String(pet.id));
+
+    if (!exists) {
+      requests.push(pet);
+    }
+
+    await AsyncStorage.setItem(key, JSON.stringify(requests));
+
+   
 
     Alert.alert("Solicitud enviada");
     router.back();

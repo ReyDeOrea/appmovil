@@ -38,16 +38,21 @@ export function ProfileAnimal() {
 
   useFocusEffect(
     useCallback(() => {
-      if (!mascota) return;
+      if (!mascota)
+         return;
       initialize();
-    }, [])
+    }, [mascota])
   );
 
   const initialize = async () => {
+    if (!mascota)
+      return;
+
     const logged = await checkUserSession();
     setUserLogged(logged);
 
-    if (!logged) return;
+    if (!logged)
+      return;
 
     const user = await getUserData();
     if (!user) return;
@@ -117,15 +122,15 @@ export function ProfileAnimal() {
     <ScrollView contentContainerStyle={styles.container}>
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} 
-        onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton}
+          onPress={() => router.back()}>
           <AntDesign name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{mascota.name}</Text>
 
-        <TouchableOpacity style={styles.favoriteButton} 
-        onPress={handleToggleFavorite}>
+        <TouchableOpacity style={styles.favoriteButton}
+          onPress={handleToggleFavorite}>
           <FontAwesome
             name={isFavorite ? "heart" : "heart-o"}
             size={26}
@@ -163,8 +168,8 @@ export function ProfileAnimal() {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.copyIconButton} 
-        onPress={copiarEnlace}>
+        <TouchableOpacity style={styles.copyIconButton}
+          onPress={copiarEnlace}>
           <Feather name="link" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -237,9 +242,8 @@ export function ProfileAnimal() {
 
             <View style={styles.descargarContainer}>
               <TouchableOpacity
-                style={[
-                  styles.botonDescargar,
-                  (!userLogged || hasRequested) && { backgroundColor: "#ccc" },
+                style={[styles.botonDescargar,
+                (!userLogged || hasRequested) && { backgroundColor: "#ccc" },
                 ]}
                 onPress={() => {
                   if (!userLogged) {
@@ -249,7 +253,10 @@ export function ProfileAnimal() {
                     );
                     return;
                   }
-
+                  if (hasRequested) {
+                    Alert.alert("Solicitud enviada", "Ya enviaste una solicitud para esta mascota");
+                    return;
+                  }
                   router.push({
                     pathname: "/adoptionRequest",
                     params: { pet: JSON.stringify(mascota) },
@@ -356,7 +363,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E5DCCC",
     marginVertical: 20,
   },
-  txtC:{
+  txtC: {
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
