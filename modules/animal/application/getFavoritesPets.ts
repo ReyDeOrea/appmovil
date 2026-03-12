@@ -13,10 +13,14 @@ export const getFavoritesPetsUseCase = async (): Promise<Pet[]> => {
 
   const allPets = await getPetsUseCase();
 
-  const updatedFavorites = favs.map(fav => {
-    const updatedPet = allPets.find(p => p.id === fav.id);
-    return updatedPet ? updatedPet : fav;
-  });
+  const updatedFavorites = favs
+    .map(fav => allPets.find(p => p.id === fav.id))
+    .filter((pet): pet is Pet => !!pet && pet.adopted !== true);
+
+  await AsyncStorage.setItem(
+    `favorites_${user.id}`,
+    JSON.stringify(updatedFavorites)
+  );
 
   return updatedFavorites;
 };
