@@ -10,7 +10,7 @@ import { uploadImagesPet } from "../../application/uploadImagesPet";
 export default function MyPetsScreen() {
 
   const [pets, setPets] = useState<any[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function MyPetsScreen() {
 
   const openDeleteModal = (id: string) => {
     setSelectedPetId(id);
-    setModalVisible(true);
+    setModalOpen(true);
   };
 
   const renderItem = ({ item }: any) => {
@@ -128,8 +128,8 @@ export default function MyPetsScreen() {
         </TouchableOpacity>
 
         <DeletePetModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
+          visible={modalOpen}
+          onClose={() => setModalOpen(false)}
           petId={selectedPetId}
           onDeleted={loadPets}
         />

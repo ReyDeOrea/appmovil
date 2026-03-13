@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GetRequestsForMyPets } from "../../application/getRequestReceived";
 import { RequestStatus } from "../../application/statusRequest";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
@@ -63,10 +63,10 @@ export default function RequestsReceived() {
   };
 
   const rechazar = async (id: string) => {
-     try {
-    await updateStatus.execute(id, "rechazado");
-    loadRequests();
-   } catch (error) {
+    try {
+      await updateStatus.execute(id, "rechazado");
+      loadRequests();
+    } catch (error) {
       console.error("Error al rechazar solicitud:", error);
     }
   };
@@ -78,15 +78,19 @@ export default function RequestsReceived() {
     });
   };
 
+  const llamarAdoptante = (telefono: string) => {
+    Linking.openURL(`tel:${telefono}`);
+  };
+
   return (
     <FlatList
       data={requests}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => verSolicitud(item)} 
+          onPress={() => verSolicitud(item)}
           style={styles.card}
-          >
+        >
 
           <Text style={styles.text}>
             <Text style={styles.label}>Mascota: </Text>
@@ -121,8 +125,20 @@ export default function RequestsReceived() {
             </View>
           )}
 
+             {item.estado === "aceptado" && item.adoptante_telefono && (
+            <TouchableOpacity
+              onPress={() => llamarAdoptante(item.adoptante_telefono)}
+              style={[styles.button, styles.call]}
+            >
+              <Text style={styles.buttonText}>
+                Llamar al adoptante ({item.adoptante_telefono})
+              </Text>
+            </TouchableOpacity>
+          )}
+
         </TouchableOpacity>
       )}
+      
       ListEmptyComponent={
         <Text style={styles.emptyText}>
           No hay solicitudes
@@ -146,6 +162,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold"
+  },
+    call: {
+    backgroundColor: "#c5e4fe",
+    marginTop: 10
   },
   buttonsContainer: {
     flexDirection: "row",
