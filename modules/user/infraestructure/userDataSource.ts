@@ -19,7 +19,13 @@ export class SupabaseUserRepository implements UserRepository {
   async updateProfile(profile: UserProfile): Promise<void> {
     const { error } = await supabase
       .from("clients")
-        .update({ password: profile.password })
+        .update({
+      username: profile.username,
+      phone: profile.phone,
+      email: profile.email,
+      avatar_url: profile.avatar_url, 
+      ...(profile.password ? { password: profile.password } : {})
+    })
       .eq("id", profile.id);
 
     if (error) throw error;
