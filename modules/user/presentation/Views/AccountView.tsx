@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { checkEmailExists } from '../../application/checkEmailExists';
 import { getUserProfile } from "../../application/getUserProfile";
 import { updateUserProfile } from "../../application/updateUserProfile";
 import AvatarView from "../components/AvatarView";
@@ -28,6 +29,7 @@ export default function Account() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -37,24 +39,56 @@ export default function Account() {
         setUsername(u.username ?? "");
         setPhone(u.phone ?? "");
         setAvatarUrl(u.avatar_url ?? "");
+        setEmail(u.email ?? "");
       }
     };
     load();
   }, []);
 
-  const UpdateProfile = async () => {
-    try {
-      setLoading(true);
-      const updated = await updateUserProfile(user, { username, phone, avatar_url: avatarUrl });
-      setUser(updated);
-      Alert.alert("Perfil actualizado");
-      router.push("/catalog");
-    } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
+const UpdateProfile = async () => {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Validar formato
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(cleanEmail)) {
+      Alert.alert("Error", "Correo electrónico inválido");
+      return;
     }
-  };
+
+    // Validar teléfono
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+      Alert.alert("Error", "El teléfono debe tener exactamente 10 dígitos");
+      return;
+    }
+
+    // Verificar si el correo ya existe
+    const exists = await checkEmailExists(cleanEmail);
+    if (exists && cleanEmail !== user.email) {
+      Alert.alert("Error", "Ese correo ya está en uso");
+      return;
+    }
+
+    setLoading(true);
+
+    const updated = await updateUserProfile(user, {
+      username: username.trim(),
+      phone: phone.trim(),
+      avatar_url: avatarUrl,
+      email: cleanEmail
+    });
+
+    setUser(updated);
+    Alert.alert("Perfil actualizado");
+    router.push("/catalog");
+
+  } catch (err: any) {
+    Alert.alert("Error", err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!user)
     return <Text style={{ padding: 20 }}>No hay usuario logueado</Text>;
@@ -84,9 +118,11 @@ export default function Account() {
 
           <Text style={styles.label}>Correo</Text>
           <TextInput
-            style={styles.inputDisabled}
-            value={user.email}
-            editable={false}
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Correo electrónico"
+            keyboardType="email-address"
           />
 
           <Text style={styles.label}>Nombre de usuario</Text>

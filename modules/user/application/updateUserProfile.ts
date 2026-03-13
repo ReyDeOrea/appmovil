@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const updateUserProfile = async (user: any, updates: { username: string, phone: string, avatar_url: string }) => {
+export const updateUserProfile = async (user: any, updates: { username: string, phone: string, avatar_url: string, email: string }) => {
   const { error } = await supabase
     .from("clients")
     .update(updates)
