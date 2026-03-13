@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 import { getFavoritesPetsUseCase } from "../../application/getFavoritesPets";
@@ -33,6 +33,7 @@ export default function FavoritesPet() {
     }
     
     return (
+
       <TouchableOpacity
         activeOpacity={isAdopted ? 1 : 0.7}
         disabled={isAdopted}
@@ -75,9 +76,18 @@ export default function FavoritesPet() {
   };
 
   return (
+     <>
+      <Stack.Screen options={{ headerShown: false }} />
+      
     <View style={styles.container}>
 
     <View style={styles.b}>
+        <TouchableOpacity
+                      style={styles.backBtn}
+                      onPress={() => router.back()}
+                    >
+                      <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+                    </TouchableOpacity>
       <View style={styles.row}>
         <Text style={styles.txtN}>Animaland</Text>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -87,7 +97,8 @@ export default function FavoritesPet() {
     </View>
       
       {favorites.length === 0 ? (
-        <Text>No tienes favoritos aún</Text>
+        <Text style={{ textAlign: "center", marginTop: 20 }}>
+          No tienes favoritos aún</Text>
       ) : (
         <FlatList
           data={favorites}
@@ -96,6 +107,7 @@ export default function FavoritesPet() {
         />
       )}
     </View>
+    </>
   );
 }
 
@@ -107,7 +119,8 @@ const styles = StyleSheet.create({
   },
   b: {
     width: "100%",
-    height: 60,
+    height: 100,
+     paddingTop: 10,
     backgroundColor: "#B7C979",
     justifyContent: "center",
     alignItems: "center",
@@ -121,7 +134,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#FDF8F0"
+    backgroundColor: "#FDF8F0",
+      
   },
   card: {
     backgroundColor: "white",
@@ -166,5 +180,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#999",
     fontWeight: "bold",
+  },
+   backBtn: {
+    position: "absolute",
+    left: 15,
+    top: 40
   },
 });
