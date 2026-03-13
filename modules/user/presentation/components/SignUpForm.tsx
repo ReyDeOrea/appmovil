@@ -35,7 +35,7 @@ export default function SignUp() {
         confirmPassword
       });
 
-      await checkUserExists(email, usuario, numt);
+      await checkUserExists(email, usuario.trim().toLowerCase(), numt);
 
       await registerUser({
         email,
@@ -47,17 +47,13 @@ export default function SignUp() {
 
       Alert.alert("Cuenta creada");
       router.replace("/catalog");
-
-    } catch (err: any) {
-
+    } 
+    catch (err: any) {
       Alert.alert("Error", err.message);
-
-    } finally {
-
+    } 
+    finally {
       setLoading(false);
-
     }
-
   };
 
   return (
@@ -67,7 +63,6 @@ export default function SignUp() {
 
       <ScrollView contentContainerStyle={styles.container}>
 
-        {/* HEADER */}
         <View style={styles.header}>
 
           <TouchableOpacity

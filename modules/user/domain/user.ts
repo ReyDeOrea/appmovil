@@ -4,4 +4,5 @@ export interface UserProfile {
   phone: string
   email:string
   password:string;
+  avatar_url?: string;
 }

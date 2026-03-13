@@ -1,23 +1,14 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from "react-native";
-import { checkEmailExists } from '../../application/checkEmailExists';
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { checkUserExistsUpdate } from '../../application/checkUserExistsUpdate';
 import { getUserProfile } from "../../application/getUserProfile";
 import { updateUserProfile } from "../../application/updateUserProfile";
 import AvatarView from "../components/AvatarView";
 
 const { width, height } = Dimensions.get("window");
 
-const HEADER_PADDING = width * 0.25;
 const AVATAR_SIZE = width * 0.32;
 const FONT_TITLE = width * 0.08;
 
@@ -33,62 +24,52 @@ export default function Account() {
 
   useEffect(() => {
     const load = async () => {
-      const u = await getUserProfile();
-      if (u) {
-        setUser(u);
-        setUsername(u.username ?? "");
-        setPhone(u.phone ?? "");
-        setAvatarUrl(u.avatar_url ?? "");
-        setEmail(u.email ?? "");
+      try {
+        const u = await getUserProfile();
+        if (u) {
+          setUser(u);
+          setUsername(u.username ?? "");
+          setPhone(u.phone ?? "");
+          setAvatarUrl(u.avatar_url ?? "");
+          setEmail(u.email ?? "");
+        }
+      }
+      catch (err: any) {
+        Alert.alert("Error", "No se pudo cargar el perfil");
       }
     };
     load();
   }, []);
 
-const UpdateProfile = async () => {
-  try {
-    const cleanEmail = email.trim().toLowerCase();
+  const UpdateProfile = async () => {
+    try {
+      setLoading(true);
 
-    // Validar formato
-    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!emailRegex.test(cleanEmail)) {
-      Alert.alert("Error", "Correo electrónico inválido");
-      return;
+      await checkUserExistsUpdate(
+        email.trim().toLowerCase(),
+        username.trim(),
+        phone.trim(),
+        user.id
+      );
+
+
+      const updated = await updateUserProfile(user, {
+        username: username.trim(),
+        phone: phone.trim(),
+        email: email.trim().toLowerCase(),
+        avatar_url: avatarUrl
+      });
+
+      setUser(updated);
+      Alert.alert("Perfil actualizado");
+      router.push("/catalog");
+
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
     }
-
-    // Validar teléfono
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(phone)) {
-      Alert.alert("Error", "El teléfono debe tener exactamente 10 dígitos");
-      return;
-    }
-
-    // Verificar si el correo ya existe
-    const exists = await checkEmailExists(cleanEmail);
-    if (exists && cleanEmail !== user.email) {
-      Alert.alert("Error", "Ese correo ya está en uso");
-      return;
-    }
-
-    setLoading(true);
-
-    const updated = await updateUserProfile(user, {
-      username: username.trim(),
-      phone: phone.trim(),
-      avatar_url: avatarUrl,
-      email: cleanEmail
-    });
-
-    setUser(updated);
-    Alert.alert("Perfil actualizado");
-    router.push("/catalog");
-
-  } catch (err: any) {
-    Alert.alert("Error", err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (!user)
     return <Text style={{ padding: 20 }}>No hay usuario logueado</Text>;
@@ -97,10 +78,20 @@ const UpdateProfile = async () => {
 
     <View style={styles.container}>
 
-      <View style={styles.BC}>
+      <View style={styles.b}>
+        
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => router.back()}>
+              <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+          </TouchableOpacity>
+          
         <View style={styles.BR}>
-          <Text style={styles.txtSU}>Animaland</Text>
-          <MaterialCommunityIcons name="dog" size={width * 0.075} color="white" />
+
+          <View style={styles.row}>
+            <Text style={styles.txtN}>Animaland</Text>
+            <MaterialCommunityIcons name="dog" size={width * 0.075} color="white" />
+          </View>
         </View>
       </View>
 
@@ -182,14 +173,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  txtSU: {
-    fontWeight: 'bold',
-    fontSize: FONT_TITLE,
-    textAlign: 'center',
-    color: 'white',
-    marginRight: 10
+  txtN: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 25,
+    marginRight: 5
   },
-
   card: {
     width: "90%",
     backgroundColor: "#fff",
@@ -202,22 +191,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
   },
-
   aB: {
     marginBottom: 20,
   },
-
   iB: {
     width: "100%",
   },
-
   label: {
     fontSize: 13,
     color: "#666",
     marginBottom: 4,
     fontWeight: "500",
   },
-
   input: {
     width: "100%",
     padding: 14,
@@ -228,7 +213,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     elevation: 1
   },
-
   inputDisabled: {
     width: "100%",
     padding: 14,
@@ -239,7 +223,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5DCCC",
     color: "#555"
   },
-
   button: {
     width: "100%",
     backgroundColor: "#B7C979",
@@ -248,12 +231,29 @@ const styles = StyleSheet.create({
     marginTop: 10,
     elevation: 3
   },
-
+  backBtn: {
+    position: "absolute",
+    left: 15,
+    top: 40
+  },
   buttonText: {
     textAlign: "center",
     fontWeight: "bold",
     color: "white",
     fontSize: 16
   },
-
+  row: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  b: {
+    width: "100%",
+    height: 100,
+    paddingTop: 30,
+    backgroundColor: "#B7C979",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10
+  },
 });
