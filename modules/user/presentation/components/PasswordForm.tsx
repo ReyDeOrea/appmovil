@@ -2,18 +2,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from "react-native";
-
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ResetPasswordUseCase } from '../../application/resetPassword';
 import { VerifyUserUseCase } from '../../application/verifyUserCase';
 import { UserProfile } from "../../domain/user";
@@ -31,7 +20,7 @@ export default function Password() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const handleVerify = async () => {
@@ -43,7 +32,7 @@ export default function Password() {
       const user = await verifyUserUseCase.execute(username, email);
 
       setProfile(user);
-      setModalVisible(true);
+      setModalOpen(true);
 
     } catch (err: any) {
 
@@ -71,7 +60,7 @@ export default function Password() {
 
       Alert.alert("Listo", "Contraseña actualizada correctamente");
 
-      setModalVisible(false);
+      setModalOpen(false);
 
       router.back();
 
@@ -161,9 +150,9 @@ export default function Password() {
         </TouchableOpacity>
 
         <NewPasswordModal
-          visible={modalVisible}
+          visible={modalOpen}
           loading={loading}
-          onClose={() => setModalVisible(false)}
+          onClose={() => setModalOpen(false)}
           onSubmit={handlePasswordChange}
         />
 
