@@ -5,6 +5,7 @@ import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View 
 import { checkUserExistsUpdate } from '../../application/checkUserExistsUpdate';
 import { getUserProfile } from "../../application/getUserProfile";
 import { updateUserProfile } from "../../application/updateUserProfile";
+import { validateUserProfile } from '../../application/validateUpdate';
 import AvatarView from "../components/AvatarView";
 
 const { width, height } = Dimensions.get("window");
@@ -44,6 +45,8 @@ export default function Account() {
   const UpdateProfile = async () => {
     try {
       setLoading(true);
+
+  validateUserProfile(email, username, phone);
 
       await checkUserExistsUpdate(
         email.trim().toLowerCase(),
