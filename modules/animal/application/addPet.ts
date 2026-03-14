@@ -1,5 +1,7 @@
 import { CreatePet, PetSize } from "../domain/pet";
-import { addPet } from "../infraestructure/petDatasource";
+import { SupabasePetRepository } from "../infraestructure/petDatasource";
+
+const repository = new SupabasePetRepository();
 
 export async function addPetUseCase(pet: CreatePet) {
 
@@ -31,5 +33,5 @@ if (!(Object.values(PetSize) as PetSize[]).includes(pet.size)) {
     throw new Error("Debes seleccionar exactamente 5 imágenes");
   }
 
-  return await addPet(pet);
+  return await repository.addPet(pet);
 }

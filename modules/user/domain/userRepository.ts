@@ -10,5 +10,8 @@ export interface UserRepository {
 
 
    checkIfProfileExists(id: string): Promise<boolean>;
-//  createUserProfile(id: string, username?: string, phone?: string): Promise<void>;
+
+  createUserProfile(id: string, username?: string, phone?: string): Promise<void>;
+
+   resetPassword(email: string): Promise<void>;
 }

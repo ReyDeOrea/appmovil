@@ -132,7 +132,7 @@ async getRequestsForOwner(ownerId: string) {
     return data;
   }
 
-  async updateStatusPet(petId: number, data: Partial<Pet>): Promise<boolean> {
+  async updateStatusPet(petId: string, data: Partial<Pet>): Promise<boolean> {
   const { error } = await supabase
     .from("pets")
     .update(data)

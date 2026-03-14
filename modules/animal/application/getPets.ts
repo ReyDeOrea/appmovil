@@ -1,6 +1,7 @@
 import { Pet } from "../domain/pet";
-import { getPets } from "../infraestructure/petDatasource";
+import { SupabasePetRepository } from "../infraestructure/petDatasource";
 
 export async function getPetsUseCase(): Promise<Pet[]> {
-  return await getPets();
+  const repository = new SupabasePetRepository();
+  return await repository.getPets();
 }
