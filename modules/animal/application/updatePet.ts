@@ -1,5 +1,7 @@
 import { Pet } from "../domain/pet";
-import { updatePet } from "../infraestructure/petDatasource";
+import { SupabasePetRepository } from "../infraestructure/petDatasource";
+
+const repository = new SupabasePetRepository();
 
 export async function updatePetUseCase(id: string, pet: Partial<Pet>) {
 
@@ -19,7 +21,7 @@ export async function updatePetUseCase(id: string, pet: Partial<Pet>) {
     throw new Error("Debes seleccionar exactamente 5 imágenes");
   }
 
-  const success = await updatePet(id, pet);
+  const success = await repository.updatePet(id, pet);
 
   if (!success) {
     throw new Error("No se pudo actualizar la mascota");
