@@ -94,10 +94,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   cancelButton: {
-    backgroundColor: "#d3a9a9"
+    backgroundColor: "#dee8b4"
   },
   txtBC: {
-    color: 'white'
+    color: 'black',
+    fontWeight: 'bold'
   },
   row: {
     flexDirection: "row",
@@ -107,16 +108,17 @@ const styles = StyleSheet.create({
   b: {
     width: "100%",
     height: 60,
-    backgroundColor: "#D4B37A",
+    backgroundColor: "#B7C979",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10
   },
   deleteButton: {
-    backgroundColor: "#dee8b4"
+    backgroundColor: "#d3a9a9"
   },
   buttonText: {
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color: "white"
 
   },
 });
