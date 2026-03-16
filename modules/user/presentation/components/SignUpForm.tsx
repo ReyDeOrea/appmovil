@@ -35,7 +35,11 @@ export default function SignUp() {
         confirmPassword
       });
 
-      await checkUserExists(email, usuario.trim().toLowerCase(), numt);
+      await checkUserExists(
+        email.trim().toLowerCase(),
+        usuario.trim(),
+         numt.trim()
+        );
 
       await registerUser({
         email,
