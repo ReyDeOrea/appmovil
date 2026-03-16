@@ -42,7 +42,7 @@ export default function AddPetScreen() {
 
     if (!result.canceled) {
       const uris = result.assets.map(asset => asset.uri);
-      setImage([...img, ...uris]);
+      setImage(uris);
     }
   };
 

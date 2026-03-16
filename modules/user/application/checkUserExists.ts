@@ -1,10 +1,14 @@
 import { supabase } from "@/lib/supabase";
 
-export const checkUserExists = async (email: string, username: string, phone: string) => {
+export const checkUserExists = async (
+  email: string, username: string, phone: string) => {
 
-  username = username.trim().toLowerCase();
-  
-    const { data: emailData, error: emailError } = await supabase
+  email = email.trim().toLowerCase();
+  username = username.trim()
+  phone = phone.trim();
+
+
+  const { data: emailData, error: emailError } = await supabase
     .from("clients")
     .select("id")
     .eq("email", email);
