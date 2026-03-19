@@ -1,6 +1,6 @@
-{
+export default{
   "expo": {
-    "name": "appmovil",
+    "name": "Animaland",
     "slug": "appmovil",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.animaland.appmovil",
+      "googleServicesFile": process.env.GOOGLE_SERVICES_JSON,
+      "useNextNotificationsApi": true, 
     },
     "web": {
       "output": "static",
@@ -39,7 +45,7 @@
           }
         }
       ],
-       [
+      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
@@ -49,6 +55,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1d9011b0-8f9b-404d-94d9-5e7e083109bc"
+      }
     }
   }
 }
