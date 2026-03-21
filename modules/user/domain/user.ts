@@ -1,8 +1,8 @@
 export interface UserProfile {
-  id: string;          
-  username: string; 
+  id: string;
+  username: string;
   phone: string
-  email:string
-  password:string;
+  email: string
+  password: string;
   avatar_url?: string;
 }

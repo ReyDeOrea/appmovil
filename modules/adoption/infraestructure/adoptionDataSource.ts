@@ -117,7 +117,7 @@ async getRequestsForOwner(ownerId: string) {
 }
 
 
- async getPetById(petId: string): Promise<Pet | null> {
+ async getPetById(petId: number): Promise<Pet | null> {
     const { data, error } = await supabase
       .from("pets") 
       .select("*")
@@ -146,6 +146,20 @@ async getRequestsForOwner(ownerId: string) {
   return true;
 }
 
+async getRequestById(requestId: string): Promise<AdoptionForm | null> {
+  const { data, error } = await supabase
+    .from("adoption_requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
+
+  if (error) {
+    console.error("Error obteniendo solicitud:", error);
+    return null;
+  }
+
+  return data;
+}
   //async deleteRequest(requestId: string): Promise<boolean> {
 
    // const { error } = await supabase

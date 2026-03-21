@@ -20,8 +20,12 @@ export interface AdoptionRequestRepository {
         status: "en_proceso" | "aceptado" | "rechazado"
     ): Promise<boolean>;
 
-    getPetById(petId: string): Promise<Pet | null>;
+    getPetById(petId: number): Promise<Pet | null>;
 
     updateStatusPet(petId: number, data: Partial<Pet>): Promise<boolean>;
+
+
+    getRequestById(requestId: string): Promise<AdoptionForm | null>;
+
     // deleteRequest(requestId: string): Promise<boolean>;
 }

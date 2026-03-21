@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552700073035",
+    "project_id": "animaland-8fea6",
+    "storage_bucket": "animaland-8fea6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552700073035:android:9dccec26b3463cfa59a9ce",
+        "android_client_info": {
+          "package_name": "com.animaland.appmovil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZHR0aVQHj9DJycP28379AaHb_6BJMd0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
