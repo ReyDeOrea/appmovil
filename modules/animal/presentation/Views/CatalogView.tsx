@@ -73,12 +73,12 @@ export default function CatalogView() {
       </View>
     );
 
-  const adoptedPets = pets.filter((p) => p.adopted === true);
+  const adoptedPets = pets.filter((p) => p.adopted === true) .slice(-1);
 
   const staticBanners: BannerItem[] = [
-    { type: "static", image: require("../../../../assets/images/BlackCat.jpg") },
+    { type: "static", image: require("../../../../assets/images/D.png") },
     { type: "static", image: require("../../../../assets/images/Cat.jpeg") },
-    { type: "static", image: require("../../../../assets/images/_D.jpg") },
+    { type: "static", image: require("../../../../assets/images/DOG.png") },
   ];
 
  const adoptedBanners: BannerItem[] = adoptedPets.map((p) => {

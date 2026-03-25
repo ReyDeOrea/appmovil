@@ -174,7 +174,7 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta2} 
         />
 
-        <Text style={styles.label}>Si es rentado ¿te permiten mascotas?</Text>
+        <Text style={styles.label}>Si es rentado, ¿te permiten mascotas?</Text>
         <TextInput style={styles.input} 
         onChangeText={setPregunta3}
          />
@@ -210,7 +210,7 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta9} 
         />
 
-        <Text style={styles.label}>¿Quién cuidará cuando no estés?</Text>
+        <Text style={styles.label}>¿Quién cuidará a la mascota cuando no estés?</Text>
         <TextInput style={styles.input} 
         onChangeText={setPregunta10} 
         />
@@ -220,8 +220,10 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta11} 
         />
 
-        <Text style={styles.label}>¿Presupuesto mensual para la mascota?</Text>
-        <TextInput style={styles.input} 
+        <Text style={styles.label}>¿Cúal es tu presupuesto mensual?</Text>
+        <TextInput 
+        keyboardType="phone-pad"
+        style={styles.input} 
         onChangeText={setPregunta12}
          />
 
