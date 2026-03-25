@@ -9,9 +9,9 @@ export interface AdoptionFormData {
   pregunta_3?: string; 
   pregunta_4: string;
   pregunta_5: string;
-  pregunta_6: string;
+  pregunta_6?: string;
   pregunta_7: string;
-  pregunta_8: string;
+  pregunta_8?: string;
   pregunta_9: string;
   pregunta_10: string;
   pregunta_11: string;
@@ -31,9 +31,7 @@ export function validateAdoptionForm(data: AdoptionFormData) {
     data.pregunta_2,
     data.pregunta_4,
     data.pregunta_5,
-    data.pregunta_6,
     data.pregunta_7,
-    data.pregunta_8,
     data.pregunta_9,
     data.pregunta_10,
     data.pregunta_11,
