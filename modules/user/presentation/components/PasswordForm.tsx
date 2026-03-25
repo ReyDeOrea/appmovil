@@ -79,7 +79,6 @@ export default function Password() {
 
       <ScrollView contentContainerStyle={styles.container}>
 
-        {/* HEADER */}
         <View style={styles.header}>
 
           <TouchableOpacity
@@ -112,6 +111,7 @@ export default function Password() {
             <TextInput
               style={styles.txtI}
               placeholder="Usuario"
+              placeholderTextColor="#999"
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
@@ -123,6 +123,7 @@ export default function Password() {
             <TextInput
               style={styles.txtI}
               placeholder="Correo electrónico"
+              placeholderTextColor="#999"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
