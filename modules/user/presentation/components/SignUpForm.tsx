@@ -38,8 +38,8 @@ export default function SignUp() {
       await checkUserExists(
         email.trim().toLowerCase(),
         usuario.trim(),
-         numt.trim()
-        );
+        numt.trim()
+      );
 
       await registerUser({
         email,
@@ -51,10 +51,10 @@ export default function SignUp() {
 
       Alert.alert("Cuenta creada");
       router.replace("/catalog");
-    } 
+    }
     catch (err: any) {
       Alert.alert("Error", err.message);
-    } 
+    }
     finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export default function SignUp() {
               placeholderTextColor="#999"
               value={email}
               onChangeText={setEmail}
-               keyboardType="email-address"
+              keyboardType="email-address"
             />
           </View>
 
@@ -263,6 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     marginLeft: 8,
+    color: "#000"
   },
 
   row: {

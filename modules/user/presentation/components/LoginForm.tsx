@@ -105,7 +105,6 @@ export default function LoginForm() {
               style={styles.txtI}
               placeholder="Contraseña"
               placeholderTextColor="#999"
-
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -227,6 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     marginLeft: 8,
+    color: "#000"
   },
 
   button: {

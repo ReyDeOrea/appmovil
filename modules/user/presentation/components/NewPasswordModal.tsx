@@ -31,7 +31,6 @@ export default function NewPasswordModal({ visible, loading, onClose, onSubmit }
           <TextInput
             placeholder="Nueva contraseña"
             placeholderTextColor="#999"
-
             value={newPassword}
             onChangeText={setNewPassword}
             secureTextEntry
@@ -84,6 +83,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 12,
     marginBottom: 15,
+    color: "#000"
   },
   button: {
     backgroundColor: "#E5DCCC",
@@ -115,4 +115,5 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
+
 });
