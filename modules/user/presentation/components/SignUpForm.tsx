@@ -99,6 +99,7 @@ export default function SignUp() {
             <TextInput
               style={styles.txtI}
               placeholder="Usuario"
+              placeholderTextColor="#999"
               value={usuario}
               onChangeText={setUsuario}
             />
@@ -109,6 +110,7 @@ export default function SignUp() {
             <TextInput
               style={styles.txtI}
               placeholder="Número de teléfono"
+              placeholderTextColor="#999"
               value={numt}
               onChangeText={setNumT}
               keyboardType="phone-pad"
@@ -120,8 +122,10 @@ export default function SignUp() {
             <TextInput
               style={styles.txtI}
               placeholder="Email"
+              placeholderTextColor="#999"
               value={email}
               onChangeText={setEmail}
+               keyboardType="email-address"
             />
           </View>
 
@@ -130,6 +134,7 @@ export default function SignUp() {
             <TextInput
               style={styles.txtI}
               placeholder="Contraseña"
+              placeholderTextColor="#999"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -141,6 +146,7 @@ export default function SignUp() {
             <TextInput
               style={styles.txtI}
               placeholder="Confirmar contraseña"
+              placeholderTextColor="#999"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry

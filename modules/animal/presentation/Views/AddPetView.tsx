@@ -120,7 +120,7 @@ export default function AddPetScreen() {
     }
   };
 
-    return (
+  return (
 
     <>
 
@@ -130,21 +130,21 @@ export default function AddPetScreen() {
 
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
 
- <View style={styles.header}>
+          <View style={styles.header}>
 
-  <TouchableOpacity
-    style={styles.backBtn}
-    onPress={() => router.back()}
-  >
-    <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
-  </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={() => router.back()}
+            >
+              <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+            </TouchableOpacity>
 
-  <View style={styles.row}>
-    <Text style={styles.txtN}>Animaland</Text>
-    <FontAwesome name="paw" size={30} color="#fff" />
-  </View>
+            <View style={styles.row}>
+              <Text style={styles.txtN}>Animaland</Text>
+              <FontAwesome name="paw" size={30} color="#fff" />
+            </View>
 
-</View>
+          </View>
           {img.length > 0 && (
             <>
               <ScrollView
@@ -211,6 +211,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Nombre del animal"
+                placeholderTextColor="#999"
                 value={name}
                 onChangeText={setName}
               />
@@ -252,6 +253,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Edad"
+                placeholderTextColor="#999"
                 value={age}
                 onChangeText={setAge}
               />
@@ -261,6 +263,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Raza"
+                placeholderTextColor="#999"
                 value={breed}
                 onChangeText={setBreed}
               />
@@ -270,6 +273,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Ubicación"
+                placeholderTextColor="#999"
                 value={location}
                 onChangeText={setLocation}
               />
@@ -279,6 +283,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.textArea}
                 placeholder="Da una breve descripción"
+                placeholderTextColor="#999"
                 value={description}
                 onChangeText={setDescription}
                 multiline
@@ -289,6 +294,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Alergias / Vacunas / Discapacidad"
+                placeholderTextColor="#999"
                 value={healthInfo}
                 onChangeText={setHealthInfo}
                 multiline
@@ -299,6 +305,7 @@ export default function AddPetScreen() {
               <TextInput
                 style={styles.inputFull}
                 placeholder="Número de teléfono"
+                placeholderTextColor="#999"
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
@@ -335,11 +342,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDF8F0",
     paddingBottom: 20,
   },
-backBtn: {
-  position: "absolute",
-  left: 15,
-  top: 45,
-},
+  backBtn: {
+    position: "absolute",
+    left: 15,
+    top: 45,
+  },
   header: {
     backgroundColor: "#B7C979",
     paddingTop: 40,

@@ -26,26 +26,26 @@ export default function LoginForm() {
       setLoading(true);
       validateLoginData(username, password);
 
-     const user = await loginUser(username, password);
+      const user = await loginUser(username, password);
 
-const projectId = Constants?.expoConfig?.extra?.eas?.projectId 
-      ?? Constants?.easConfig?.projectId;
+      const projectId = Constants?.expoConfig?.extra?.eas?.projectId
+        ?? Constants?.easConfig?.projectId;
 
-       const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-       console.log("USER ID:", user.id);
-console.log("TOKEN:", token);
-if (token) {
-       const repo = new PushTokenRepositorySupabase();
-    const savePushToken = new SavePushToken(repo);
+      const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+      console.log("USER ID:", user.id);
+      console.log("TOKEN:", token);
+      if (token) {
+        const repo = new PushTokenRepositorySupabase();
+        const savePushToken = new SavePushToken(repo);
 
-    await savePushToken.execute(user.id, token);
-}
+        await savePushToken.execute(user.id, token);
+      }
 
       router.replace("/catalog");
     }
     catch (err: any) {
       Alert.alert("Error", err.message);
-    } 
+    }
     finally {
       setLoading(false);
     }
@@ -59,7 +59,6 @@ if (token) {
 
       <ScrollView contentContainerStyle={styles.container}>
 
-        {/* HEADER */}
         <View style={styles.header}>
 
           <TouchableOpacity
@@ -76,7 +75,6 @@ if (token) {
 
         </View>
 
-        {/* AVATAR */}
         <View style={styles.avatarBox}>
           <FontAwesome name="user-circle-o" size={170} color="#E5DCCC" />
         </View>
@@ -85,7 +83,6 @@ if (token) {
           Accede a tu cuenta para continuar
         </Text>
 
-        {/* INPUTS */}
         <View style={styles.BE}>
 
           <View style={styles.BI}>
@@ -94,6 +91,7 @@ if (token) {
             <TextInput
               style={styles.txtI}
               placeholder="Usuario"
+              placeholderTextColor="#999"
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
@@ -106,6 +104,8 @@ if (token) {
             <TextInput
               style={styles.txtI}
               placeholder="Contraseña"
+              placeholderTextColor="#999"
+
               value={password}
               onChangeText={setPassword}
               secureTextEntry

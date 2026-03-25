@@ -276,6 +276,7 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.input}
             placeholder="Nombre"
+            placeholderTextColor="#999"
             value={name}
             onChangeText={setName}
           />
@@ -306,6 +307,7 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.input}
             placeholder="Edad"
+            placeholderTextColor="#999"
             value={age}
             onChangeText={setAge}
           />
@@ -336,6 +338,7 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.input}
             placeholder="Raza"
+            placeholderTextColor="#999"
             value={breed}
             onChangeText={setBreed}
           />
@@ -345,6 +348,7 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.textArea}
             placeholder="Información de salud"
+            placeholderTextColor="#999"
             value={healthInfo}
             onChangeText={setHealthInfo}
             multiline
@@ -355,6 +359,7 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.textArea}
             placeholder="Descripción"
+            placeholderTextColor="#999"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -365,14 +370,16 @@ export default function UpdatePetsScreen() {
           <TextInput
             style={styles.input}
             placeholder="Teléfono"
+            placeholderTextColor="#999"
             value={phone}
             onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ""))}
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             maxLength={10}
           />
 
           <TextInput
             style={styles.input}
+            placeholderTextColor="#999"
             placeholder="Ubicación"
             value={location}
             onChangeText={setLocation}
@@ -404,7 +411,7 @@ export default function UpdatePetsScreen() {
 
 const styles = StyleSheet.create({
 
-    scrollContainer: {
+  scrollContainer: {
     flexGrow: 1,
     backgroundColor: "#FDF8F0",
     paddingBottom: 20,
@@ -417,7 +424,7 @@ const styles = StyleSheet.create({
   },
 
   b: {
-     backgroundColor: "#B7C979",
+    backgroundColor: "#B7C979",
     paddingTop: 40,
     paddingBottom: 20,
     marginBottom: 20,

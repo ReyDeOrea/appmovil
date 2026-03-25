@@ -30,6 +30,8 @@ export default function NewPasswordModal({ visible, loading, onClose, onSubmit }
 
           <TextInput
             placeholder="Nueva contraseña"
+            placeholderTextColor="#999"
+
             value={newPassword}
             onChangeText={setNewPassword}
             secureTextEntry
@@ -38,6 +40,7 @@ export default function NewPasswordModal({ visible, loading, onClose, onSubmit }
 
           <TextInput
             placeholder="Confirmar nueva contraseña"
+            placeholderTextColor="#999"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry

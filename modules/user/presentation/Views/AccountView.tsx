@@ -116,6 +116,7 @@ export default function Account() {
             value={email}
             onChangeText={setEmail}
             placeholder="Correo electrónico"
+            placeholderTextColor="#999"
             keyboardType="email-address"
           />
 
@@ -133,6 +134,7 @@ export default function Account() {
             value={phone}
             onChangeText={setPhone}
             placeholder="Número de teléfono"
+            placeholderTextColor="#999"
             keyboardType="phone-pad"
           />
 
