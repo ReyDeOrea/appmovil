@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { validateAdoptionForm } from "../../application/adoptionFormValidator";
@@ -115,6 +115,8 @@ const enviarSolicitud = async () => {
 };
 
   return (
+     <>
+      <Stack.Screen options={{ headerShown: false }} />
     <ScrollView style={styles.container}>
 
       <View style={styles.header}>
@@ -174,7 +176,7 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta2} 
         />
 
-        <Text style={styles.label}>Si es rentado ¿te permiten mascotas?</Text>
+        <Text style={styles.label}>Si es rentado, ¿te permiten mascotas?</Text>
         <TextInput style={styles.input} 
         onChangeText={setPregunta3}
          />
@@ -210,7 +212,7 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta9} 
         />
 
-        <Text style={styles.label}>¿Quién cuidará cuando no estés?</Text>
+        <Text style={styles.label}>¿Quién cuidará a la mascota cuando no estés?</Text>
         <TextInput style={styles.input} 
         onChangeText={setPregunta10} 
         />
@@ -220,7 +222,7 @@ const enviarSolicitud = async () => {
         onChangeText={setPregunta11} 
         />
 
-        <Text style={styles.label}>¿Presupuesto mensual para la mascota?</Text>
+        <Text style={styles.label}>¿Cúal es tu presupuesto mensual?</Text>
         <TextInput style={styles.input} 
         onChangeText={setPregunta12}
          />
@@ -239,6 +241,7 @@ const enviarSolicitud = async () => {
 
       </View>
     </ScrollView>
+      </>
   );
 }
 
@@ -294,6 +297,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginBottom: 12,
+     color: "#000000",
   },
 
   textArea: {
@@ -305,6 +309,7 @@ const styles = StyleSheet.create({
     height: 90,
     textAlignVertical: "top",
     marginBottom: 12,
+     color: "#000000",
   },
 
   button: {
