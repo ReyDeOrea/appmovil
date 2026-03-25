@@ -1,6 +1,6 @@
 export interface AdoptionForm {
   id: string,
-  pet_id: string,
+  pet_id: number,
   owner_id: string,
   user_id: string,
 

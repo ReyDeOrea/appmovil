@@ -153,7 +153,7 @@ export default function SignUp() {
 
           <Image
             style={styles.imgD}
-            source={require('../../../../assets/images/DOG.png')}
+            source={require('../../../../assets/images/_D.jpg')}
           />
 
           <TouchableOpacity

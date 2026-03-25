@@ -76,9 +76,9 @@ export default function CatalogView() {
   const adoptedPets = pets.filter((p) => p.adopted === true);
 
   const staticBanners: BannerItem[] = [
-    { type: "static", image: require("../../../../assets/images/D.png") },
+    { type: "static", image: require("../../../../assets/images/BlackCat.jpg") },
     { type: "static", image: require("../../../../assets/images/Cat.jpeg") },
-    { type: "static", image: require("../../../../assets/images/DOG.png") },
+    { type: "static", image: require("../../../../assets/images/_D.jpg") },
   ];
 
  const adoptedBanners: BannerItem[] = adoptedPets.map((p) => {

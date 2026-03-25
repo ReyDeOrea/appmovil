@@ -1,14 +1,17 @@
+import { PushTokenRepositorySupabase } from "@/modules/notifications/infrastructure/tokenDataSource";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GetRequestsForMyPets } from "../../application/getRequestReceived";
-import { RequestStatus } from "../../application/statusRequest";
+import { RespondAdoptionRequest } from "../../application/repondAdoption";
 import { AdoptionRepository } from "../../infraestructure/adoptionDataSource";
 
 const repository = new AdoptionRepository();
 const getUserRequests = new GetRequestsForMyPets(repository);
-const updateStatus = new RequestStatus(repository);
+
+const pushRepo = new PushTokenRepositorySupabase();
+const respondRequest = new RespondAdoptionRequest(repository, pushRepo);
 
 export default function RequestsReceived() {
   const [requests, setRequests] = useState<any[]>([]);
@@ -49,22 +52,22 @@ export default function RequestsReceived() {
     }
   };
 
-  const aceptar = async (Rid: string, pet_id: number) => {
+  const aceptar = async (request: any) => {
     try {
 
-      await updateStatus.execute(Rid, "aceptado");
+      await respondRequest.execute(request.id, "aceptado");
 
-      await repository.updateStatusPet(pet_id, { adopted: true });
       loadRequests();
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error al aceptar solicitud:", error);
     }
   };
 
-  const rechazar = async (id: string) => {
+  const rechazar = async (request: any) => {
     try {
-      await updateStatus.execute(id, "rechazado");
+      await respondRequest.execute(request.id, "rechazado");
+
+
       loadRequests();
     } catch (error) {
       console.error("Error al rechazar solicitud:", error);
@@ -110,14 +113,14 @@ export default function RequestsReceived() {
           {item.estado === "en_proceso" && (
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
-                onPress={() => aceptar(item.id, item.pet_id)}
+                onPress={() => aceptar(item)}
                 style={[styles.button, styles.accept]}
               >
                 <Text style={styles.buttonText}>Aceptar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => rechazar(item.id)}
+                onPress={() => rechazar(item)}
                 style={[styles.button, styles.reject]}
               >
                 <Text style={styles.buttonText}>Rechazar</Text>
@@ -125,7 +128,7 @@ export default function RequestsReceived() {
             </View>
           )}
 
-             {item.estado === "aceptado" && item.adoptante_telefono && (
+          {item.estado === "aceptado" && item.adoptante_telefono && (
             <TouchableOpacity
               onPress={() => llamarAdoptante(item.adoptante_telefono)}
               style={[styles.button, styles.call]}
@@ -138,7 +141,7 @@ export default function RequestsReceived() {
 
         </TouchableOpacity>
       )}
-      
+
       ListEmptyComponent={
         <Text style={styles.emptyText}>
           No hay solicitudes
@@ -163,7 +166,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: "bold"
   },
-    call: {
+  call: {
     backgroundColor: "#c5e4fe",
     marginTop: 10
   },

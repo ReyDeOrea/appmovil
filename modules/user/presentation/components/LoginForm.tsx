@@ -8,6 +8,11 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, Touc
 import { loginUser } from '../../application/loginUser';
 import { validateLoginData } from '../../application/validateLoginData';
 
+import { SavePushToken } from '@/modules/notifications/application/saveToken';
+import { PushTokenRepositorySupabase } from '@/modules/notifications/infrastructure/tokenDataSource';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+
 export default function LoginForm() {
 
   const router = useRouter()
@@ -18,23 +23,31 @@ export default function LoginForm() {
   const handleLogin = async () => {
 
     try {
-
       setLoading(true);
-
       validateLoginData(username, password);
 
-      await loginUser(username, password);
+     const user = await loginUser(username, password);
+
+const projectId = Constants?.expoConfig?.extra?.eas?.projectId 
+      ?? Constants?.easConfig?.projectId;
+
+       const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+       console.log("USER ID:", user.id);
+console.log("TOKEN:", token);
+if (token) {
+       const repo = new PushTokenRepositorySupabase();
+    const savePushToken = new SavePushToken(repo);
+
+    await savePushToken.execute(user.id, token);
+}
 
       router.replace("/catalog");
-
-    } catch (err: any) {
-
+    }
+    catch (err: any) {
       Alert.alert("Error", err.message);
-
-    } finally {
-
+    } 
+    finally {
       setLoading(false);
-
     }
 
   };
@@ -101,7 +114,7 @@ export default function LoginForm() {
 
         </View>
 
-       
+
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
@@ -116,7 +129,7 @@ export default function LoginForm() {
 
         </TouchableOpacity>
 
-   
+
         <View style={styles.rp}>
 
           <FontAwesome6 name="shield-dog" size={26} color="#B7C979" />
@@ -229,7 +242,7 @@ const styles = StyleSheet.create({
   txtB: {
     fontSize: 18,
     color: 'black',
-   
+
   },
 
   row: {
