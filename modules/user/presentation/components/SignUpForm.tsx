@@ -1,5 +1,6 @@
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, useRouter } from "expo-router";
@@ -157,10 +158,7 @@ export default function SignUp() {
 
         <View style={styles.row}>
 
-          <Image
-            style={styles.imgD}
-            source={require('../../../../assets/images/_D.jpg')}
-          />
+        <FontAwesome6  style={styles.imgD} name="cat" size={26} color="#B7C979" />
 
           <TouchableOpacity
             style={styles.button}
@@ -199,7 +197,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDF8F0",
     paddingBottom: 40,
   },
-
   header: {
     width: "100%",
     height: 90,
@@ -209,25 +206,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-
   rowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   title: {
     fontWeight: 'bold',
     fontSize: 30,
     color: "#fff",
     marginRight: 6,
   },
-
   backBtn: {
     position: "absolute",
     left: 15,
     top: 45,
   },
-
   img: {
     width: '90%',
     height: 200,
@@ -235,18 +228,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
   },
-
   txt: {
     textAlign: 'center',
     fontSize: 16,
     color: "#555",
     marginBottom: 10,
   },
-
   BE: {
     marginHorizontal: 20,
   },
-
   BI: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -258,40 +248,32 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     backgroundColor: "#fff",
   },
-
   txtI: {
     fontSize: 16,
     flex: 1,
     marginLeft: 8,
     color: "#000"
   },
-
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 12,
   },
-
   button: {
     backgroundColor: '#dee8b4',
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 50,
   },
-
   txtB: {
     fontSize: 18,
     color: "white",
     fontWeight: "bold",
   },
-
   imgD: {
-    width: 60,
-    height: 60,
-    marginRight: 12,
+    marginRight:8,
   },
-
   txtSI: {
     fontWeight: 'bold',
     textDecorationLine: 'underline',

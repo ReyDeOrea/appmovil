@@ -6,6 +6,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { addPetUseCase } from "../../application/addPet";
 import { PetSex, PetSize, PetType } from "../../domain/pet";
 
@@ -126,212 +127,213 @@ export default function AddPetScreen() {
 
       <Stack.Screen options={{ headerShown: false }} />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#FDF8F0" }}>
 
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
 
-          <View style={styles.header}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
 
-            <TouchableOpacity
-              style={styles.backBtn}
-              onPress={() => router.back()}
-            >
-              <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
-            </TouchableOpacity>
-
-            <View style={styles.row}>
-              <Text style={styles.txtN}>Animaland</Text>
-              <FontAwesome name="paw" size={30} color="#fff" />
-            </View>
-
-          </View>
-          {img.length > 0 && (
-            <>
-              <ScrollView
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onScroll={(e) => setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))}
-                scrollEventThrottle={16}
-              >
-
-                {bannerImages.map((item, idx) => (
-
-                  <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
-                    <Image source={item.image} style={[styles.imgD, { width: width * 0.9 }]} />
-                  </View>
-
-                ))}
-
-              </ScrollView>
-
-              <View style={styles.BP}>
-
-                {bannerImages.map((_, i) => (
-                  <View key={i} style={[styles.dot, bannerPage === i && styles.dotActive]} />
-                ))}
-
-              </View>
-            </>
-          )}
-
-          <View style={styles.mainContainer}>
-
-            <View style={styles.rightColumn}>
-
-              <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-                <MaterialCommunityIcons name="camera" size={20} color="#fff" />
-                <Text style={styles.buttonText}>Subir foto</Text>
-              </TouchableOpacity>
-
-            </View>
-
-            <View style={styles.leftColumn}>
-
-              <Text style={styles.sectionTitle}>Información Básica</Text>
-
-              <Text style={styles.inputLabel}>Tipo de animal</Text>
-
-              <View style={styles.selectionContainer}>
-
-                {petTypes.map((t) => (
-                  <TouchableOpacity
-                    key={t}
-                    style={[styles.selectionButton, type === t && styles.selectionButtonActive]}
-                    onPress={() => setType(t)}
-                  >
-                    <Text style={styles.selectionButtonText}>{t}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              </View>
-
-              <Text style={styles.inputLabel}>Nombre del animal</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Nombre del animal"
-                placeholderTextColor="#999"
-                value={name}
-                onChangeText={setName}
-              />
-
-              <Text style={styles.inputLabel}>Sexo</Text>
-
-              <View style={styles.selectionContainer}>
-
-                {petSex.map((s) => (
-                  <TouchableOpacity
-                    key={s}
-                    style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
-                    onPress={() => setSex(s)}
-                  >
-                    <Text style={styles.selectionButtonText}>{s}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              </View>
-
-              <Text style={styles.inputLabel}>Tamaño</Text>
-
-              <View style={styles.selectionContainer}>
-
-                {Object.values(PetSize).map((s) => (
-                  <TouchableOpacity
-                    key={s}
-                    style={[styles.selectionButton, size === s && styles.selectionButtonActive]}
-                    onPress={() => setSize(s)}
-                  >
-                    <Text style={styles.selectionButtonText}>{s}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              </View>
-
-              <Text style={styles.inputLabel}>Edad</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Edad"
-                placeholderTextColor="#999"
-                value={age}
-                onChangeText={setAge}
-              />
-
-              <Text style={styles.inputLabel}>Raza</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Raza"
-                placeholderTextColor="#999"
-                value={breed}
-                onChangeText={setBreed}
-              />
-
-              <Text style={styles.inputLabel}>Ubicación</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Ubicación"
-                placeholderTextColor="#999"
-                value={location}
-                onChangeText={setLocation}
-              />
-
-              <Text style={styles.inputLabel}>Descripción</Text>
-
-              <TextInput
-                style={styles.textArea}
-                placeholder="Da una breve descripción"
-                placeholderTextColor="#999"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-              />
-
-              <Text style={styles.sectionTitle}>Salud</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Alergias / Vacunas / Discapacidad"
-                placeholderTextColor="#999"
-                value={healthInfo}
-                onChangeText={setHealthInfo}
-                multiline
-              />
-
-              <Text style={styles.sectionTitle}>Contacto</Text>
-
-              <TextInput
-                style={styles.inputFull}
-                placeholder="Número de teléfono"
-                placeholderTextColor="#999"
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-              />
+            <View style={styles.header}>
 
               <TouchableOpacity
-                style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
-                onPress={savePet}
-                disabled={isSaving}
-              >
-                <Text style={styles.buttonText}>
-                  {isSaving ? "Guardando..." : "Guardar mascota"}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.cancelButton}
+                style={styles.backBtn}
                 onPress={() => router.back()}
               >
-                <Text style={styles.buttonText}>Cancelar</Text>
+                <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
               </TouchableOpacity>
 
+              <View style={styles.row}>
+                <Text style={styles.txtN}>Animaland</Text>
+                <FontAwesome name="paw" size={30} color="#fff" />
+              </View>
+
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            {img.length > 0 && (
+              <>
+                <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  onScroll={(e) => setBannerPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+                  scrollEventThrottle={16}
+                >
+
+                  {bannerImages.map((item, idx) => (
+
+                    <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
+                      <Image source={item.image} style={[styles.imgD, { width: width * 0.9 }]} />
+                    </View>
+
+                  ))}
+
+                </ScrollView>
+
+                <View style={styles.BP}>
+
+                  {bannerImages.map((_, i) => (
+                    <View key={i} style={[styles.dot, bannerPage === i && styles.dotActive]} />
+                  ))}
+
+                </View>
+              </>
+            )}
+
+            <View style={styles.mainContainer}>
+              <View style={styles.rightColumn}>
+
+                <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+                  <MaterialCommunityIcons name="camera" size={20} color="#fff" />
+                  <Text style={styles.buttonText}>Subir foto</Text>
+                </TouchableOpacity>
+
+              </View>
+
+              <View style={styles.leftColumn}>
+                <Text style={styles.sectionTitle}>Información Básica</Text>
+
+                <Text style={styles.inputLabel}>Tipo de animal</Text>
+
+                <View style={styles.selectionContainer}>
+
+                  {petTypes.map((t) => (
+                    <TouchableOpacity
+                      key={t}
+                      style={[styles.selectionButton, type === t && styles.selectionButtonActive]}
+                      onPress={() => setType(t)}
+                    >
+                      <Text style={styles.selectionButtonText}>{t}</Text>
+                    </TouchableOpacity>
+                  ))}
+
+                </View>
+
+                <Text style={styles.inputLabel}>Nombre del animal</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Nombre del animal"
+                  placeholderTextColor="#999"
+                  value={name}
+                  onChangeText={setName}
+                />
+
+                <Text style={styles.inputLabel}>Sexo</Text>
+
+                <View style={styles.selectionContainer}>
+
+                  {petSex.map((s) => (
+                    <TouchableOpacity
+                      key={s}
+                      style={[styles.selectionButton, sex === s && styles.selectionButtonActive]}
+                      onPress={() => setSex(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
+                  ))}
+
+                </View>
+
+                <Text style={styles.inputLabel}>Tamaño</Text>
+
+                <View style={styles.selectionContainer}>
+
+                  {Object.values(PetSize).map((s) => (
+                    <TouchableOpacity
+                      key={s}
+                      style={[styles.selectionButton, size === s && styles.selectionButtonActive]}
+                      onPress={() => setSize(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
+                  ))}
+
+                </View>
+
+                <Text style={styles.inputLabel}>Edad</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Edad"
+                  placeholderTextColor="#999"
+                  value={age}
+                  onChangeText={setAge}
+                />
+
+                <Text style={styles.inputLabel}>Raza</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Raza"
+                  placeholderTextColor="#999"
+                  value={breed}
+                  onChangeText={setBreed}
+                />
+
+                <Text style={styles.inputLabel}>Ubicación</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Ubicación"
+                  placeholderTextColor="#999"
+                  value={location}
+                  onChangeText={setLocation}
+                />
+
+                <Text style={styles.inputLabel}>Descripción</Text>
+
+                <TextInput
+                  style={styles.textArea}
+                  placeholder="Da una breve descripción"
+                  placeholderTextColor="#999"
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                />
+
+                <Text style={styles.sectionTitle}>Salud</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Alergias / Vacunas / Discapacidad"
+                  placeholderTextColor="#999"
+                  value={healthInfo}
+                  onChangeText={setHealthInfo}
+                  multiline
+                />
+
+                <Text style={styles.sectionTitle}>Contacto</Text>
+
+                <TextInput
+                  style={styles.inputFull}
+                  placeholder="Número de teléfono"
+                  placeholderTextColor="#999"
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                />
+
+                <TouchableOpacity
+                  style={[styles.saveButton, isSaving && { opacity: 0.5 }]}
+                  onPress={savePet}
+                  disabled={isSaving}
+                >
+                  <Text style={styles.buttonText}>
+                    {isSaving ? "Guardando..." : "Guardar mascota"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => router.back()}
+                >
+                  <Text style={styles.buttonText}>Cancelar</Text>
+                </TouchableOpacity>
+
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 }
@@ -480,16 +482,17 @@ const styles = StyleSheet.create({
   },
   selectionContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 12,
     marginBottom: 8,
   },
   selectionButton: {
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "#DAC193",
     borderRadius: 8,
     backgroundColor: "#fff",
+    alignItems: "center",
   },
   selectionButtonActive: {
     backgroundColor: "#E5DCCC",
