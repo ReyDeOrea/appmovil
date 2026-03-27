@@ -76,26 +76,31 @@ export default function CatalogView() {
   const adoptedPets = pets.filter((p) => p.adopted === true);
 
   const staticBanners: BannerItem[] = [
-    { type: "static", image: require("../../../../assets/images/BlackCat.jpg") },
-    { type: "static", image: require("../../../../assets/images/Cat.jpeg") },
-    { type: "static", image: require("../../../../assets/images/_D.jpg") },
+    { type: "static", image: require("../../../../assets/images/B1.png") },
+    { type: "static", image: require("../../../../assets/images/CD.jpg") },
   ];
 
- const adoptedBanners: BannerItem[] = adoptedPets.map((p) => {
-  let images: string[] = [];
-  try {
-    images = JSON.parse(p.image_url || "[]");
-    if (!Array.isArray(images)) images = [images];
-  } 
-  catch {
-    images = p.image_url ? [p.image_url] : [];
-  }
-  return {
-    type: "adopted",
-    image: { uri: images[0] },
-    name: p.name,
-  };
-});
+  const adoptedBanners: BannerItem[] = (() => {
+    if (adoptedPets.length === 0)
+      return [];
+    const shuffled = [...adoptedPets].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 3);
+    return selected.map((p) => {
+      let images: string[] = [];
+      try {
+        images = JSON.parse(p.image_url || "[]");
+        if (!Array.isArray(images)) images = [images];
+      }
+      catch {
+        images = p.image_url ? [p.image_url] : [];
+      }
+      return {
+        type: "adopted",
+        image: { uri: images[0] },
+        name: p.name,
+      };
+    });
+  })();
 
   const bannerImages: BannerItem[] = [...staticBanners, ...adoptedBanners];
 
@@ -222,7 +227,7 @@ export default function CatalogView() {
             onChangeText={setSearch}
           />
           <TouchableOpacity style={styles.F}
-           onPress={() => setFilterOpen(true)}>
+            onPress={() => setFilterOpen(true)}>
             <Ionicons name="filter-outline" size={24} color="#D09100" />
           </TouchableOpacity>
         </View>

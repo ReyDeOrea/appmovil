@@ -2,6 +2,7 @@ import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ModalMenuProps {
   visible: boolean;
@@ -12,6 +13,8 @@ interface ModalMenuProps {
 }
 
 export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMenuProps) {
+
+  const insets = useSafeAreaInsets();
 
   const logout = async () => {
     await AsyncStorage.removeItem("user");
@@ -25,7 +28,9 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalBackground}>
 
-        <View style={styles.modalContainer}>
+        <View style={[
+            styles.modalContainer,
+            { paddingBottom: insets.bottom + 15 }]}>
 
           <Text style={styles.modalTitle}>Menú</Text>
 
@@ -102,7 +107,7 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
                 >
                   <Feather name="clipboard" size={24} color="#999" />
                   <Text style={styles.navText}>Solicitudes</Text>
-                   <Text style={styles.navText}>de adopción</Text>
+                  <Text style={styles.navText}>de adopción</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -132,7 +137,7 @@ export function ModalMenu({ visible, onClose, user, setUser, onUpdate }: ModalMe
           </View>
 
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Cancelar</Text>
+            <Text style={styles.cancelText}>Cerrar</Text>
           </TouchableOpacity>
 
         </View>

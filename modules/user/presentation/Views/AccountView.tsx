@@ -46,7 +46,7 @@ export default function Account() {
     try {
       setLoading(true);
 
-  validateUserProfile(email, username, phone);
+      validateUserProfile(email, username, phone);
 
       await checkUserExistsUpdate(
         email.trim().toLowerCase(),
@@ -82,13 +82,13 @@ export default function Account() {
     <View style={styles.container}>
 
       <View style={styles.b}>
-        
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => router.back()}>
-              <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
-          </TouchableOpacity>
-          
+
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => router.back()}>
+          <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+        </TouchableOpacity>
+
         <View style={styles.BR}>
 
           <View style={styles.row}>
@@ -126,6 +126,7 @@ export default function Account() {
             value={username}
             onChangeText={setUsername}
             placeholder="Tu nombre"
+            placeholderTextColor="#999"
           />
 
           <Text style={styles.label}>Teléfono</Text>
@@ -164,20 +165,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDF8F0",
     alignItems: "center",
   },
-
   BC: {
     width: "100%",
     backgroundColor: "#B7C979",
     paddingVertical: height * 0.02,
     marginBottom: 30,
   },
-
   BR: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   txtN: {
     color: "#fff",
     fontWeight: "bold",

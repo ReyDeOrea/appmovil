@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { updatePetUseCase } from "../../application/updatePet";
 import { PetSex, PetSize, PetType } from "../../domain/pet";
 
@@ -182,247 +183,263 @@ export default function UpdatePetsScreen() {
 
     <>
       <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#FDF8F0" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
 
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.b}>
 
-          <View style={styles.b}>
-
-            <TouchableOpacity
-              style={styles.backBtn}
-              onPress={() => router.back()}
-            >
-              <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
-            </TouchableOpacity>
-
-            <View style={styles.row}>
-              <Text style={styles.txtN}>Animaland</Text>
-              <MaterialCommunityIcons name="dog" size={33} color="#fff" />
-            </View>
-
-          </View>
-
-          {images.length > 0 && (
-
-            <>
-              <ScrollView
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onScroll={(e) =>
-                  setImagePage(Math.round(e.nativeEvent.contentOffset.x / width))
-                }
-                scrollEventThrottle={16}
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={() => router.back()}
               >
+                <MaterialCommunityIcons name="arrow-left" size={28} color="#fff" />
+              </TouchableOpacity>
 
-                {images.map((uri, idx) => (
-                  <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
-                    <Image
-                      source={{ uri }}
-                      style={[styles.imgD, { width: width * 0.9 }]}
-                    />
-                  </View>
-                ))}
-
-              </ScrollView>
-
-              <View style={styles.BP}>
-
-                {images.map((_, i) => (
-                  <View
-                    key={i}
-                    style={[styles.dot, imagePage === i && styles.dotActive]}
-                  />
-                ))}
-
+              <View style={styles.row}>
+                <Text style={styles.txtN}>Animaland</Text>
+                <MaterialCommunityIcons name="dog" size={33} color="#fff" />
               </View>
 
-            </>
-          )}
+            </View>
 
-          <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
-            <Text style={styles.imageBtnText}>Insertar Imagen</Text>
-          </TouchableOpacity>
+            {images.length > 0 && (
 
-          <Text style={styles.sectionTitle}>Información general</Text>
+              <>
+                <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  onScroll={(e) =>
+                    setImagePage(Math.round(e.nativeEvent.contentOffset.x / width))
+                  }
+                  scrollEventThrottle={16}
+                >
 
-          <Label style={styles.LabelText}>Tipo de animal</Label>
+                  {images.map((uri, idx) => (
+                    <View key={idx} style={{ width, alignItems: "center", marginVertical: 10 }}>
+                      <Image
+                        source={{ uri }}
+                        style={[styles.imgD, { width: width * 0.9 }]}
+                      />
+                    </View>
+                  ))}
 
-          <View style={styles.selectionContainer}>
+                </ScrollView>
 
-            {["perro", "gato"].map((t) => (
+                <View style={styles.BP}>
 
-              <TouchableOpacity
-                key={t}
-                style={[
-                  styles.selectionButton,
-                  type === t && styles.selectionButtonActive,
-                ]}
-                onPress={() => setType(t)}
-              >
-                <Text style={styles.selectionButtonText}>{t}</Text>
-              </TouchableOpacity>
+                  {images.map((_, i) => (
+                    <View
+                      key={i}
+                      style={[styles.dot, imagePage === i && styles.dotActive]}
+                    />
+                  ))}
 
-            ))}
+                </View>
 
-          </View>
+              </>
+            )}
 
-          <Label style={styles.LabelText}>Nombre del animal</Label>
+            <View style={styles.mainContainer}>
+              <View style={styles.rightColumn}>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre"
-            placeholderTextColor="#999"
-            value={name}
-            onChangeText={setName}
-          />
+                <TouchableOpacity style={styles.imageBtn} onPress={pickImage}>
+                  <MaterialCommunityIcons name="camera" size={20} color="#fff" />
+                  <Text style={styles.imageBtnText}>Subir foto</Text>
+                </TouchableOpacity>
+              </View>
 
-          <Label style={styles.LabelText}>Sexo del animal</Label>
+              <View style={styles.leftColumn}>
+                <Text style={styles.sectionTitle}>Información general</Text>
 
-          <View style={styles.selectionContainer}>
+                <Label style={styles.LabelText}>Tipo de animal</Label>
 
-            {["macho", "hembra"].map((s) => (
+                <View style={styles.selectionContainer}>
 
-              <TouchableOpacity
-                key={s}
-                style={[
-                  styles.selectionButton,
-                  sex === s && styles.selectionButtonActive,
-                ]}
-                onPress={() => setSex(s)}
-              >
-                <Text style={styles.selectionButtonText}>{s}</Text>
-              </TouchableOpacity>
+                  {["perro", "gato"].map((t) => (
 
-            ))}
+                    <TouchableOpacity
+                      key={t}
+                      style={[
+                        styles.selectionButton,
+                        type === t && styles.selectionButtonActive,
+                      ]}
+                      onPress={() => setType(t)}
+                    >
+                      <Text style={styles.selectionButtonText}>{t}</Text>
+                    </TouchableOpacity>
 
-          </View>
+                  ))}
 
-          <Label style={styles.LabelText}>Edad del animal</Label>
+                </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Edad"
-            placeholderTextColor="#999"
-            value={age}
-            onChangeText={setAge}
-          />
+                <Label style={styles.LabelText}>Nombre del animal</Label>
 
-          <Label style={styles.LabelText}>Tamaño del animal</Label>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nombre"
+                  placeholderTextColor="#999"
+                  value={name}
+                  onChangeText={setName}
+                />
 
-          <View style={styles.selectionContainer}>
+                <Label style={styles.LabelText}>Sexo del animal</Label>
 
-            {["pequeño", "mediano", "grande"].map((s) => (
+                <View style={styles.selectionContainer}>
 
-              <TouchableOpacity
-                key={s}
-                style={[
-                  styles.selectionButton,
-                  size === s && styles.selectionButtonActive,
-                ]}
-                onPress={() => setSize(s)}
-              >
-                <Text style={styles.selectionButtonText}>{s}</Text>
-              </TouchableOpacity>
+                  {["macho", "hembra"].map((s) => (
 
-            ))}
+                    <TouchableOpacity
+                      key={s}
+                      style={[
+                        styles.selectionButton,
+                        sex === s && styles.selectionButtonActive,
+                      ]}
+                      onPress={() => setSex(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
 
-          </View>
+                  ))}
 
-          <Label style={styles.LabelText}>Raza del animal</Label>
+                </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Raza"
-            placeholderTextColor="#999"
-            value={breed}
-            onChangeText={setBreed}
-          />
+                <Label style={styles.LabelText}>Edad del animal</Label>
 
-          <Text style={styles.sectionTitle}>Salud</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Edad"
+                  placeholderTextColor="#999"
+                  value={age}
+                  onChangeText={setAge}
+                />
 
-          <TextInput
-            style={styles.textArea}
-            placeholder="Información de salud"
-            placeholderTextColor="#999"
-            value={healthInfo}
-            onChangeText={setHealthInfo}
-            multiline
-          />
+                <Label style={styles.LabelText}>Tamaño del animal</Label>
 
-          <Text style={styles.sectionTitle}>Descripción</Text>
+                <View style={styles.selectionContainer}>
 
-          <TextInput
-            style={styles.textArea}
-            placeholder="Descripción"
-            placeholderTextColor="#999"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
+                  {["pequeño", "mediano", "grande"].map((s) => (
 
-          <Text style={styles.sectionTitle}>Contacto</Text>
+                    <TouchableOpacity
+                      key={s}
+                      style={[
+                        styles.selectionButton,
+                        size === s && styles.selectionButtonActive,
+                      ]}
+                      onPress={() => setSize(s)}
+                    >
+                      <Text style={styles.selectionButtonText}>{s}</Text>
+                    </TouchableOpacity>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Teléfono"
-            placeholderTextColor="#999"
-            value={phone}
-            onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ""))}
-            keyboardType="phone-pad"
-            maxLength={10}
-          />
+                  ))}
 
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#999"
-            placeholder="Ubicación"
-            value={location}
-            onChangeText={setLocation}
-          />
+                </View>
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleUpdatePet}>
-            <Text style={{ color: "#fff", fontWeight: "600" }}>
-              Actualizar
-            </Text>
-          </TouchableOpacity>
+                <Label style={styles.LabelText}>Raza del animal</Label>
 
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => router.back()}
-          >
-            <Text style={{ color: "#fff", fontWeight: "600" }}>
-              Cancelar
-            </Text>
-          </TouchableOpacity>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Raza"
+                  placeholderTextColor="#999"
+                  value={breed}
+                  onChangeText={setBreed}
+                />
 
-        </ScrollView>
+                <Text style={styles.sectionTitle}>Salud</Text>
 
-      </KeyboardAvoidingView>
+                <TextInput
+                  style={styles.textArea}
+                  placeholder="Información de salud"
+                  placeholderTextColor="#999"
+                  value={healthInfo}
+                  onChangeText={setHealthInfo}
+                  multiline
+                />
 
+                <Text style={styles.sectionTitle}>Descripción</Text>
+
+                <TextInput
+                  style={styles.textArea}
+                  placeholder="Descripción"
+                  placeholderTextColor="#999"
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                />
+
+                <Text style={styles.sectionTitle}>Contacto</Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Teléfono"
+                  placeholderTextColor="#999"
+                  value={phone}
+                  onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ""))}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholderTextColor="#999"
+                  placeholder="Ubicación"
+                  value={location}
+                  onChangeText={setLocation}
+                />
+
+                <TouchableOpacity style={styles.saveButton} onPress={handleUpdatePet}>
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    Actualizar
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => router.back()}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    Cancelar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 
 }
 
 const styles = StyleSheet.create({
-
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "#FDF8F0",
     paddingBottom: 20,
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-
+  mainContainer: {
+    flexDirection: "column",
+    paddingHorizontal: 20,
+    gap: 20,
+  },
+  leftColumn: {
+    width: "100%",
+  },
+  rightColumn: {
+    width: "100%",
+    alignItems: "center",
+  },
   b: {
     backgroundColor: "#B7C979",
     paddingTop: 40,
@@ -430,21 +447,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
   },
-
-
   txtN: {
     color: "#fff",
     fontSize: 32,
     fontWeight: "bold",
     marginRight: 10,
   },
-
   backBtn: {
     position: "absolute",
     left: 15,
     top: 45,
   },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -452,14 +465,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: "center",
   },
-
   LabelText: {
     fontSize: 12,
     color: "#666",
     marginBottom: 4,
     fontWeight: "500",
+    alignSelf: "flex-start",
   },
-
   input: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -470,7 +482,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 8,
   },
-
   textArea: {
     borderWidth: 1,
     borderColor: "#E8E0D0",
@@ -483,18 +494,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
-
   imgD: {
     height: BANNER_HEIGHT,
     borderRadius: 20,
   },
-
   BP: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 8,
   },
-
   dot: {
     width: 8,
     height: 8,
@@ -502,25 +510,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     margin: 5,
   },
-
   dotActive: {
     backgroundColor: "#000",
   },
-
   imageBtn: {
     backgroundColor: "#D4B37A",
     padding: 14,
     borderRadius: 15,
+    marginBottom: 12,
+    width: "100%",
     alignItems: "center",
-    marginBottom: 15,
+    flexDirection: "row",
+    justifyContent: "center",
     elevation: 3,
   },
-
   imageBtnText: {
     color: "#fff",
     fontWeight: "600",
   },
-
   saveButton: {
     backgroundColor: "#B7C979",
     padding: 14,
@@ -530,7 +537,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 3,
   },
-
   cancelButton: {
     backgroundColor: "#E8B4B4",
     padding: 14,
@@ -539,13 +545,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     elevation: 3,
   },
-
   selectionContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
+    gap: 12,
+    marginBottom: 8,
   },
-
   selectionButton: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -554,15 +558,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
   },
-
   selectionButtonActive: {
     backgroundColor: "#E5DCCC",
     borderColor: "#DAC193",
   },
-
   selectionButtonText: {
     textTransform: "capitalize",
     fontWeight: "bold",
   },
-
 });

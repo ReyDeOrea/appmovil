@@ -5,7 +5,6 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Clipboard from "expo-clipboard";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, Dimensions, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
@@ -90,11 +89,7 @@ export function ProfileAnimal() {
 
   const llamar = () => Linking.openURL(`tel:${mascota?.phone}`);
 
-  const copiarEnlace = async () => {
-    if (!mascota) return;
-    await Clipboard.setStringAsync(`https://app.com/animal/${mascota.id}`);
-    Alert.alert("Enlace copiado", "El enlace fue copiado");
-  };
+  
 
   const images: string[] = (() => {
     if (!mascota) return [];
@@ -167,11 +162,6 @@ export function ProfileAnimal() {
             />
           ))}
         </View>
-
-        <TouchableOpacity style={styles.copyIconButton}
-          onPress={copiarEnlace}>
-          <Feather name="link" size={22} color="#fff" />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.txtU}>
