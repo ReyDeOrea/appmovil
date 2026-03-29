@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#FDF8F0"
   },
- imageAdopted: { 
+  imageAdopted: {
     opacity: 0.5
   },
   b: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10
   },
- cardAdopted: { 
+  cardAdopted: {
     opacity: 0.5
   },
   row: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginRight: 5
   },
-adoptedText: { 
+  adoptedText: {
     color: "green",
     fontWeight: "bold",
     marginTop: 5
@@ -220,7 +220,7 @@ adoptedText: {
     marginTop: 10
   },
   editBtn: {
-    backgroundColor: "#ffdfba",
+    backgroundColor: "#B7C979",
     padding: 8,
     borderRadius: 8,
     flex: 1,
